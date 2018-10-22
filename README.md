@@ -140,7 +140,8 @@ Below values are pre-set as default values. It means, you can put even nothing i
 			sampleRateIn: 16000, // supported rates are between 16000-24000 (defaults to 16000)
 			encodingOut: "LINEAR16", // supported are LINEAR16 / MP3 / (defaults to LINEAR16) When you select MP3, you need mp3Player option.
 			sampleRateOut: 24000, // supported are 16000 / 24000 (defaults to 24000)
-			mp3Player: "mpg321" // If needed, use with options.
+			mp3Player: "mpg321", // If needed, use with options.
+			speakerDevice: null //When your speaker is not the default device. (e.g: "plughw:2,0")
 		},
 		defaultProfile: "default", // This default profile should be in `profiles` field.
 		profiles: {
