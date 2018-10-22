@@ -20,24 +20,7 @@ So, I'd made this module newly.
 ### Screenshot
 [[PlaceHolder]]
 
-### Updates
-#### [1.1.0] - 2018.10.04
-- MP3 Output is supported. Now you can get more unchunky sound result.(Set `audio.encodingOut` to `MP3` // `OGG` is not yet supported.)
-- `ding.wav` will be played when Assistant is ready to hear your voice.
-- For update from prior version
-```
-sudo apt-get install mpg321
-cd ~/MagicMirror/modules/MMM-AssistantMk2
-git pull
-npm install --save wav
-```
 
-
-#### [1.0.1] - 2018.07.25.
-- Youtube playlist can be playable
-- Some uncaught youtube videos are caught now
-- On youtube player error, error code is shown
-- notifyPlaying option is added.
 
 ### Installation
 1. Install pre-dependencies
@@ -155,7 +138,7 @@ Below values are pre-set as default values. It means, you can put even nothing i
 		audio: {
 			encodingIn: "LINEAR16", // supported are LINEAR16 / FLAC (defaults to LINEAR16)
 			sampleRateIn: 16000, // supported rates are between 16000-24000 (defaults to 16000)
-			encodingOut: "LINEAR16", // supported are LINEAR16 / MP3 / (defaults to LINEAR16) When you select MP3, you need mp3Player option. 
+			encodingOut: "LINEAR16", // supported are LINEAR16 / MP3 / (defaults to LINEAR16) When you select MP3, you need mp3Player option.
 			sampleRateOut: 24000, // supported are 16000 / 24000 (defaults to 24000)
 			mp3Player: "mpg321" // If needed, use with options.
 		},
@@ -498,7 +481,28 @@ npm install grpc@1.13
 npm install --save-dev electron-rebuild
 ./node_modules/.bin/electron-rebuild
 ```
+### Updates
+#### [1.1.1] - 2018.10.22
+- Speaker device configurable(`audio.speakerDevice`) (It might be able to fix some bugs about playing `ding.wav`)
 
+
+#### [1.1.0] - 2018.10.04
+- MP3 Output is supported. Now you can get more unchunky sound result.(Set `audio.encodingOut` to `MP3` // `OGG` is not yet supported.)
+- `ding.wav` will be played when Assistant is ready to hear your voice.
+- For update from prior version
+```
+sudo apt-get install mpg321
+cd ~/MagicMirror/modules/MMM-AssistantMk2
+git pull
+git checkout 1.1.0
+npm install --save wav
+```
+
+#### [1.0.1] - 2018.07.25.
+- Youtube playlist can be playable
+- Some uncaught youtube videos are caught now
+- On youtube player error, error code is shown
+- notifyPlaying option is added.
 
 ### TODO
 - debugging??
