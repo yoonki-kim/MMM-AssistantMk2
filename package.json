@@ -1,6 +1,6 @@
 {
   "name": "MMM-AssistantMk2",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "An embedded Google Assistant on MagicMirror",
   "main": "MMM-AssistantMk2.js",
   "keywords": [
@@ -15,6 +15,10 @@
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/eouia/MMM-AssistantMk2/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/eouia/MMM-AssistantMk2"
   },
   "dependencies": {
     "google-assistant": "^0.5.2",
