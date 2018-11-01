@@ -1,6 +1,6 @@
 {
   "name": "MMM-AssistantMk2",
-  "version": "1.2.0",
+  "version": "2.0.0",
   "description": "An embedded Google Assistant on MagicMirror",
   "main": "MMM-AssistantMk2.js",
   "keywords": [
@@ -23,8 +23,5 @@
   "dependencies": {
     "google-assistant": "^0.5.2",
     "node-record-lpcm16": "^0.3.0"
-  },
-  "devDependencies": {
-    "electron-rebuild": "^1.8.1"
   }
 }
