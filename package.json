@@ -22,6 +22,10 @@
   },
   "dependencies": {
     "google-assistant": "^0.5.2",
-    "node-record-lpcm16": "^0.3.0"
+    "node-record-lpcm16": "^0.3.0",
+    "play-sound": "^1.1.2"
+  },
+  "devDependencies": {
+    "electron-rebuild": "^1.8.2"
   }
 }

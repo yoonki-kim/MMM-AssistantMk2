@@ -10,52 +10,53 @@ const GoogleAssistant = require("google-assistant")
 const exec = require("child_process").exec
 const fs = require("fs")
 
-
-
 var NodeHelper = require("node_helper")
-
 
 module.exports = NodeHelper.create({
   start: function () {
     this.config = {}
     this.continueConversation = false
     this.currentPayload = null
+    this.speaker = null
+  },
+
+  play: function(file, command, option, cb=()=>{}) {
+    const player = require('play-sound')()
+    this.sendSocketNotification("SPEAKER_ON")
+    var co = {}
+    co[command] = option
+    this.speaker = player.play(file, co, (err)=>{
+      if (err && !err.killed) {
+        console.log("Speaker error:", err)
+        throw err
+      }
+      this.sendSocketNotification("SPEAKER_OFF")
+      cb()
+    })
   },
 
   playChime: function (cb) {
-    var com = ""
+    var com = this.config.play.playProgram
+    var option = this.config.play.playOption
     var file = path.resolve(__dirname, "resources", this.config.startChime)
-    if(this.config.mp3PlayCommand.match("%FILE%")) {
-      com = this.config.mp3PlayCommand.replace("%FILE%", file)
-    } else {
-      com = this.config.mp3mp3PlayCommand + " " + file
-    }
-    exec(com, (e,so,se)=>{
-      if (e) {
-        console.log("[AMK2] Playing chime error:", e)
-      }
-      cb()
-    })
+    this.play(file, com, option, ()=>{cb()})
   },
 
   playResponse: function (file, cb) {
-    var com = ""
-    if(this.config.mp3PlayCommand.match("%FILE%")) {
-      com = this.config.mp3PlayCommand.replace("%FILE%", file)
-    } else {
-      com = this.config.mp3mp3PlayCommand + " " + file
-    }
-    exec(com, (e,so,se)=>{
-      if (e) {
-        console.log("[AMK2] Speaking response error:", e)
-      }
-      fs.unlink(file, (err) => {
-        if (err) {
-          console.log("[AMK2] Clearing response file error:", err)
-        }
+    var com = this.config.play.playProgram
+    var option = this.config.play.playOption
+    if (this.config.responseVoice) {
+      this.play(file, com, option, ()=>{
+        fs.unlink(file, (err) => {
+          if (err) {
+            console.log("[AMK2] Clearing response file error:", err)
+          }
+        })
+        cb()
       })
+    } else {
       cb()
-    })
+    }
   },
 
   clearTmp: function() {
@@ -72,7 +73,19 @@ module.exports = NodeHelper.create({
     if (!this.config.verbose) {
       console.log = function() {}
     }
+    this.gactionCLI()
     this.clearTmp()
+  },
+
+  gactionCLI: function() {
+    if (this.config.useGactionCLI) {
+      var cdPath = path.resolve(__dirname, "gaction")
+      var cmd = "cd " + cdPath + "; ./gactions test --action_package actions.json --project " + this.config.projectId
+      exec(cmd, (e, so, se)=>{
+        console.log("[AMK2] GAction action package updates:", so, se)
+        if (e) console.log(e)
+      })
+    }
   },
 
   socketNotificationReceived: function (notification, payload) {
@@ -83,6 +96,11 @@ module.exports = NodeHelper.create({
       break
     case "START":
       this.prepareActivate(payload)
+      break
+    case this.config.notifications.ASSISTANT_DEACTIVATED:
+      if (this.speaker) {
+        this.speaker.kill()
+      }
       break
     }
   },
@@ -97,7 +115,6 @@ module.exports = NodeHelper.create({
       payload = this.currentPayload
     }
     this.playChime(()=>{
-      this.sendSocketNotification("STARTED")
       if (textQuery) {
         this.sendSocketNotification("TRANSCRIPTION", {done:true, transcription:textQuery})
       }
@@ -106,7 +123,6 @@ module.exports = NodeHelper.create({
   },
 
   activate: function(payload, textQuery=null, sender=null) {
-    console.log(payload, textQuery, sender)
     var transcriptionHook = this.config.transcriptionHook
 
     var cfgInstance = {
@@ -118,15 +134,15 @@ module.exports = NodeHelper.create({
         audio : {
           encodingIn: "LINEAR16",
           sampleRateIn: 16000,
-          encodingOut: "MP3",
-          sampleRateOut: 24000,
+          encodingOut: this.config.play.encodingOut,
+          sampleRateOut: this.config.play.sampleRateOut,
         },
         lang : payload.lang,
         deviceModelId : this.config.deviceModelId,
         deviceId : this.config.deviceInstanceId,
         deviceLocation : this.config.deviceLocation,
         screen : {
-          isOn: this.config.useScreen
+          isOn: this.config.responseScreen
         },
       },
     }
@@ -182,6 +198,7 @@ module.exports = NodeHelper.create({
       .on("end-of-utterance", () => {
         console.log("[AMK2] end-of-utterance")
         record.stop()
+        this.sendSocketNotification("MIC_OFF")
       })
       // just to spit out to the console what was said (as we say it)
       .on("transcription", (data) => {
@@ -207,15 +224,15 @@ module.exports = NodeHelper.create({
       .on("device-action", (action) => {
         console.log("[AMK2] Device Action:", action)
         if (typeof action["inputs"] !== "undefined") {
-          var intent = action.inputs[0].payload.commands
-          console.log("[AMK2] execution", action.inputs[0].payload.commands[0].execution[0])
-          foundAction = action.inputs[0].payload.commands
+          var intent = action.inputs[0].payload.commands[0].execution[0]
+          console.log("[AMK2] Action execution", intent)
+          foundAction = intent
         }
       })
       .on("screen-data", (screen) => {
         var self = this
         var file = require("fs")
-        var filePath = path.resolve(__dirname, "temp.html")
+        var filePath = path.resolve(__dirname, "tmp", "temp.html")
         screenOutput = "temp.html"
         var str = screen.data.toString("utf8")
         str = str.replace("html,body{", "html,body{zoom:" + this.config.screenZoom + ";")
@@ -327,10 +344,13 @@ module.exports = NodeHelper.create({
       })
       if (!textQuery) {
         var mic = record.start(this.config.record)
+        this.sendSocketNotification("MIC_ON")
         mic.on("data", (data) => {
           try {
             conversation.write(data)
           } catch (err) {
+            record.stop()
+            this.sendSocketNotification("MIC_OFF")
             console.error("[AMK2] mic error:", err)
           }
         })
@@ -347,6 +367,8 @@ module.exports = NodeHelper.create({
     })
     .on("started", startConversation)
     .on("error", (error) => {
+      record.stop()
+      this.sendSocketNotification("MIC_OFF")
       console.error("[AMK2] Assistant Error:", error)
       this.sendSocketNotification("ASSISTANT_ERROR", error)
     })

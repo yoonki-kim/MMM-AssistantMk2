@@ -7,6 +7,8 @@ var ytp
 Module.register("MMM-AssistantMk2", {
   defaults: {
     verbose:false,
+    projectId: "", // Google Assistant ProjectId (Required only when you use gAction.)
+    useGactionCLI: false,
     startChime: "connection.mp3",
     deviceModelId: "", // It should be described in your config.json
     deviceInstanceId: "", // It should be described in your config.json
@@ -29,30 +31,32 @@ Module.register("MMM-AssistantMk2", {
         // fr-CA, fr-FR, it-IT, ja-JP, es-ES, es-MX, ko-KR, pt-BR
         // https://developers.google.com/assistant/sdk/reference/rpc/languages
       },
-      //"kids" : {
-      //  profileFile: "jarvis.json",
-      //  lang: "de-DE"
-      //},
-      //"myself_korean" : {
-      //  profileFile: "default.json",
-      //  lang: "ko-KR"
-      //}
     },
 
     transcriptionHook: {
-      //"SCREEN_OFF" : "screen off",
-      //"SCREEN_ON" : "screen on",
-      //"REBOOT" : "reboot",
-      //"SHUTDOWN" : "shut down",
-      //"TEST" : "test"
+      "TEST_HOOK": {
+        pattern: "test hook ([a-zA-Z0-9 ]*)$",
+        notification: "SHOW_ALERT",
+        payload: (obj)=>{
+          return {
+              "message": obj.match[1],
+              timer: 3000,
+          }
+        }
+      },
     },
-    useScreen: true,  // set this to true if you want to output results to a screen
-    //showed contents will be hidden when new conversation starts or interface.stopContentNotification is comming.
+    responseVoice: true, // If available, Assistant will response with her voice.
+    responseScreen: true, // If available, Assistant will response with some rendered HTML
+    responseAlert: true, // If available, Assistant will response with Alert module of MM
+    // Sometimes, any response could not be returned.
+
     screenZoom: "80%",
     screenDuration: 0, //If you set 0, Screen Output will be closed after Response speech finishes.
 
     youtubeAutoplay: true,
     alertError: true,
+
+    useWelcomeMessage: "",
 
     record: {
       sampleRate    : 16000,      // audio sample rate
@@ -65,7 +69,13 @@ Module.register("MMM-AssistantMk2", {
       device        : null        // recording device (e.g.: "plughw:1")
     },
 
-    mp3PlayCommand : "mpg321 %FILE%", // playing sound(mp3) program. You can use your prefer mp3 player program
+    play: {
+      encodingOut: "MP3", //'MP3' or 'WAV' is available, but you might not need to modify this.
+      sampleRateOut: 24000,
+      playProgram: "mpg321", //Your prefer sound play program. By example, if you are running this on OSX, `afplay` could be available.
+      playOption: [], // If you need additional options to use playProgram, describe here. (except filename)
+      // e.g: ["-d", "", "-t", "100"]
+    },
 
     notifications: {
       ASSISTANT_ACTIVATE: "ASSISTANT_ACTIVATE",
@@ -94,39 +104,176 @@ Module.register("MMM-AssistantMk2", {
 
   telegramCommand: function(command, handler) {
     if (command == "q" && handler.args) {
-      handler.reply("TEXT", "Transmitted.")
+      handler.reply("TEXT", "AssistantMk2 will be activated")
       this.notificationReceived(this.config.notifications.TEXT_QUERY, handler.args, "MMM-TelegramBot")
     }
   },
 
-
   start: function () {
     this.sendSocketNotification("INIT", this.config)
-    this.currentProfile = this.config.profiles[this.config.defaultProfile]
-    this.lastQuery = ""
-    this.suggestQuery = ""
-    this.status = ""
+    var assistant = new AssistantHelper(this.config)
+    assistant.setProfile(this.config.profiles[this.config.defaultProfile])
+    assistant.registerHelper("sendNotification" , (noti, payload)=> {
+      this.sendNotification(noti, payload)
+    })
+    assistant.registerHelper("sendSocketNotification" , (noti, payload)=> {
+      this.sendSocketNotification(noti, payload)
+    })
+
+    this.assistant = assistant
   },
 
   getDom : function() {
-    var wrapper = document.createElement("div")
-    wrapper.className = "sleeping"
-    wrapper.id = "ASSISTANT"
-    wrapper.onclick = ()=> {
-      if (wrapper.className == "sleeping") {
-        this.restart(this.currentProfile)
-      }
+    return this.assistant.drawDom()
+  },
+
+
+
+  notificationReceived: function (notification, payload, sender) {
+    switch(notification) {
+      case "DOM_OBJECTS_CREATED":
+        this.assistant.initializeAfterLoading(this.config)
+        break
+      case this.config.notifications.ASSISTANT_ACTIVATE:
+        var profileKey = ""
+        if (payload.profile in this.config.profiles) {
+          profileKey = payload.profile
+        } else {
+          profileKey = this.config.defaultProfile
+        }
+        this.currentProfile = this.config.profiles[profileKey]
+        this.assistant.activate(this.currentProfile)
+        break
+      case this.config.notifications.ASSISTANT_DEACTIVATE:
+        this.assistant.deactivate()
+        //this.hideScreen()
+        break
+      case this.config.notifications.TEXT_QUERY:
+        if (typeof sender == "object") {
+          sender = sender.name
+        }
+        this.assistant.activate(this.currentProfile, payload, sender)
+        break
     }
+  },
+
+  socketNotificationReceived: function (notification, payload) {
+    switch(notification) {
+      case "INITIALIZED":
+        //do nothing
+        if (this.config.useWelcomeMessage) {
+          this.assistant.activate(this.config.profiles[this.config.defaultProfile], this.config.useWelcomeMessage)
+          this.config.useWelcomeMessage = ""
+        }
+        break
+      case "PREPARED":
+
+        break
+      case "MIC_ON": //necessary?????
+        this.assistant.micStatus(true)
+        break
+      case "MIC_OFF":
+        this.assistant.micStatus(false)
+      case "SPEAKER_ON": //necessary?????
+        this.assistant.speakerStatus(true)
+        break
+      case "SPEAKER_OFF":
+        this.assistant.speakerStatus(false)
+        break
+      case "TRANSCRIPTION":
+        this.assistant.transcription(payload)
+        break
+      case "RESPONSE_START":
+        this.assistant.responseStart(payload)
+        break
+      case "RESPONSE_END":
+        break
+      case "CONVERSATION_END":
+        this.assistant.conversationEnd(payload)
+        break
+      case "CONVERSATION_ERROR":
+      case "ASSISTANT_ERROR":
+        this.asistant.onError(notification)
+        break
+    }
+  },
+})
+
+class AssistantHelper {
+  constructor(config) {
+    this.config = config
+    this.helper = {}
+    this.events = {}
+    this.locked = false
+    this.profile = null
+    this.subdom = {
+      mic: null,
+      message: null,
+      screen: null,
+      youtube: null,
+      wrapper: null
+    }
+    this.dom = this.prepareDom()
+    this.status = "STANDBY" //STANDBY, READY, UNDERSTANDING, RESPONSING,
+    this.nextQuery = ""
+    this.screenTimer = null
+  }
+
+  registerHelper(name, cb) {
+    this.helper[name] = cb
+  }
+
+  log (text) {
+    if(this.config.verbose) {
+      console.log("[AMK2] ", text)
+    }
+  }
+
+  setProfile(profile) {
+    this.profile = profile
+  }
+
+  configure(config) {
+    this.config = config
+  }
+
+  initializeAfterLoading() {
+    window.addEventListener("message", (e)=>{
+      this.screenMessage(e.data)
+    }, false)
+    this.prepareYoutube()
+  }
+
+  prepareYoutube() {
+    var tag = document.createElement("script")
+    tag.src = "https://www.youtube.com/iframe_api"
+    var firstScriptTag = document.getElementsByTagName("script")[0]
+    firstScriptTag.parentNode.insertBefore(tag, firstScriptTag)
+
+    window.onYouTubeIframeAPIReady = () => {
+      this.log("YouTube iframe API is ready.")
+    }
+  }
+
+  prepareDom() {
+    var wrapper = document.createElement("div")
+    wrapper.id = "ASSISTANT"
+    wrapper.className = "STANDBY"
+
     var micImg = document.createElement("div")
     micImg.id = "ASSISTANT_MIC"
 
-    var message = document.createElement("div")
-    message.id = "ASSISTANT_MESSAGE"
-
+    micImg.onclick = (e)=> {
+      console.log("CLICKED!!!")
+      e.stopPropagation()
+      this.activate(this.profile)
+    }
 
     wrapper.appendChild(micImg)
-    wrapper.appendChild(message)
 
+    var message = document.createElement("div")
+    message.id = "ASSISTANT_MESSAGE"
+    wrapper.appendChild(message)
 
     var screenOutput = document.createElement("iframe")
     screenOutput.id = "ASSISTANT_SCREEN"
@@ -136,53 +283,247 @@ Module.register("MMM-AssistantMk2", {
     ytOutput.id = "ASSISTANT_YOUTUBE"
     wrapper.appendChild(ytOutput)
 
+    this.subdom.mic = micImg
+    this.subdom.message = message
+    this.subdom.screen = screenOutput
+    this.subdom.youtube = ytOutput
+    this.subdom.wrapper = wrapper
+
     return wrapper
-  },
+  }
 
-  showScreen: function() {
-    var screen = document.getElementById("ASSISTANT_SCREEN")
-    screen.src = this.data.path + "/temp.html"
-    setTimeout(()=>{
-      screen.className = "show"
-    },100)
-  },
+  on(eventName, callback=()=>{}) {
+    this.events[eventName] = callback
+  }
 
-  hideScreen: function() {
-    var screen = document.getElementById("ASSISTANT_SCREEN")
-    screen.className = "hide"
-  },
+  off(eventName) {
+    if (this.events.hasOwnProperty(eventName)) {
+      delete this.events[eventName]
+    }
+  }
 
-  displayStatus: function(mode, text) {
-    var wrapper = document.getElementById("ASSISTANT")
-    wrapper.className = mode
-    var message = document.getElementById("ASSISTANT_MESSAGE")
-    message.innerHTML = text
-  },
-
-  screenMessage: function(obj) {
-    const ytVideoPattern = /youtube\.com\/watch\?v=([a-zA-Z0-9-_]*)$/ig
-    if (obj.hasOwnProperty("url")) {
-      var re = ytVideoPattern.exec(obj.url.href)
-      if (re.length > 0) {
-        this.playYoutubeVideo(re[1])
-      } else {
-        //external link
+  emit(eventName, payload) {
+    if (this.events.hasOwnProperty(eventName)) {
+      var fn = this.events[eventName]
+      if (typeof fn == "function") {
+        fn(payload)
       }
     }
-    if (obj.hasOwnProperty("query")) {
-      if(obj.query.queryText) {
-        console.log(this.status)
-        this.suggestQuery = obj.query.queryText
-        if (this.status == "CONVERSATION_END") {
-          this.restart(this.currentProfile, this.suggestQuery)
-          this.suggestQuery = ""
+  }
+
+  transcription(payload) {
+    this.changeStatus((payload.done) ? "UNDERSTANDING" : null)
+    this.subdom.message.innerHTML = "<p>" + payload.transcription + "</p>"
+  }
+
+  changeStatus(key) {
+    if (key) {
+      this.status = key
+      this.subdom.wrapper.className = key
+    }
+
+    if (key == "STANDBY") {
+      this.subdom.mic.className = ""
+    }
+  }
+
+  getStatus() {
+    return this.status
+  }
+
+  isLocked() {
+    return this.locked
+  }
+
+  drawDom() {
+    return this.dom
+  }
+
+  sendSocketNotification(noti, payload) {
+    this.helper["sendSocketNotification"](noti, payload)
+  }
+
+  sendNotification(noti, payload) {
+    this.helper["sendNotification"](noti, payload)
+  }
+
+  onError(error) {
+    this.changeStatus("ERROR")
+    this.subdom.message.innerHTML = "<p>" + error + "</p>"
+    setTimeout(()=>{
+      this.deactivate()
+    }, 3000)
+  }
+
+  activate(profile, textQuery=null, sender=null, id=null) {
+    console.log(this.status)
+    if (this.status == "STANDBY" || this.status == "UNDERSTANDING" || this.status == "RESPONSING") {
+      //this.deactivate()
+      this.changeStatus("READY")
+      this.sendNotification(this.config.notifications.ASSISTANT_ACTIVATED)
+      this.sendSocketNotification("START", {profile:profile, textQuery:textQuery, sender:sender, id:id})
+      return true
+    } else {
+      this.log("Assistant is busy.")
+      return false
+    }
+  }
+
+  deactivate(cb=()=>{}) {
+    this.clearResponse()
+    this.changeStatus("STANDBY")
+    this.sendNotification(this.config.notifications.ASSISTANT_DEACTIVATED)
+    cb()
+  }
+
+  clearResponse() {
+    this.subdom.message.innerHTML = ""
+    this.sendSocketNotification(this.config.notifications.ASSISTANT_DEACTIVATED)
+  }
+
+  micStatus(bool) {
+    this.subdom.mic.className = (bool) ? "MIC" : ""
+  }
+
+  speakerStatus(bool) {
+    this.subdom.mic.className = (bool) ? "SPEAKER" : ""
+  }
+
+  responseStart(payload) {
+    if (this.config.responseScreen && payload.screenOutput) {
+      this.subdom.screen.src = "/modules/MMM-AssistantMk2/tmp/temp.html"
+      clearTimeout(this.screenTimer)
+      setTimeout(()=>{
+        this.subdom.screen.className = "show"
+      },100)
+    }
+    if (!this.config.responseScreen && payload.foundTextResponse && this.config.useAlertResponse) {
+      this.alert(payload.foundTextResponse)
+    }
+  }
+
+  responseEnd(after=()=>{}, force=false) {
+    if (this.config.responseScreen) {
+      if (this.config.screenDuration > 0 && !force) {
+        this.screenTimer = setTimeout(()=>{
+          this.subdom.screen.className = "hide"
+          after()
+        }, this.config.screenDuration)
+      } else {
+        this.subdom.screen.className = "hide"
+        after()
+      }
+    } else {
+      this.sendNotification("HIDE_ALERT")
+      after()
+    }
+  }
+
+  alert(message) {
+    if(this.config.responseAlert) {
+      this.log(message)
+      var timer = (this.config.screenDuration > 3000) ? this.config.screenDuration : 3000
+      this.sendNotification("SHOW_ALERT", {
+        title: "MMM-AssistanMk2",
+        message: message,
+        timer: timer
+      })
+    }
+  }
+
+  foundAction(foundAction) {
+    if (foundAction) {
+      console.log(foundAction)
+      if (this.config.action.hasOwnProperty(foundAction.command)) {
+        var action = this.config.action[foundAction.command]
+        var notification = action.notification
+        var payload = action.payload
+        if (typeof notification == "function") {
+          notification = notification(foundAction.params)
+        }
+        if (typeof payload == "function") {
+          payload = payload(foundAction.params)
+        }
+
+        this.sendNotification(notification, payload)
+      }
+    }
+  }
+
+  foundError(error) {
+    if (error) {
+      var message = ""
+      if (typeof error == "string") {
+        message = error
+      } else {
+        message = error.toString()
+      }
+      if (this.config.alertError) {
+        this.onError(message)
+        this.alert(message)
+      }
+      console.log("[AMK2] Error:", message)
+    }
+  }
+
+  foundHook (foundHook) {
+    if (foundHook.length > 0) {
+      for(var i in foundHook) {
+        var res = foundHook[i]
+        var hook = this.config.transcriptionHook[res.key]
+        var notification = this.config.notifications.DEFAULT_HOOK_NOTIFICATION
+        if (typeof hook.notification !== "undefined" && hook.notification) {
+          notification = (typeof hook.notification == "function") ? hook.notification(hook.payload) : hook.notification
+        }
+        var pl = {
+          hook:res.key,
+          match:res.match
+        }
+        if (hook.payload) {
+          if (typeof hook.payload == "function") {
+            pl = hook.payload(pl)
+          } else {
+            pl = hook.payload
+          }
+        }
+        this.sendNotification(notification, pl)
+      }
+    }
+  }
+
+  conversationEnd(payload) {
+    this.foundError(payload.error)
+    this.foundAction(payload.foundAction)
+    this.foundHook(payload.foundHook)
+
+    if (payload.foundVideo || payload.foundVideoList) {
+      if (this.config.youtubeAutoplay) {
+        if (payload.foundVideo) {
+          this.playYoutubeVideo("video", payload.foundVideo, ()=>{
+            this.deactivate()
+          })
+        }
+        if (payload.foundVideoList) {
+          this.playYoutubeVideo("videolist", payload.foundVideoList, ()=>{
+            this.deactivate()
+          })
         }
       }
-    }
-  },
+    } else {
+      var thenAfter
+      if(payload.continueConversation) {
+        thenAfter = ()=> {this.activate(this.profile)}
+        this.responseEnd(thenAfter, true)
 
-  playYoutubeVideo: function(id, cb=()=>{}) {
-    this.hideResponse(()=>{}, true)
+      } else {
+        thenAfter = () => {this.deactivate()}
+        this.responseEnd(thenAfter)
+      }
+    }
+  }
+
+  playYoutubeVideo(type, id, cb=()=>{}) {
+    this.responseEnd(()=>{}, true)
     var onClose = (holder, cb=()=>{}) => {
       holder.style.display = "none"
       holder.innerHTML = ""
@@ -213,7 +554,11 @@ Module.register("MMM-AssistantMk2", {
       },
       events: {
         "onReady": (event)=>{
-          event.target.loadVideoById(id)
+          if (type == "video") {
+            event.target.loadVideoById(id)
+          } else {
+            event.target.loadPlaylist(id)
+          }
           event.target.playVideo()
         },
         "onStateChange": (event)=>{
@@ -228,202 +573,25 @@ Module.register("MMM-AssistantMk2", {
         }
       }
     })
-  },
+  }
 
-  prepareYoutube: function() {
-    var tag = document.createElement("script")
-    tag.src = "https://www.youtube.com/iframe_api"
-    var firstScriptTag = document.getElementsByTagName("script")[0]
-    firstScriptTag.parentNode.insertBefore(tag, firstScriptTag)
-
-    window.onYouTubeIframeAPIReady = () => {
-      console.log("[AMK2] YouTube iframe API is ready.")
-    }
-  },
-
-  notificationReceived: function (notification, payload, sender) {
-    switch(notification) {
-      case "DOM_OBJECTS_CREATED":
-        window.addEventListener("message", (e)=>{
-          this.screenMessage(e.data)
-        }, false)
-        this.prepareYoutube()
-        break
-      case this.config.notifications.ASSISTANT_ACTIVATE:
-        var profileKey = ""
-        if (payload.profile in this.config.profiles) {
-          profileKey = payload.profile
-        } else {
-          profileKey = this.config.defaultProfile
-        }
-        this.currentProfile = this.config.profiles[profileKey]
-        this.restart(this.currentProfile)
-        break
-      case this.config.notifications.ASSISTANT_DEACTIVATE:
-        this.hideScreen()
-        break
-      case this.config.notifications.TEXT_QUERY:
-        this.restart(this.currentProfile, payload, sender.name)
-        break
-    }
-  },
-
-  restart: function(profile, textQuery=null, sender=null, id=null) {
-    this.sendNotification(this.config.notifications.ASSISTANT_ACTIVATED)
-    this.sendSocketNotification("START", {profile:profile, textQuery:textQuery, sender:sender, id:id})
-  },
-
-
-  showResponse: function(payload) {
-    if (this.config.useScreen && payload.screenOutput) {
-      this.showScreen()
-    }
-    if (!this.config.useScreen && payload.foundTextResponse) {
-      this.sendNotification("SHOW_ALERT", {
-        title: "MMM-AssistantMk2",
-        message: payload.foundTextResponse,
-        timer: this.config.screenDuration,
-      })
-    }
-  },
-
-  hideResponse: function(after=()=>{}, force=false) {
-    if (this.config.useScreen) {
-      if (this.config.screenDuration > 0 && !force) {
-        setTimeout(()=>{
-          this.hideScreen()
-          after()
-        }, this.config.screenDuration)
+  screenMessage(obj) {
+    const ytVideoPattern = /youtube\.com\/watch\?v=([a-zA-Z0-9-_]*)$/ig
+    if (obj.hasOwnProperty("url")) {
+      var re = ytVideoPattern.exec(obj.url.href)
+      if (re.length > 0) {
+        this.playYoutubeVideo(re[1])
       } else {
-        this.hideScreen()
-        after()
-      }
-    } else {
-      this.sendNotification("HIDE_ALERT")
-      after()
-    }
-  },
-
-  deactivateAssistant: function() {
-    this.displayStatus("sleeping", "")
-    this.sendNotification(this.config.notifications.ASSISTANT_DEACTIVATED, null)
-  },
-
-  socketNotificationReceived: function (notification, payload) {
-    this.status = notification
-    switch(notification) {
-      case "INITIALIZED":
-        //do nothing
-        break
-      case "STARTED":
-        this.displayStatus("waiting", "")
-        break
-      case "TRANSCRIPTION":
-        if(payload.done == true) {
-          this.displayStatus("understanding", payload.transcription)
-        } else {
-          this.displayStatus("listening", payload.transcription)
-        }
-        break
-      case "RESPONSE_START":
-        this.showResponse(payload)
-        this.lastQuery = payload.finalTranscription
-        break
-      case "RESPONSE_END":
-        //this.hideResponse()
-        this.lastQuery = payload.finalTranscription
-        break
-      case "CONVERSATION_END":
-        console.log(payload)
-        this.lastQuery = payload.finalTranscription
-        if (payload.foundAction) {
-          if (payload.foundAction.command !== "action.devices.commands.EXCEPTION") {
-            this.sendNotification(this.config.notifications.ASSISTANT_ACTION, payload.foundAction)
-          } else {
-            var status = JSON.parse(payload.foundAction.params.status)
-            this.displayStatus("error", status.description)
-          }
-        }
-
-        if (payload.error) {
-          var message = ""
-          if (typeof payload.error == "string") {
-            message = payload.error
-          } else {
-            message = payload.error.toString()
-          }
-          this.sendNotification("SHOW_ALERT", {
-            title : "MMM-AssistantMk2 Error",
-            message: message,
-            timer:5000,
-          })
-          console.log("[AMK2] Error:", message)
-        }
-
-        if (payload.foundHook.length > 0) {
-          this.foundHook(payload.foundHook)
-        }
-
-        if (payload.foundVideo || payload.foundVideoList) {
-          this.deactivateAssistant()
-          if (this.config.youtubeAutoplay) {
-            this.playYoutubeVideo(payload.foundVideo)
-          }
-        } else {
-          this.hideResponse(()=>{
-            if (payload.continueConversation) {
-              this.restart(this.currentProfile)
-            } else if (this.suggestQuery) {
-              var query = this.suggestQuery
-              this.suggestQuery = ""
-              console.log("restart:", query)
-              this.restart(this.currentProfile, query)
-            } else {
-              this.deactivateAssistant()
-            }
-          })
-        }
-        break
-      case "CONVERSATION_ERROR":
-        this.displayStatus("error", "CONVERSATION ERROR")
-        setTimeout(()=>{
-          this.deactivateAssistant()
-        }, 3000)
-        break
-      case "ASSISTANT_READY":
-        break
-      case "ASSISTANT_ERROR":
-        this.displayStatus("error", "CONVERSATION ERROR")
-        setTimeout(()=>{
-          this.deactivateAssistant()
-        }, 3000)
-        break
-    }
-  },
-
-  foundHook : function(foundHook, cb=()=>{}) {
-    if (foundHook) {
-      for(i in foundHook) {
-        var res = foundHook[i]
-        var hook = this.config.transcriptionHook[res.key]
-        var notification = this.config.notifications.DEFAULT_HOOK_NOTIFICATION
-        if (typeof hook.notification !== "undefined" && hook.notification) {
-          notification = hook.notification
-        }
-        var pl = {
-          hook:res.key,
-          match:res.match
-        }
-        if (hook.payload) {
-          if (typeof hook.payload == "function") {
-            pl = hook.payload(pl)
-          } else {
-            pl = hook.payload
-          }
-        }
-        this.sendNotification(notification, pl)
+        //external link
       }
     }
-    cb()
-  },
-})
+    if (obj.hasOwnProperty("query")) {
+      if(obj.query.queryText) {
+        //this.nextQuery = obj.query.queryText
+        this.deactivate(()=>{
+          this.activate(this.profile, obj.query.queryText)
+        })
+      }
+    }
+  }
+}
