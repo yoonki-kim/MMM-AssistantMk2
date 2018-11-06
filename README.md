@@ -39,12 +39,14 @@ npm install --save wav
 
 
 ### Install & Update
-Read https://github.com/eouia/MMM-AssistanMk2/INSTALL.md
+Read [INSTALL.md](/INSTALL.md)
 
 ### Configuration
-Read https://github.com/eouia/MMM-AssistantMk2/CONFIGURATION.md
+Read [CONFIGURATION.md](/CONFIGURATION.md)
 
 ### Usage
+Read [USAGE.md](/USAGE.md)
+
 
 #### Incoming Notifications as ASSISTANT request.
 |Notification|Payload|Description|
