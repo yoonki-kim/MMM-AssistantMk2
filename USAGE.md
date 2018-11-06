@@ -1,7 +1,7 @@
 # USAGE
 
 ## GAction
-Read :  https://github.com/eouia/MMM-AssistantMk2/gaction/README.md
+Read :  [gaction/README.md](/gaction/README.md)
 
 ## TranscriptionHook
 - You can hook some phrase from your spoken transcription to make your custom notification command to control MM.
