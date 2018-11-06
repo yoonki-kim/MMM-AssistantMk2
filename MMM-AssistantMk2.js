@@ -1,9 +1,7 @@
 //
 // Module : MMM-AssistantMk2
 //
-
 var ytp
-
 Module.register("MMM-AssistantMk2", {
   defaults: {
     verbose:false,
@@ -34,6 +32,7 @@ Module.register("MMM-AssistantMk2", {
     },
 
     transcriptionHook: {
+      /*
       "TEST_HOOK": {
         pattern: "test hook ([a-zA-Z0-9 ]*)$",
         notification: "SHOW_ALERT",
@@ -44,6 +43,36 @@ Module.register("MMM-AssistantMk2", {
           }
         }
       },
+      */
+    },
+    action: {
+      /*
+      "com.example.commands.REBOOT" : {
+        notification: "SHOW_ALERT",
+        payload: {
+          message: "You've ordered REBOOT",
+          timer: 3000,
+        }
+      },
+      "com.example.commands.PAGE" : {
+        notification: (params) => {
+          if (params.number) {
+            return "PAGE_CHANGED"
+          } else if (params.incordec == "INC") {
+            return "PAGE_INCREMENT"
+          } else {
+            return "PAGE_DECREMENT"
+          }
+        },
+        payload: (params) => {
+          if (params.number) {
+            return params.number
+          } else {
+            return null
+          }
+        }
+      }
+      */
     },
     responseVoice: true, // If available, Assistant will response with her voice.
     responseScreen: true, // If available, Assistant will response with some rendered HTML
@@ -54,6 +83,7 @@ Module.register("MMM-AssistantMk2", {
     screenDuration: 0, //If you set 0, Screen Output will be closed after Response speech finishes.
 
     youtubeAutoplay: true,
+    pauseOnYoutube:true,
     alertError: true,
 
     useWelcomeMessage: "",
@@ -110,6 +140,7 @@ Module.register("MMM-AssistantMk2", {
   },
 
   start: function () {
+    this.config = this.configAssignment({}, this.defaults, this.config)
     this.sendSocketNotification("INIT", this.config)
     var assistant = new AssistantHelper(this.config)
     assistant.setProfile(this.config.profiles[this.config.defaultProfile])
@@ -119,7 +150,6 @@ Module.register("MMM-AssistantMk2", {
     assistant.registerHelper("sendSocketNotification" , (noti, payload)=> {
       this.sendSocketNotification(noti, payload)
     })
-
     this.assistant = assistant
   },
 
@@ -197,6 +227,33 @@ Module.register("MMM-AssistantMk2", {
         break
     }
   },
+
+  configAssignment : function (result) {
+    var stack = Array.prototype.slice.call(arguments, 1);
+    var item;
+    var key;
+    while (stack.length) {
+      item = stack.shift();
+      for (key in item) {
+        if (item.hasOwnProperty(key)) {
+          if (
+            typeof result[key] === "object"
+            && result[key]
+            && Object.prototype.toString.call(result[key]) !== "[object Array]"
+          ) {
+            if (typeof item[key] === "object" && item[key] !== null) {
+              result[key] = this.configAssignment({}, result[key], item[key]);
+            } else {
+              result[key] = item[key];
+            }
+          } else {
+            result[key] = item[key];
+          }
+        }
+      }
+    }
+    return result;
+  }
 })
 
 class AssistantHelper {
@@ -217,6 +274,7 @@ class AssistantHelper {
     this.status = "STANDBY" //STANDBY, READY, UNDERSTANDING, RESPONSING,
     this.nextQuery = ""
     this.screenTimer = null
+    this.youtubePlaying = false
   }
 
   registerHelper(name, cb) {
@@ -264,7 +322,6 @@ class AssistantHelper {
     micImg.id = "ASSISTANT_MIC"
 
     micImg.onclick = (e)=> {
-      console.log("CLICKED!!!")
       e.stopPropagation()
       this.activate(this.profile)
     }
@@ -351,13 +408,18 @@ class AssistantHelper {
     this.changeStatus("ERROR")
     this.subdom.message.innerHTML = "<p>" + error + "</p>"
     setTimeout(()=>{
+      this.clearResponse()
       this.deactivate()
     }, 3000)
   }
 
   activate(profile, textQuery=null, sender=null, id=null) {
-    console.log(this.status)
+    if (this.youtubePlaying && this.config.pauseOnYoutube) {
+      this.log("Assistant will not work during Youtube playing.")
+      return false
+    }
     if (this.status == "STANDBY" || this.status == "UNDERSTANDING" || this.status == "RESPONSING") {
+      this.clearResponse()
       //this.deactivate()
       this.changeStatus("READY")
       this.sendNotification(this.config.notifications.ASSISTANT_ACTIVATED)
@@ -370,7 +432,7 @@ class AssistantHelper {
   }
 
   deactivate(cb=()=>{}) {
-    this.clearResponse()
+    //this.clearResponse()
     this.changeStatus("STANDBY")
     this.sendNotification(this.config.notifications.ASSISTANT_DEACTIVATED)
     cb()
@@ -378,7 +440,9 @@ class AssistantHelper {
 
   clearResponse() {
     this.subdom.message.innerHTML = ""
-    this.sendSocketNotification(this.config.notifications.ASSISTANT_DEACTIVATED)
+    this.subdom.youtube.innerHTML = ""
+    this.subdom.youtube.style.display = "none"
+    //this.sendSocketNotification(this.config.notifications.ASSISTANT_DEACTIVATED)
   }
 
   micStatus(bool) {
@@ -433,7 +497,6 @@ class AssistantHelper {
 
   foundAction(foundAction) {
     if (foundAction) {
-      console.log(foundAction)
       if (this.config.action.hasOwnProperty(foundAction.command)) {
         var action = this.config.action[foundAction.command]
         var notification = action.notification
@@ -462,7 +525,7 @@ class AssistantHelper {
         this.onError(message)
         this.alert(message)
       }
-      console.log("[AMK2] Error:", message)
+      this.log("[AMK2] Error:", message)
     }
   }
 
@@ -496,17 +559,24 @@ class AssistantHelper {
     this.foundAction(payload.foundAction)
     this.foundHook(payload.foundHook)
 
+
     if (payload.foundVideo || payload.foundVideoList) {
       if (this.config.youtubeAutoplay) {
-        if (payload.foundVideo) {
-          this.playYoutubeVideo("video", payload.foundVideo, ()=>{
+        var after = ()=>{}
+        if (this.config.pauseOnYoutube) {
+          after = ()=>{
+            this.clearResponse()
             this.deactivate()
-          })
+          }
+        }
+        if (payload.foundVideo) {
+          this.playYoutubeVideo("video", payload.foundVideo, after)
         }
         if (payload.foundVideoList) {
-          this.playYoutubeVideo("videolist", payload.foundVideoList, ()=>{
-            this.deactivate()
-          })
+          this.playYoutubeVideo("videolist", payload.foundVideoList, after)
+        }
+        if (!this.config.pauseOnYoutube) {
+          this.deactivate()
         }
       }
     } else {
@@ -516,7 +586,10 @@ class AssistantHelper {
         this.responseEnd(thenAfter, true)
 
       } else {
-        thenAfter = () => {this.deactivate()}
+        thenAfter = () => {
+          this.clearResponse()
+          this.deactivate()
+        }
         this.responseEnd(thenAfter)
       }
     }
@@ -525,11 +598,12 @@ class AssistantHelper {
   playYoutubeVideo(type, id, cb=()=>{}) {
     this.responseEnd(()=>{}, true)
     var onClose = (holder, cb=()=>{}) => {
+      this.youtubePlaying = false
       holder.style.display = "none"
       holder.innerHTML = ""
       cb()
     }
-    var holder = document.getElementById("ASSISTANT_YOUTUBE")
+    var holder = this.subdom.youtube
     holder.innerHTML = ""
     holder.style.display = "block"
 
@@ -545,7 +619,7 @@ class AssistantHelper {
       onClose(holder, cb)
     }
     holder.appendChild(close)
-
+    this.youtubePlaying = true
     ytp = new YT.Player(yt.id, {
       playerVars: {
         "controls": 0,
@@ -569,7 +643,7 @@ class AssistantHelper {
           }
         },
         "onError": (event)=> {
-          console.log("youtube error:", id, event)
+          this.log("youtube error:", id, event)
         }
       }
     })

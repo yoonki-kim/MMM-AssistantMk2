@@ -149,7 +149,6 @@ module.exports = NodeHelper.create({
 
     if (textQuery) {
       cfgInstance.conversation.textQuery = textQuery
-
     }
 
     this.currentPayload = payload
