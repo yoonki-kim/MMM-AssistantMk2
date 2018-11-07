@@ -16,7 +16,7 @@ This empty configuration will even work if you use;
 
 ## Full detailed version. (Don't panic. Detailed information will be followed.)
 - All configuration fields are set as belows by default.
-- If you don't need, just see `ESSENTIALS` parts.
+- If you don't need, just use `ESSENTIALS` parts.
 
 ```
 {
