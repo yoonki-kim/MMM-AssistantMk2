@@ -36,6 +36,7 @@ git pull
 npm install --save play-sound
 ```
 - Some config structures are changed. Rewrite your configuration.
+- You also need new update of `MMM-Hotword` if you want to use Hotword activating.
 
 ### Who want fresh installation
 - First, backup your `profiles` directory and your `credentials.json`

@@ -16,7 +16,7 @@ This empty configuration will even work if you use;
 
 ## Full detailed version. (Don't panic. Detailed information will be followed.)
 - All configuration fields are set as belows by default.
-- If you don't need, just see `ESSENTIALS` parts.
+- If you don't need, just use `ESSENTIALS` parts.
 
 ```
 {
@@ -60,7 +60,7 @@ This empty configuration will even work if you use;
 
     play: { // Full values are in `FOR EXPERTS` section.
       playProgram: "mpg321", // recommended.
-    }
+    },
 
 
     // --- OPTIONAL / not important but customizable for your usage
@@ -123,7 +123,7 @@ This empty configuration will even work if you use;
     deviceInstanceId: "", // It should be described in your config.json. In most of case, you don't need to this.
     action:{}, // You can catch your gAction command.
 
-    notifications: { // You can redefine these notification to communicate specific modules.
+    notifications: { // You can redefine these notifications to communicate with specific modules.
       ASSISTANT_ACTIVATE: "ASSISTANT_ACTIVATE",
       ASSISTANT_DEACTIVATE: "ASSISTANT_CLEAR",
       ASSISTANT_ACTIVATED: "ASSISTANT_ACTIVATED",
