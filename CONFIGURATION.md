@@ -60,7 +60,7 @@ This empty configuration will even work if you use;
 
     play: { // Full values are in `FOR EXPERTS` section.
       playProgram: "mpg321", // recommended.
-    }
+    },
 
 
     // --- OPTIONAL / not important but customizable for your usage
