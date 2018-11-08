@@ -5,7 +5,9 @@
 {
   module: "MMM-AssistantMk2",
   position: "top_right",
-  config: {}
+  config: {
+    useWelcomeMessage: "brief today"
+  }
 },
 ```
 This empty configuration will even work if you use;
