@@ -23,39 +23,6 @@ cd ~/MagicMirror/modules/MMM-AssistantMk2
 git pull
 ```
 
-### Old Updates
-#### [2.0.0] - 2018.11.05
-- Whole new build-up.
-- Annoying `speaker` dependencies deprecated
-- More stable. (I think)
-- Choppy sound issue solved(I think), If you get still this issue, that might be the lack of computing power of your device.
-- NotificationTrigger dependency free. Now you can activate without NotificationTrigger (But If you want, you can still use it.)
-- Making Hook and GAction becomes easier
-- `MMM-TelegramBot` supproted
-
-
-#### [1.1.1] - 2018.10.22
-- Speaker device configurable(`audio.speakerDevice`) (It might be able to fix some bugs about playing `ding.wav`)
-
-
-#### [1.1.0] - 2018.10.04
-- MP3 Output is supported. Now you can get more unchunky sound result.(Set `audio.encodingOut` to `MP3` // `OGG` is not yet supported.)
-- `ding.wav` will be played when Assistant is ready to hear your voice.
-- For update from prior version
-```
-sudo apt-get install mpg321
-cd ~/MagicMirror/modules/MMM-AssistantMk2
-git pull
-npm install --save wav
-```
-
-#### [1.0.1] - 2018.07.25.
-- Youtube playlist can be playable
-- Some uncaught youtube videos are caught now
-- On youtube player error, error code is shown
-- notifyPlaying option is added.
-
-
 ### Install & Update
 Read [INSTALL.md](/INSTALL.md)
 
@@ -134,6 +101,40 @@ npm install grpc@1.13
 npm install --save-dev electron-rebuild
 ./node_modules/.bin/electron-rebuild
 ```
+
+
+### Old Updates
+#### [2.0.0] - 2018.11.05
+- Whole new build-up.
+- Annoying `speaker` dependencies deprecated
+- More stable. (I think)
+- Choppy sound issue solved(I think), If you get still this issue, that might be the lack of computing power of your device.
+- NotificationTrigger dependency free. Now you can activate without NotificationTrigger (But If you want, you can still use it.)
+- Making Hook and GAction becomes easier
+- `MMM-TelegramBot` supproted
+
+
+#### [1.1.1] - 2018.10.22
+- Speaker device configurable(`audio.speakerDevice`) (It might be able to fix some bugs about playing `ding.wav`)
+
+
+#### [1.1.0] - 2018.10.04
+- MP3 Output is supported. Now you can get more unchunky sound result.(Set `audio.encodingOut` to `MP3` // `OGG` is not yet supported.)
+- `ding.wav` will be played when Assistant is ready to hear your voice.
+- For update from prior version
+```
+sudo apt-get install mpg321
+cd ~/MagicMirror/modules/MMM-AssistantMk2
+git pull
+npm install --save wav
+```
+
+#### [1.0.1] - 2018.07.25.
+- Youtube playlist can be playable
+- Some uncaught youtube videos are caught now
+- On youtube player error, error code is shown
+- notifyPlaying option is added.
+
 
 ### TODO
 - debugging??
