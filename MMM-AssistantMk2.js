@@ -270,6 +270,7 @@ Module.register("MMM-AssistantMk2", {
         this.assistant.activate(this.currentProfile)
         break
       case this.config.notifications.ASSISTANT_DEACTIVATE:
+        this.assistant.clearResponse()
         this.assistant.deactivate()
         //this.hideScreen()
         break
@@ -554,6 +555,7 @@ class AssistantHelper {
     this.subdom.message.innerHTML = ""
     this.subdom.youtube.innerHTML = ""
     this.subdom.youtube.style.display = "none"
+    this.youtubePlaying = false
     //this.sendSocketNotification(this.config.notifications.ASSISTANT_DEACTIVATED)
   }
 
