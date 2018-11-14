@@ -13,8 +13,8 @@
   - `show all` : hidden modules will be shown again
   - `reboot yourself` : reboot device
   - `shutdown yourself` : shutdown device
-  - `go to sleep` : LCD power off (you might need to modify `/resources/screenoff.sh`)
-  - `wake up` : LCD power on (you might need to modify `/resources/screenon.sh`)
+  - `go to sleep` : LCD power off (you might need to modify `/scripts/screenoff.sh`)
+  - `wake up` : LCD power on (you might need to modify `/scripts/screenon.sh`)
 - `onIdle` feature be added. After `timer` without no query after last query, `command` will be activated. (By default, after 30min All modules will be hidden.)
 - And `onActivate` feature is added. When you activate Assistant, this `command` will be executed after `timer`. (By default, modules hidden by `onIdle` will be shown again)
 - For update from 2.0.0
