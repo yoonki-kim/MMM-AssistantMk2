@@ -1,7 +1,7 @@
 {
   "name": "MMM-AssistantMk2",
-  "version": "2.0.0",
-  "description": "An embedded Google Assistant on MagicMirror. version 2.0.0",
+  "version": "2.1.0",
+  "description": "An embedded Google Assistant on MagicMirror.",
   "main": "MMM-AssistantMk2.js",
   "keywords": [
     "magic mirror",
@@ -20,6 +20,7 @@
     "type": "git",
     "url": "https://github.com/eouia/MMM-AssistantMk2"
   },
+  "homepage": "https://github.com/eouia/MMM-AssistantMk2",
   "dependencies": {
     "google-assistant": "^0.5.2",
     "node-record-lpcm16": "^0.3.0",

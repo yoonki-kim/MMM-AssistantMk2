@@ -47,32 +47,35 @@ Add belows in your config.
 ```
 action: {
   "com.example.commands.REBOOT" : {
-    notification: "SHOW_ALERT",
-    payload: {
-      message: "You've ordered REBOOT",
-      timer: 3000,
-    }
+    command: "REBOOT"
   },
   "com.example.commands.PAGE" : {
-    notification: (params) => {
+    command: "PAGE"
+  },
+},
+
+command: {
+  ...
+
+  "PAGE": {
+    notification:(params)=>{
       if (params.number) {
-        return "PAGE_CHANGED"
+        return "PAGE_SELECT"
       } else if (params.incordec == "INC") {
         return "PAGE_INCREMENT"
       } else {
         return "PAGE_DECREMENT"
       }
     },
-    payload: (params) => {
+    payload:()=>{
       if (params.number) {
         return params.number
       } else {
         return null
       }
     }
-  }
+  },
+
+  ...
 },
 ```
-- `notification` could be `String`(notification name) or `function`(should return proper notification name).
-- `payload` could be `Object or Variables`(used as payload) or
-`function`(should return proper notification payload structure).

@@ -32,18 +32,30 @@ Module.register("MMM-AssistantMk2", {
     },
 
     transcriptionHook: {
-      /*
-      "TEST_HOOK": {
-        pattern: "test hook ([a-zA-Z0-9 ]*)$",
-        notification: "SHOW_ALERT",
-        payload: (obj)=>{
-          return {
-              "message": obj.match[1],
-              timer: 3000,
-          }
-        }
+      "HIDE_ALL_MODULES": {
+        pattern: "hide all",
+        command: "HIDEMODULES"
       },
-      */
+      "SHOW_ALL_MODULES": {
+        pattern: "show all",
+        command: "SHOWMODULES"
+      },
+      "SCREEN_ON": {
+        pattern: "wake up",
+        command: "SCREENON"
+      },
+      "SCREEN_OFF": {
+        pattern: "go to sleep",
+        command: "SCREENOFF"
+      },
+      "REBOOT": {
+        pattern: "reboot yourself",
+        command: "REBOOT"
+      },
+      "SHUTDOWN": {
+        pattern: "shutdown yourself",
+        command: "SHUTDOWN"
+      }
     },
     action: {
       /*
@@ -73,6 +85,76 @@ Module.register("MMM-AssistantMk2", {
         }
       }
       */
+    },
+
+    command: {
+      "HIDEMODULES": {
+        moduleExec: {
+          module:()=>{
+            return []
+          },
+          exec: (module, params, key) => {
+            module.hide(1000, null, {lockString:"AMK2"})
+          }
+        }
+      },
+      "SHOWMODULES": {
+        moduleExec: {
+          module:[],
+          exec: (module, params, key) => {
+            module.show(1000, null, {lockString:"AMK2"})
+          }
+        }
+      },
+      "SCREENON": {
+        shellExec: {
+          exec: (params, key) => {
+            return "~/MagicMirror/modules/MMM-AssistantMk2/scripts/screenon.sh"
+            //return "ls -al"
+          },
+          options: (params, key)=> {
+            return ""
+          },
+        }
+      },
+      "SCREENOFF": {
+        shellExec: {
+          exec: "~/MagicMirror/modules/MMM-AssistantMk2/scripts/screenoff.sh",
+          options: null,
+        }
+      },
+      "REBOOT": {
+        notificationExec: {
+          notification: "SHOW_ALERT",
+          payload: {
+            message: "You've ordered REBOOT. I'm showing just alert, but you can modify config.js to reboot really.",
+            timer: 5000,
+          }
+        },
+        /*
+        shellExec: {
+          exec: "sudo reboot now"
+        }
+        */
+      },
+      "SHUTDOWN": {
+        notificationExec: {
+          notification: (params, key) => {
+            return "SHOW_ALERT"
+          },
+          payload: (params, key)=> {
+            return {
+              message: "You've ordered SHUTDOWN. I'm showing just alert, but you can modify config.js to reboot really.",
+              timer: 5000,
+            }
+          }
+        },
+        /*
+        shellExec: {
+          exec: "sudo shutdown now"
+        }
+        */
+      },
     },
     responseVoice: true, // If available, Assistant will response with her voice.
     responseScreen: true, // If available, Assistant will response with some rendered HTML
@@ -105,6 +187,16 @@ Module.register("MMM-AssistantMk2", {
       playProgram: "mpg321", //Your prefer sound play program. By example, if you are running this on OSX, `afplay` could be available.
       playOption: [], // If you need additional options to use playProgram, describe here. (except filename)
       // e.g: ["-d", "", "-t", "100"]
+    },
+
+    onIdle: {
+      timer: 1000*60*30, // if you don't want to use this feature, just set timer as `0` or command as ""
+      command: "HIDEMODULES"
+    },
+
+    onActivate: {
+      timer: 0,
+      command: "SHOWMODULES"
     },
 
     notifications: {
@@ -182,6 +274,7 @@ Module.register("MMM-AssistantMk2", {
         if (typeof sender == "object") {
           sender = sender.name
         }
+        this.currentProfile = this.config.profiles[this.config.defaultProfile]
         this.assistant.activate(this.currentProfile, payload, sender)
         break
     }
@@ -275,6 +368,7 @@ class AssistantHelper {
     this.nextQuery = ""
     this.screenTimer = null
     this.youtubePlaying = false
+    this.idleTimer = null
   }
 
   registerHelper(name, cb) {
@@ -424,6 +518,21 @@ class AssistantHelper {
       this.changeStatus("READY")
       this.sendNotification(this.config.notifications.ASSISTANT_ACTIVATED)
       this.sendSocketNotification("START", {profile:profile, textQuery:textQuery, sender:sender, id:id})
+      if (this.config.onActivate) {
+        setTimeout(()=>{
+          console.log("!!")
+          this.doCommand(this.config.onActivate, "onActivate")
+        }, this.config.onActivate.timer)
+      }
+
+      if (this.config.onIdle && this.config.onIdle.timer > 0) {
+        console.log("?", this.config.onIdle)
+        clearTimeout(this.idleTimer)
+        this.idleTimer = setTimeout(()=>{
+          console.log("!!!!!")
+          this.doCommand(this.config.onIdle, "onIdle")
+        }, this.config.onIdle.timer)
+      }
       return true
     } else {
       this.log("Assistant is busy.")
@@ -495,23 +604,7 @@ class AssistantHelper {
     }
   }
 
-  foundAction(foundAction) {
-    if (foundAction) {
-      if (this.config.action.hasOwnProperty(foundAction.command)) {
-        var action = this.config.action[foundAction.command]
-        var notification = action.notification
-        var payload = action.payload
-        if (typeof notification == "function") {
-          notification = notification(foundAction.params)
-        }
-        if (typeof payload == "function") {
-          payload = payload(foundAction.params)
-        }
 
-        this.sendNotification(notification, payload)
-      }
-    }
-  }
 
   foundError(error) {
     if (error) {
@@ -529,27 +622,64 @@ class AssistantHelper {
     }
   }
 
+  doCommand (hooked, key) {
+    var hook
+    if (this.config.command.hasOwnProperty(hooked.command)) {
+      hook = this.config.command[hooked.command]
+    } else {
+      return
+    }
+    if (hook.hasOwnProperty("notificationExec")) {
+      var ne = hook.notificationExec
+      var notification = (ne.notification) ? ne.notification : this.config.notifications.DEFAULT_HOOK_NOTIFICATION
+      var fn = (typeof notification == "function") ? notification(hook.payload, key) : notification
+      var payload = (ne.payload) ? ne.payload : hook.payload
+
+      var fp = (typeof payload == "function") ? payload(hook.payload, key) : Object.assign({}, payload)
+        this.sendNotification(fn, fp)
+    }
+
+    if (hook.hasOwnProperty("shellExec")) {
+      var se = hook.shellExec
+      if (se.exec) {
+        var fs = (typeof se.exec == "function") ? se.exec(hook.payload, key) : se.exec
+        var options = (se.options) ? se.options : null
+        var fo = (typeof options == "function") ? options(hook.payload, key) : Object.assign({}, options)
+        this.sendSocketNotification("SHELLEXEC", {command:fs, options:fo})
+      }
+    }
+    if (hook.hasOwnProperty("moduleExec")) {
+      var me = hook.moduleExec
+      var m = me.module
+      if (typeof me.module == 'function') {
+        m = me.module(hook.payload)
+      }
+      if (Array.isArray(m)) {
+        MM.getModules().enumerate((module)=>{
+          if (m.length == 0 || module.name in m) {
+            var payload = Object.assign({}, hook.payload)
+            me.exec(module, payload, key)
+          }
+        })
+      }
+    }
+  }
+
   foundHook (foundHook) {
     if (foundHook.length > 0) {
       for(var i in foundHook) {
         var res = foundHook[i]
         var hook = this.config.transcriptionHook[res.key]
-        var notification = this.config.notifications.DEFAULT_HOOK_NOTIFICATION
-        if (typeof hook.notification !== "undefined" && hook.notification) {
-          notification = (typeof hook.notification == "function") ? hook.notification(hook.payload) : hook.notification
-        }
-        var pl = {
-          hook:res.key,
-          match:res.match
-        }
-        if (hook.payload) {
-          if (typeof hook.payload == "function") {
-            pl = hook.payload(pl)
-          } else {
-            pl = hook.payload
-          }
-        }
-        this.sendNotification(notification, pl)
+        this.doCommand(hook, res.key)
+      }
+    }
+  }
+
+  foundAction(foundAction) {
+    if (foundAction) {
+      if (this.config.action.hasOwnProperty(foundAction.command)) {
+        var action = this.config.action[foundAction.command]
+        this.doCommand(action, foundAction.params)
       }
     }
   }

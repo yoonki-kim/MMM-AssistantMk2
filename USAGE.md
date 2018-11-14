@@ -1,63 +1,231 @@
 # USAGE
 
-## GAction
-Read :  [gaction/README.md](/gaction/README.md)
-
-## TranscriptionHook
-- You can hook some phrase from your spoken transcription to make your custom notification command to control MM.
-- When you saying something and it is defined in `transcriptionHook`, some notification will be emitted. Your other module can catch that notification then can do its job.
-
-#### Example
+## Command
+- You can make your own commands to control MM directly.
+  - `notificationExec` : Control MM & modules with notification
+    - `notification` : `String` or `Function` for notification name to be broadcasted
+    - `payload` : `Variables or Object` or `Function` for notification payload
+  - `shellExec` : Control MM & device with shell command
+    - `exec` : `String` or `Function` for shell command to be executed
+    - `options` : `String` or `Function` for additional option for command
+  - `moduleExec` : Control modules with using module object.
+    - `module` : `Array of String` or `Function` for module name to be controlled. All modules are targeted when you set as `[]`
+    - `exec` : `Function` for execution
+### Example
+1. **notificationExec**
 ```
-transcriptionHook: {
-  "MY_COMMAND1": {
-    pattern: "who is the best mc",
-    notification: "SHOW_ALERT"
-    payload: {
-      message: "Of course, It's you.",
-      timer: 3000,
-    }
-  },
-  "MY_COMMAND2": {
-    pattern: "test ([a-zA-Z0-9 ]*)$",
-    notification: (obj) => {
-      if (obj.match[1] == "unicorn") {
-        return "SHOW_ALERT"
-      } else {
-        return "SOME_OTHER_NOTIFICATION"
+command: {
+  "SAYHELLO": {
+    notificationExec: {
+      notification: "SHOW_ALERT",
+      payload: {
+        message: "You've ordered SAYHELLO.",
+        timer: 5000,
       }
     },
-    payload: (obj)=>{
-      return {
-          message: obj.match[1],
-          timer: 3000,
+  },
+  "SAYHELLO2": {
+    notificationExec: {
+      notification: (params, key) => {
+        // params: result of transcriptionHook match or gAction parameters
+        // key: which transcriptionHook or gAction call this command
+
+        if (key == "com.example.commands.SAYHELLO2")
+        return "SHOW_ALERT" //return value will be used as notification name
+      },
+      payload: (params, key)=> {
+        return { // return value will be used as payload
+          message: "You've ordered SAYHELLO2.",
+          timer: 5000,
+        }
+      }
+    },
+  },
+}
+
+```
+2. **shellExec**
+```
+command: {
+  "SCREENOFF": {
+    shellExec: {
+      exec: "~/MagicMirror/modules/MMM-AssistantMk2/scripts/screenoff.sh",
+      options: null,
+    }
+  },
+  "REBOOT": {
+    shellExec: {
+      exec: (params, key) => {
+        return "sudo reboot"
+      },
+      options: (params, key)=> {
+        if (params[1]) {
+          return params[1]
+        } else {
+          return "now" // the command "sudo reboot now" will be executed.
+        }
+      },
+    }
+  },
+}
+```
+3. **moduleExec**
+```
+command: {
+  "HIDECLOCK": {
+    moduleExec: {
+      module:(params, key)=>{
+        return ["clock"] // Array of String which contains module names should be returned.
+      },
+      exec: (module, params, key) => { // `module` will be target module instance.
+        module.hide()
       }
     }
+  },
+  "HIDEALLMODULES": {
+    moduleExec: {
+      module:[],
+      exec: (module, params, key) => {
+        module.hide()
+      }
+    }
+  },
+}
+```
+### Default Prepared commands
+```
+command: {
+  "HIDEMODULES": {
+    moduleExec: {
+      module:()=>{
+        return []
+      },
+      exec: (module, params, key) => {
+        module.hide(1000, null, {lockString:"AMK2"})
+      }
+    }
+  },
+  "SHOWMODULES": {
+    moduleExec: {
+      module:[],
+      exec: (module, params, key) => {
+        module.show(1000, null, {lockString:"AMK2"})
+      }
+    }
+  },
+  "SCREENON": {
+    shellExec: {
+      exec: (params, key) => {
+        return "~/MagicMirror/modules/MMM-AssistantMk2/scripts/screenon.sh"
+        //return "ls -al"
+      },
+      options: (params, key)=> {
+        return ""
+      },
+    }
+  },
+  "SCREENOFF": {
+    shellExec: {
+      exec: "~/MagicMirror/modules/MMM-AssistantMk2/scripts/screenoff.sh",
+      options: null,
+    }
+  },
+  "REBOOT": {
+    notificationExec: {
+      notification: "SHOW_ALERT",
+      payload: {
+        message: "You've ordered REBOOT. I'm showing just alert, but you can modify config.js to reboot really.",
+        timer: 5000,
+      }
+    },
+    /*
+    shellExec: {
+      exec: "sudo reboot now"
+    }
+    */
+  },
+  "SHUTDOWN": {
+    notificationExec: {
+      notification: (params, key) => {
+        return "SHOW_ALERT"
+      },
+      payload: (params, key)=> {
+        return {
+          message: "You've ordered SHUTDOWN. I'm showing just alert, but you can modify config.js to reboot really.",
+          timer: 5000,
+        }
+      }
+    },
+    /*
+    shellExec: {
+      exec: "sudo shutdown now"
+    }
+    */
   },
 },
 ```
-With this,
-- If you say `"who is the best mc"` then `Of course, It's you.` will be shown as `alert`
-- If you say `"test unicorn"` then `unicorn` will be shown as `alert`.
+You can activate these commands with `transcriptionHook` and `action`
 
-`transcriptionHook` could have lots of your custom command objects. Each custom command would have 3 property.
+
+## TranscriptionHook
+- You can hook some phrase from your spoken transcription.
+- When you saying something and it is defined in `transcriptionHook`, `command` will be executed.
+
+### Example
+```
+transcriptionHook: {
+  "MY_COMMAND_HIDE_ALL_MODULES": {
+    pattern: "hide all",  // When you say "hide all",
+    command: "HIDEMODULES" // command "HIDEMODULES" will be executed
+  },
+  "MY_COMMAND_REBOOT": {
+    pattern: "reboot ([a-zA-Z0-9 ]*)$",
+    command: "REBOOT"
+},
+```
+
 - pattern **REQUIRED**
   - Regular Expression String for catching phrase.
-  - Matched pattern will be delivered to `notification` and `payload`
-- notification
-  - **null** : When omitted, `ASSISTANT_HOOK` will be used.
-  - **String** : That string will be used as notification name. In above example, "SHOW_ALERT" is that.
-  - **Function** : You can use javascript function for more dynamic control.
-- payload
-  - **null** : When omitted, matched result of `pattern` will be used as payload.
-  - **Object or Variables** : That static values will be used as payload.
-  - **Function** : You can use javascript function for more dynamic control.
+  - Matched pattern will be delivered to `command`
+- command **REQUIRED**
+  - which command to be executed. (defined in `command`)
 
+### Default hooks (combined with `command`)
+```
+transcriptionHook: {
+  "HIDE_ALL_MODULES": {
+    pattern: "hide all",
+    command: "HIDEMODULES"
+  },
+  "SHOW_ALL_MODULES": {
+    pattern: "show all",
+    command: "SHOWMODULES"
+  },
+  "SCREEN_ON": {
+    pattern: "wake up",
+    command: "SCREENON"
+  },
+  "SCREEN_OFF": {
+    pattern: "go to sleep",
+    command: "SCREENOFF"
+  },
+  "REBOOT": {
+    pattern: "reboot yourself",
+    command: "REBOOT"
+  },
+  "SHUTDOWN": {
+    pattern: "shutdown yourself",
+    command: "SHUTDOWN"
+  }
+},
+```
 #### Notice
 - `TranscriptionHook` is a hook mechanism out of Google Assistant. So with this hook, you cannot control Assistant Itself. (It means you cannot get vocal response of Assistant when hooked)
-- Take care of `Side effects`. If hooked phrase is reserved or used by Assistant, there could be unintended side effects. By exmaple, don't assign **add event** as hook phrase. This might be used Google Assistant itself. She will try making an event to your Google Calendar but you hooked this process, so failed. And that makes unintended continous conversations.
+- Take care of `Side effects`. If hooked phrase is reserved or used by Assistant, there could be unintended side effects. By exmaple, don't assign **add event** as hook phrase. This might be used Google Assistant itself. She will try making an event to your Google Calendar but you hooked this process, so failed. And that makes unintended continuous conversations.
 
-
+## GAction
+It is similar with `transcriptionHook`, more complex but powerful and natural on Google Assistant
+Read :  [gaction/README.md](/gaction/README.md)
 
 ## Youtube
 ```
@@ -67,7 +235,9 @@ youtubeAutoplay: true,
 pauseOnYoutube: true,
 //If set as true, You cannot activate Assistant during youtube playing. Recommended for the performance (Because always listening of hotword detector might make performance lower)
 ```
-
+If Youtube video is not played :
+  - You might have some front-end error. Check front-end errors with `npm start dev`
+  - Some videos are not allowed to be played on embedded player by owner.
 
 ## MMM-TelegramBot & Other module can query.
 - If you are using `MMM-TelegramBot`, `/q YOUR_QUERY` could be transmitted to Assistant. The response will come to MM.
@@ -101,7 +271,7 @@ python -m pip install --upgrade google-auth-oauthlib[tool]
 
 cp MagicMirror/modules/MMM-AssistantMk2/credentials.json .
 ```
-Then, 
+Then,
 ```
 google-oauthlib-tool --scope https://www.googleapis.com/auth/assistant-sdk-prototype --headless --client-secrets credentials.json
 ```
