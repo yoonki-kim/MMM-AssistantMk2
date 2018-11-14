@@ -549,7 +549,7 @@ class AssistantHelper {
       clearTimeout(this.screenTimer)
       setTimeout(()=>{
         this.subdom.screen.className = "show"
-      },100)
+      },10)
     }
     if (!this.config.responseScreen && payload.foundTextResponse && this.config.useAlertResponse) {
       this.alert(payload.foundTextResponse)
@@ -729,7 +729,7 @@ class AssistantHelper {
           if (event.data == 0) {
             setTimeout(()=>{
               onClose(holder, cb)
-            }, 500)
+            }, 100)
           }
         },
         "onError": (event)=> {

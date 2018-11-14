@@ -67,6 +67,7 @@ Read [USAGE.md](/USAGE.md)
 - MagicMirror : 2.5.1
 - nodeJS : 8.11.3 & 10.0.x
 - SBC : Asus TinkerBoard & Raspberry Pi 3 / Kiosk mode and Serveronly mode both work.
+- `Raspbian Stretch` is recommended. Many problems would be possible in `Raspbian Jessie`. 
 - on Pi Zero (or ARMv6 Architecture), You might need to rebuild modules from source. That is out of my ability, so I cannot help about that.
 
 

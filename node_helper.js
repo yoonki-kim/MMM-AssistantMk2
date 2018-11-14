@@ -328,11 +328,11 @@ module.exports = NodeHelper.create({
                 this.sendSocketNotification("RESPONSE_END", conversationResult)
                 setTimeout(()=>{
                   this.sendSocketNotification("CONVERSATION_END", conversationResult)
-                }, 100)
+                }, 10)
               })
             }
           }
-        }, 1000)
+        }, 100)
       })
 
       // catch any errors
