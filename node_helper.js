@@ -97,6 +97,14 @@ module.exports = NodeHelper.create({
     case "START":
       this.prepareActivate(payload)
       break
+    case "SHELLEXEC":
+      var command = payload.command
+      command += (payload.option) ? (" " + payload.option) : ""
+      exec (command, (e,so,se)=> {
+        console.log("[AMK2] ShellExec command:", command)
+        if (e) console.log(e)
+      })
+      break
     case this.config.notifications.ASSISTANT_DEACTIVATED:
       if (this.speaker) {
         this.speaker.kill()
@@ -314,6 +322,7 @@ module.exports = NodeHelper.create({
           }
 
           if (conversationResult.foundHook.length > 0) {
+            console.log("[AMK2] Conversation Completed")
             this.sendSocketNotification("CONVERSATION_END", conversationResult)
           } else {
             if (conversationResult.audioSize <= 0) {

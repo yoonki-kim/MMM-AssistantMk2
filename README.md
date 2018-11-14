@@ -4,7 +4,26 @@
 ### Screenshot
 [[PlaceHolder]]
 
-### Updates
+### New Update
+#### [2.1.0] - 2018.11.14
+- Customizable `command` feature is added. Now you can control your device and MM without other module's help.
+  And notification system of `transcriptionHook` is changed. New configuration is needed.
+- Prepared hook commands. Say these (Or customize them in configuration)
+  - `hide all` : modules on screen will be hidden
+  - `show all` : hidden modules will be shown again
+  - `reboot yourself` : reboot device
+  - `shutdown yourself` : shutdown device
+  - `go to sleep` : LCD power off (you might need to modify `/resources/screenoff.sh`)
+  - `wake up` : LCD power on (you might need to modify `/resources/screenon.sh`)
+- `onIdle` feature be added. After `timer` without no query after last query, `command` will be activated. (By default, after 30min All modules will be hidden.)
+- And `onActivate` feature is added. When you activate Assistant, this `command` will be executed after `timer`. (By default, modules hidden by `onIdle` will be shown again)
+- For update from 2.0.0
+```
+cd ~/MagicMirror/modules/MMM-AssistantMk2
+git pull
+```
+
+### Old Updates
 #### [2.0.0] - 2018.11.05
 - Whole new build-up.
 - Annoying `speaker` dependencies deprecated
@@ -27,7 +46,6 @@
 sudo apt-get install mpg321
 cd ~/MagicMirror/modules/MMM-AssistantMk2
 git pull
-git checkout 1.1.0
 npm install --save wav
 ```
 
@@ -67,7 +85,7 @@ Read [USAGE.md](/USAGE.md)
 - MagicMirror : 2.5.1
 - nodeJS : 8.11.3 & 10.0.x
 - SBC : Asus TinkerBoard & Raspberry Pi 3 / Kiosk mode and Serveronly mode both work.
-- `Raspbian Stretch` is recommended. Many problems would be possible in `Raspbian Jessie`. 
+- `Raspbian Stretch` is recommended. Many problems would be possible in `Raspbian Jessie`.
 - on Pi Zero (or ARMv6 Architecture), You might need to rebuild modules from source. That is out of my ability, so I cannot help about that.
 
 

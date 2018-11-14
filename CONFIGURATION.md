@@ -82,7 +82,15 @@ This empty configuration will even work if you use;
 
     useWelcomeMessage: "", //Try "brief today" as this value. You can use this value to check module working when MM is starting.
 
+    onIdle: {
+      timer: 1000*60*30, // if you don't want to use this feature, just set timer as `0` or command as ""
+      command: "HIDEMODULES"
+    },
 
+    onActivate: {
+      timer: 0,
+      command: "SHOWMODULES"
+    },
 
 
     // --- FOR EXPERTS / For development, debug or more
@@ -116,14 +124,18 @@ This empty configuration will even work if you use;
       // e.g: ["-d", "", "-t", "100"]
     },
 
-    transcriptionHook: {}, // You can catch transcription hook and be able to make your own `COMMAND` with this.
-    //See the `transcriptionHook` section.
-
     useGactionCLI: false, // If set as true, you can update your gAction when MM is rebooted.
     projectId: "", // Google Assistant ProjectId (Required only when you use gAction.)
     deviceModelId: "", // It should be described in your config.json. In most of case, you don't need to this.
     deviceInstanceId: "", // It should be described in your config.json. In most of case, you don't need to this.
+
     action:{}, // You can catch your gAction command.
+
+    transcriptionHook: {}, // You can catch transcription hook and be able to make your own `COMMAND` with this.
+    //See the `transcriptionHook` section.
+
+    command: {}, // You can make your own MM command for gAction and transcriptionHook
+    //See the `command` section.
 
     notifications: { // You can redefine these notifications to communicate with specific modules.
       ASSISTANT_ACTIVATE: "ASSISTANT_ACTIVATE",
@@ -149,7 +161,7 @@ This empty configuration will even work if you use;
         recordProgram : "arecord",  
         device        : "plughw:1",
       },
-      
+
       notifications: {
         ASSISTANT_ACTIVATED: "HOTWORD_PAUSE",
         ASSISTANT_DEACTIVATED: "HOTWORD_RESUME",
