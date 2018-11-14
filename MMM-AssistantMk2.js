@@ -32,6 +32,31 @@ Module.register("MMM-AssistantMk2", {
     },
 
     transcriptionHook: {
+      "HIDE_ALL_MODULES": {
+        pattern: "hide all",
+        command: "HIDEMODULES"
+      },
+      "SHOW_ALL_MODULES": {
+        pattern: "show all",
+        command: "SHOWMODULES"
+      },
+      "SCREEN_ON": {
+        pattern: "wake up",
+        command: "SCREENON"
+      },
+      "SCREEN_OFF": {
+        pattern: "go to sleep",
+        command: "SCREENOFF"
+      },
+      "REBOOT": {
+        pattern: "reboot yourself",
+        command: "REBOOT"
+      },
+      "SHUTDOWN": {
+        pattern: "shutdown yourself",
+        command: "SHUTDOWN"
+      }
+
       /*
       "TEST_HOOK": {
         pattern: "test hook ([a-zA-Z0-9 ]*)$",
@@ -73,6 +98,71 @@ Module.register("MMM-AssistantMk2", {
         }
       }
       */
+    },
+
+    command: {
+      "HIDEMODULES": {
+        moduleExec: {
+          module:[],
+          exec: (module, params) => {
+            module.hide(1000, null, {lockString:"AMK2"})
+          }
+        }
+      },
+      "SHOWMODULES": {
+        moduleExec: {
+          module:[],
+          exec: (module, params) => {
+            module.show(1000, null, {lockString:"AMK2"})
+          }
+        }
+      },
+      "SCREENON": {
+        shellExec: {
+          exec: "~/MagicMirror/modules/MMM-AssistantMk2/scripts/screenon.sh",
+          options: (params)=> {
+            return ""
+          },
+        }
+      },
+      "SCREENOFF": {
+        shellExec: {
+          exec: "~/MagicMirror/modules/MMM-AssistantMk2/scripts/screenoff.sh",
+          options: null,
+        }
+      },
+      "REBOOT": {
+        notificationExec: {
+          notification: "SHOW_ALERT",
+          payload: {
+            message: "You've ordered REBOOT. I'm showing just alert, but you can modify config.js to reboot really.",
+            timer: 5000,
+          }
+        },
+        /*
+        shellExec: {
+          exec: "sudo reboot now"
+        }
+        */
+      },
+      "SHUTDOWN": {
+        notificationExec: {
+          notification: (params) => {
+            return "SHOW_ALERT"
+          },
+          payload: (params)=> {
+            return {
+              message: "You've ordered SHUTDOWN. I'm showing just alert, but you can modify config.js to reboot really.",
+              timer: 5000,
+            }
+          }
+        },
+        /*
+        shellExec: {
+          exec: "sudo shutdown now"
+        }
+        */
+      },
     },
     responseVoice: true, // If available, Assistant will response with her voice.
     responseScreen: true, // If available, Assistant will response with some rendered HTML
