@@ -258,7 +258,10 @@ Module.register("MMM-AssistantMk2", {
         break
       case this.config.notifications.ASSISTANT_ACTIVATE:
         var profileKey = ""
-        if (payload.hasOwnProperty("profile") && payload.profile in this.config.profiles) {
+        if (payload
+          && payload.hasOwnProperty("profile")
+          && payload.profile in this.config.profiles
+        ) {
           profileKey = payload.profile
         } else {
           profileKey = this.config.defaultProfile
