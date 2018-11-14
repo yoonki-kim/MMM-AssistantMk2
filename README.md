@@ -2,7 +2,7 @@
 `MMM-AssistantMk2` is an embedded google assistant on MagicMirror.
 
 ### Screenshot
-[[PlaceHolder]]
+[![2.1.0 demo](https://img.youtube.com/vi/7yI_9NfhpwI/1.jpg)](https://youtu.be/7yI_9NfhpwI)
 
 ### New Update
 #### [2.1.0] - 2018.11.14
