@@ -55,6 +55,8 @@ sudo apt-get install libasound2-dev sox libsox-fmt-all
 git clone https://github.com/eouia/MMM-AssistantMk2.git
 cd MMM-AssistantMk2
 npm install
+cd scripts
+chmod +x *.sh
 ```
 There could be some warnings, but it gives no harm for using.
 
