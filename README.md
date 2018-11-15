@@ -21,6 +21,8 @@
 ```
 cd ~/MagicMirror/modules/MMM-AssistantMk2
 git pull
+cd scripts
+chmod +x *.sh
 ```
 
 ### Install & Update
