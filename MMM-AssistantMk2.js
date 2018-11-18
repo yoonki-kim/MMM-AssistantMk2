@@ -528,16 +528,13 @@ class AssistantHelper {
       this.sendSocketNotification("START", {profile:profile, textQuery:textQuery, sender:sender, id:id})
       if (this.config.onActivate) {
         setTimeout(()=>{
-          console.log("!!")
           this.doCommand(this.config.onActivate, "onActivate")
         }, this.config.onActivate.timer)
       }
 
       if (this.config.onIdle && this.config.onIdle.timer > 0) {
-        console.log("?", this.config.onIdle)
         clearTimeout(this.idleTimer)
         this.idleTimer = setTimeout(()=>{
-          console.log("!!!!!")
           this.doCommand(this.config.onIdle, "onIdle")
         }, this.config.onIdle.timer)
       }
@@ -579,7 +576,7 @@ class AssistantHelper {
         this.subdom.screen.className = "show"
       },10)
     }
-    if (!this.config.responseScreen && payload.foundTextResponse && this.config.useAlertResponse) {
+    if (!this.config.responseScreen && payload.foundTextResponse) {
       this.alert(payload.foundTextResponse)
     }
   }
@@ -627,7 +624,7 @@ class AssistantHelper {
         this.onError(message)
         this.alert(message)
       }
-      this.log("[AMK2] Error:", message)
+      this.log("Error:" + message)
     }
   }
 
