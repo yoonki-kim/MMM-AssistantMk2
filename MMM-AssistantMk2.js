@@ -133,11 +133,11 @@ Module.register("MMM-AssistantMk2", {
           }
         },
         */
-        
+
         shellExec: {
           exec: "sudo reboot now"
         }
-        
+
       },
       "SHUTDOWN": {
         /*
@@ -153,11 +153,11 @@ Module.register("MMM-AssistantMk2", {
           }
         },
         */
-        
+
         shellExec: {
           exec: "sudo shutdown now"
         }
-        
+
       },
     },
     responseVoice: true, // If available, Assistant will response with her voice.
@@ -262,7 +262,7 @@ Module.register("MMM-AssistantMk2", {
         break
       case this.config.notifications.ASSISTANT_ACTIVATE:
         var profileKey = ""
-        if (payload.hasOwnProperty("profile") && (this.config.profiles.indexOf(payload.profile) >= 0)) {
+        if (payload.hasOwnProperty("profile") && payload.profile in this.config.profiles) {
           profileKey = payload.profile
         } else {
           profileKey = this.config.defaultProfile
