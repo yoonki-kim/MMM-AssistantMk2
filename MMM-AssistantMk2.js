@@ -124,6 +124,7 @@ Module.register("MMM-AssistantMk2", {
         }
       },
       "REBOOT": {
+        /*
         notificationExec: {
           notification: "SHOW_ALERT",
           payload: {
@@ -131,13 +132,15 @@ Module.register("MMM-AssistantMk2", {
             timer: 5000,
           }
         },
-        /*
+        */
+        
         shellExec: {
           exec: "sudo reboot now"
         }
-        */
+        
       },
       "SHUTDOWN": {
+        /*
         notificationExec: {
           notification: (params, key) => {
             return "SHOW_ALERT"
@@ -149,11 +152,12 @@ Module.register("MMM-AssistantMk2", {
             }
           }
         },
-        /*
+        */
+        
         shellExec: {
           exec: "sudo shutdown now"
         }
-        */
+        
       },
     },
     responseVoice: true, // If available, Assistant will response with her voice.
@@ -267,6 +271,7 @@ Module.register("MMM-AssistantMk2", {
         this.assistant.activate(this.currentProfile)
         break
       case this.config.notifications.ASSISTANT_DEACTIVATE:
+        this.assistant.clearResponse()
         this.assistant.deactivate()
         //this.hideScreen()
         break
@@ -548,6 +553,7 @@ class AssistantHelper {
     this.subdom.message.innerHTML = ""
     this.subdom.youtube.innerHTML = ""
     this.subdom.youtube.style.display = "none"
+    this.youtubePlaying = false
     //this.sendSocketNotification(this.config.notifications.ASSISTANT_DEACTIVATED)
   }
 

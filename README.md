@@ -2,7 +2,7 @@
 `MMM-AssistantMk2` is an embedded google assistant on MagicMirror.
 
 ### Screenshot
-[[PlaceHolder]]
+[![2.1.0 demo](https://img.youtube.com/vi/7yI_9NfhpwI/1.jpg)](https://youtu.be/7yI_9NfhpwI)
 
 ### New Update
 #### [2.1.0] - 2018.11.14
@@ -13,14 +13,16 @@
   - `show all` : hidden modules will be shown again
   - `reboot yourself` : reboot device
   - `shutdown yourself` : shutdown device
-  - `go to sleep` : LCD power off (you might need to modify `/resources/screenoff.sh`)
-  - `wake up` : LCD power on (you might need to modify `/resources/screenon.sh`)
+  - `go to sleep` : LCD power off (you might need to modify `/scripts/screenoff.sh`)
+  - `wake up` : LCD power on (you might need to modify `/scripts/screenon.sh`)
 - `onIdle` feature be added. After `timer` without no query after last query, `command` will be activated. (By default, after 30min All modules will be hidden.)
 - And `onActivate` feature is added. When you activate Assistant, this `command` will be executed after `timer`. (By default, modules hidden by `onIdle` will be shown again)
 - For update from 2.0.0
 ```
 cd ~/MagicMirror/modules/MMM-AssistantMk2
 git pull
+cd scripts
+chmod +x *.sh
 ```
 
 ### Install & Update
