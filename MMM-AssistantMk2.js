@@ -262,10 +262,7 @@ Module.register("MMM-AssistantMk2", {
         break
       case this.config.notifications.ASSISTANT_ACTIVATE:
         var profileKey = ""
-        if (payload
-          && payload.hasOwnProperty("profile")
-          && payload.profile in this.config.profiles
-        ) {
+        if (payload.hasOwnProperty("profile") && (this.config.profiles.indexOf(payload.profile) >= 0)) {
           profileKey = payload.profile
         } else {
           profileKey = this.config.defaultProfile
@@ -662,7 +659,7 @@ class AssistantHelper {
       }
       if (Array.isArray(m)) {
         MM.getModules().enumerate((module)=>{
-          if (m.length == 0 || module.name in m) {
+          if (m.length == 0 || (m.indexOf(module.name) >=0)) {
             var payload = Object.assign({}, hook.payload)
             me.exec(module, payload, key)
           }
