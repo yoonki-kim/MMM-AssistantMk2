@@ -145,6 +145,7 @@ This empty configuration will even work if you use;
       ASSISTANT_ACTION: "ASSISTANT_ACTION",
       DEFAULT_HOOK_NOTIFICATION: "ASSISTANT_HOOK",
       TEXT_QUERY: "ASSISTANT_QUERY",
+      SAY_TEXT: "ASSISTANT_SAY",
     }
   }
 },

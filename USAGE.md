@@ -240,12 +240,23 @@ If Youtube video is not played :
   - Some videos are not allowed to be played on embedded player by owner.
 
 ## MMM-TelegramBot & Other module can query.
-- If you are using `MMM-TelegramBot`, `/q YOUR_QUERY` could be transmitted to Assistant. The response will come to MM.
+- External Query
+  - If you are using `MMM-TelegramBot`, `/q YOUR_QUERY` could be transmitted to Assistant. The response will come to MM.
+  - Or your other module can also request query with notification
+  ```
+  this.sendNotification("ASSISTANT_QUERY", "what time is it now")
+  ```
+- TTS
+  - If you are using `MMM-TelegramBot`, `/s TEXT` could be transmitted to Assistant. Assistant will say this.
+  - TTS feature is added. Now, Other modules can order MMM-AssistantMk2 to say something. It can be used like something similar TEXT-TO-SPEECH. By example, you can build your customClock module say current time via MMM-AssistantMk2
+    - USAGE:
+      - `this.sendNotification("ASSISTANT_SAY", "Time to go to bed")`
+      - `this.sendNotification("ASSISTANT_SAY", {text:"C'est trop chaud", lang:"fr-FR"})`
+    - NOTICE:
+      - This feature is somekind of Assistant hooking. If you say "Repeat after me SOMETHING", Google Assistant will repeat SOMETHING. So, there could be a possibility of not responding as intend. Too long or complex text might be not available.
+      - Currently I can't find correspondence of `Repeat after me` for **German/Japanese/Korean** language. PR please.
+    - Thanks to [Valerio Pilo](https://github.com/vpilo). His brilliant idea and PR could make this feature.
 
-- Or your other module can also request query with notification
-```
-this.sendNotification("ASSISTANT_QUERY", "what time is it now")
-```
 
 
 ## Register your Mirror as Google Assistant related device.

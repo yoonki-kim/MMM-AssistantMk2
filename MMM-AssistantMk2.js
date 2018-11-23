@@ -211,7 +211,21 @@ Module.register("MMM-AssistantMk2", {
       ASSISTANT_ACTION: "ASSISTANT_ACTION",
       DEFAULT_HOOK_NOTIFICATION: "ASSISTANT_HOOK",
       TEXT_QUERY: "ASSISTANT_QUERY",
-    }
+      SAY_TEXT: "ASSISTANT_SAY"
+    },
+
+    //magicQueryToSay: "", // set as your language e.g) "Repeat as me : '%TEXT%'",
+  },
+
+  magicQueryToSay: {
+    "de" : "Repeat after me : '%TEXT%'", // I cannot find proper query for Deutsch
+    "en" : "Repeat after me : '%TEXT%'",
+    "fr" : "Répétez après moi : '%TEXT%'",
+    "it" : "Ripeti dopo di me : '%TEXT%'",
+    "ja" : "Repeat after me : '%TEXT%'",  // I cannot find proper query for Japanese
+    "es" : "Repite despues de mi : '%TEXT%'",
+    "ko" : "Repeat after me : '%TEXT%'", // I cannot find proper query for Korean
+    "pt" : "Repita depois de mim : '%TEXT%'"
   },
 
   getStyles: function () {
@@ -224,6 +238,11 @@ Module.register("MMM-AssistantMk2", {
         command: "q",
         callback: "telegramCommand",
         description: "You can command `AssistantMk2` by text with this command."
+      },
+      {
+        command: "s",
+        callback: "telegramCommand",
+        description: "You can make `MMM-AssistantMk2` to say some text with this command."
       }
     ]
   },
@@ -232,6 +251,11 @@ Module.register("MMM-AssistantMk2", {
     if (command == "q" && handler.args) {
       handler.reply("TEXT", "AssistantMk2 will be activated")
       this.notificationReceived(this.config.notifications.TEXT_QUERY, handler.args, "MMM-TelegramBot")
+    }
+    if (command == "s" && handler.args) {
+      console.log("s", handler.args)
+      handler.reply("TEXT", "AssistantMk2 will repeat your text: " + handler.args)
+      this.notificationReceived(this.config.notifications.SAY_TEXT, handler.args, "MMM-TelegramBot")
     }
   },
 
@@ -274,6 +298,23 @@ Module.register("MMM-AssistantMk2", {
         this.assistant.clearResponse()
         this.assistant.deactivate()
         //this.hideScreen()
+        break
+      case this.config.notifications.SAY_TEXT:
+        if (typeof sender == "object") {
+          sender = sender.name
+        }
+        var profile = this.config.profiles[this.config.defaultProfile]
+        var text = (typeof payload == "string") ? payload : payload.text
+        profile.lang = (typeof payload == "object") ? payload.lang : profile.lang
+        var langCode = profile.lang.slice(0, 2)
+        var magicQuery = (langCode && langCode in this.magicQueryToSay) ? this.magicQueryToSay[langCode] : this.magicQueryToSay["en"]
+        if (magicQuery) {
+          this.assistant.quietRequest = true
+          magicQuery = magicQuery.replace("%TEXT%", payload)
+          this.assistant.activate(profile, magicQuery, sender)
+        } else {
+          console.log("[AMK2] magciQueryToSay is not set.")
+        }
         break
       case this.config.notifications.TEXT_QUERY:
         if (typeof sender == "object") {
@@ -327,11 +368,11 @@ Module.register("MMM-AssistantMk2", {
   },
 
   configAssignment : function (result) {
-    var stack = Array.prototype.slice.call(arguments, 1);
-    var item;
-    var key;
+    var stack = Array.prototype.slice.call(arguments, 1)
+    var item
+    var key
     while (stack.length) {
-      item = stack.shift();
+      item = stack.shift()
       for (key in item) {
         if (item.hasOwnProperty(key)) {
           if (
@@ -340,17 +381,17 @@ Module.register("MMM-AssistantMk2", {
             && Object.prototype.toString.call(result[key]) !== "[object Array]"
           ) {
             if (typeof item[key] === "object" && item[key] !== null) {
-              result[key] = this.configAssignment({}, result[key], item[key]);
+              result[key] = this.configAssignment({}, result[key], item[key])
             } else {
-              result[key] = item[key];
+              result[key] = item[key]
             }
           } else {
-            result[key] = item[key];
+            result[key] = item[key]
           }
         }
       }
     }
-    return result;
+    return result
   }
 })
 
@@ -374,6 +415,8 @@ class AssistantHelper {
     this.screenTimer = null
     this.youtubePlaying = false
     this.idleTimer = null
+    this.quietRequest = false
+    this.isYoutubeReady = false
   }
 
   registerHelper(name, cb) {
@@ -408,6 +451,7 @@ class AssistantHelper {
     firstScriptTag.parentNode.insertBefore(tag, firstScriptTag)
 
     window.onYouTubeIframeAPIReady = () => {
+      this.isYoutubeReady = true
       this.log("YouTube iframe API is ready.")
     }
   }
@@ -468,6 +512,9 @@ class AssistantHelper {
   }
 
   transcription(payload) {
+    if (this.quietRequest) {
+      return
+    }
     this.changeStatus((payload.done) ? "UNDERSTANDING" : null)
     this.subdom.message.innerHTML = "<p>" + payload.transcription + "</p>"
   }
@@ -546,6 +593,7 @@ class AssistantHelper {
     //this.clearResponse()
     this.changeStatus("STANDBY")
     this.sendNotification(this.config.notifications.ASSISTANT_DEACTIVATED)
+    this.quietRequest = false
     cb()
   }
 
@@ -566,6 +614,9 @@ class AssistantHelper {
   }
 
   responseStart(payload) {
+    if (this.quietRequest) {
+      return
+    }
     if (this.config.responseScreen && payload.screenOutput) {
       this.subdom.screen.src = "/modules/MMM-AssistantMk2/tmp/temp.html"
       clearTimeout(this.screenTimer)
@@ -606,8 +657,6 @@ class AssistantHelper {
       })
     }
   }
-
-
 
   foundError(error) {
     if (error) {
@@ -729,6 +778,9 @@ class AssistantHelper {
   }
 
   playYoutubeVideo(type, id, cb=()=>{}) {
+    if (!this.isYoutubeReady) {
+      this.log("Youtube API is not ready. Check erros on frontend.")
+    }
     this.responseEnd(()=>{}, true)
     var onClose = (holder, cb=()=>{}) => {
       this.youtubePlaying = false
@@ -761,6 +813,7 @@ class AssistantHelper {
       },
       events: {
         "onReady": (event)=>{
+          console.log("Youtube player: on ready.")
           if (type == "video") {
             event.target.loadVideoById(id)
           } else {
@@ -770,13 +823,16 @@ class AssistantHelper {
         },
         "onStateChange": (event)=>{
           if (event.data == 0) {
+            console.log("Youtube player: playing ends")
             setTimeout(()=>{
               onClose(holder, cb)
             }, 100)
+          } else {
+            console.log("youtube status:", event.data)
           }
         },
         "onError": (event)=> {
-          this.log("youtube error:", id, event)
+          console.log("youtube error:", id, event)
         }
       }
     })
