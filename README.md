@@ -14,7 +14,7 @@
     - This feature is somekind of Assistant hooking. If you say "Repeat after me SOMETHING", Google Assistant will repeat SOMETHING. So, there could be a possibility of not responding as intend. Too long or complex text might be not available.
     - Currently I can't find correspondence of `Repeat after me` for **German/Japanese/Korean** language. PR please.
   - Thanks to [Valerio Pilo](https://github.com/vpilo). His brilliant idea and PR could make this feature.
-- For TelegramBot, TTS feature is also added. Now you can make your Home Mirror say something with MMM-TelegramBot even in outside.
+- For TelegramBot, TTS feature is also added. Now you can make your Home Mirror to say something with MMM-TelegramBot even you are in your office.
   - `/s Please open the door, mom!`
 - Youtube playing status in frontend dev console added.
   - At least you can get status of Youtube player event when video fails to be played.
