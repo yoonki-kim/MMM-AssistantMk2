@@ -38,6 +38,8 @@ Read [USAGE.md](/USAGE.md)
 |---|---|---|
 |ASSISTANT_ACTIVATE|{profile:`String`}|Assistant will start with this profile name.
 |ASSISTANT_CLEAR|null|Current playing video or content will be disappeared. And Assistant turns to sleep mode for waiting invocation.
+|ASSISTANT_QUERY| `String` | Ask to Assistant about `String`,
+|ASSISTANT_SAY| `String` or `{text:String, lang:"en-US"}` | Assistant will say this `String`
 
 #### Outgoing Notifications as ASSISTANT response.
 |Notification|Payload|Description|
