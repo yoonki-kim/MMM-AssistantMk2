@@ -211,6 +211,7 @@ Module.register("MMM-AssistantMk2", {
       ASSISTANT_ACTION: "ASSISTANT_ACTION",
       DEFAULT_HOOK_NOTIFICATION: "ASSISTANT_HOOK",
       TEXT_QUERY: "ASSISTANT_QUERY",
+      SAY_TEXT: "ASSISTANT_SAY"
     }
   },
 
@@ -274,6 +275,15 @@ Module.register("MMM-AssistantMk2", {
         this.assistant.clearResponse()
         this.assistant.deactivate()
         //this.hideScreen()
+        break
+      case this.config.notifications.SAY_TEXT:
+        if (typeof sender == "object") {
+          sender = sender.name
+        }
+        this.assistant.quietRequest = true
+        payload = 'repeat after me: "' + payload + '"'
+        this.currentProfile = this.config.profiles[this.config.defaultProfile]
+        this.assistant.activate(this.currentProfile, payload, sender)
         break
       case this.config.notifications.TEXT_QUERY:
         if (typeof sender == "object") {
@@ -374,6 +384,7 @@ class AssistantHelper {
     this.screenTimer = null
     this.youtubePlaying = false
     this.idleTimer = null
+    this.quietRequest = false
   }
 
   registerHelper(name, cb) {
@@ -468,6 +479,9 @@ class AssistantHelper {
   }
 
   transcription(payload) {
+    if (this.quietRequest) {
+      return;
+    }
     this.changeStatus((payload.done) ? "UNDERSTANDING" : null)
     this.subdom.message.innerHTML = "<p>" + payload.transcription + "</p>"
   }
@@ -546,6 +560,7 @@ class AssistantHelper {
     //this.clearResponse()
     this.changeStatus("STANDBY")
     this.sendNotification(this.config.notifications.ASSISTANT_DEACTIVATED)
+    this.quietRequest = false
     cb()
   }
 
@@ -566,6 +581,9 @@ class AssistantHelper {
   }
 
   responseStart(payload) {
+    if (this.quietRequest) {
+      return;
+    }
     if (this.config.responseScreen && payload.screenOutput) {
       this.subdom.screen.src = "/modules/MMM-AssistantMk2/tmp/temp.html"
       clearTimeout(this.screenTimer)
