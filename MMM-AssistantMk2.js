@@ -329,14 +329,13 @@ Module.register("MMM-AssistantMk2", {
   socketNotificationReceived: function (notification, payload) {
     switch(notification) {
       case "INITIALIZED":
-        //do nothing
         if (this.config.useWelcomeMessage) {
           this.assistant.activate(this.config.profiles[this.config.defaultProfile], this.config.useWelcomeMessage)
           this.config.useWelcomeMessage = ""
         }
         break
-      case "PREPARED":
-
+      case "ASSISTANT_READY":
+        //do nothing
         break
       case "MIC_ON": //necessary?????
         this.assistant.micStatus(true)
@@ -362,7 +361,7 @@ Module.register("MMM-AssistantMk2", {
         break
       case "CONVERSATION_ERROR":
       case "ASSISTANT_ERROR":
-        this.asistant.onError(notification)
+        this.assistant.onError(notification)
         break
     }
   },
