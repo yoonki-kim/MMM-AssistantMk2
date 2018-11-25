@@ -8,6 +8,7 @@ Module.register("MMM-AssistantMk2", {
     projectId: "", // Google Assistant ProjectId (Required only when you use gAction.)
     useGactionCLI: false,
     startChime: "connection.mp3",
+    noChimeOnSay: false,
     deviceModelId: "", // It should be described in your config.json
     deviceInstanceId: "", // It should be described in your config.json
     deviceLocation: { // (optional)
@@ -321,7 +322,7 @@ Module.register("MMM-AssistantMk2", {
           sender = sender.name
         }
         this.currentProfile = this.config.profiles[this.config.defaultProfile]
-        this.assistant.activate(this.currentProfile, payload, sender)
+        this.assistant.activate(this.currentProfile, payload, sender, true /* sayMode */)
         break
     }
   },
@@ -559,7 +560,7 @@ class AssistantHelper {
     }, 3000)
   }
 
-  activate(profile, textQuery=null, sender=null, id=null) {
+  activate(profile, textQuery=null, sender=null, id=null, sayMode=false) {
     if (this.youtubePlaying && this.config.pauseOnYoutube) {
       this.log("Assistant will not work during Youtube playing.")
       return false
@@ -569,7 +570,7 @@ class AssistantHelper {
       //this.deactivate()
       this.changeStatus("READY")
       this.sendNotification(this.config.notifications.ASSISTANT_ACTIVATED)
-      this.sendSocketNotification("START", {profile:profile, textQuery:textQuery, sender:sender, id:id})
+      this.sendSocketNotification("START", {profile:profile, textQuery:textQuery, sender:sender, id:id, sayMode:sayMode})
       if (this.config.onActivate) {
         setTimeout(()=>{
           this.doCommand(this.config.onActivate, "onActivate")
