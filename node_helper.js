@@ -122,12 +122,18 @@ module.exports = NodeHelper.create({
     if (this.continueConversation) {
       payload = this.currentPayload
     }
-    this.playChime(()=>{
+
+    var cb = ()=>{
       if (textQuery) {
         this.sendSocketNotification("TRANSCRIPTION", {done:true, transcription:textQuery})
       }
       this.activate(payload, textQuery, sender)
-    })
+    };
+    if (pObj.sayMode == true && this.config.noChimeOnSay) {
+      cb()
+    } else {
+      this.playChime(cb)
+    }
   },
 
   activate: function(payload, textQuery=null, sender=null) {
