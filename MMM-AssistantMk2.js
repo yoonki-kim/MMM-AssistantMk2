@@ -165,6 +165,9 @@ Module.register("MMM-AssistantMk2", {
     responseScreen: true, // If available, Assistant will response with some rendered HTML
     responseAlert: true, // If available, Assistant will response with Alert module of MM
     // Sometimes, any response could not be returned.
+    ignoreNoVoiceError: true, //To avoid some annoying youtube stop bug.
+
+
 
     screenZoom: "80%",
     screenDuration: 0, //If you set 0, Screen Output will be closed after Response speech finishes.
@@ -254,7 +257,6 @@ Module.register("MMM-AssistantMk2", {
       this.notificationReceived(this.config.notifications.TEXT_QUERY, handler.args, "MMM-TelegramBot")
     }
     if (command == "s" && handler.args) {
-      console.log("s", handler.args)
       handler.reply("TEXT", "AssistantMk2 will repeat your text: " + handler.args)
       this.notificationReceived(this.config.notifications.SAY_TEXT, handler.args, "MMM-TelegramBot")
     }

@@ -332,9 +332,11 @@ module.exports = NodeHelper.create({
             this.sendSocketNotification("CONVERSATION_END", conversationResult)
           } else {
             if (conversationResult.audioSize <= 0) {
-              conversationResult.audioError = "NO RESPONSE AUDIO IS RETURNED."
-              conversationResult.error = conversationResult.audioError
-              console.log("[AMK2]", conversationResult.audioError)
+              if (!this.config.ignoreNoVoiceError) {
+                conversationResult.audioError = "NO RESPONSE AUDIO IS RETURNED."
+                conversationResult.error = conversationResult.audioError
+                console.log("[AMK2]", conversationResult.audioError)
+              }
               this.sendSocketNotification("CONVERSATION_END", conversationResult)
             } else {
               this.sendSocketNotification("RESPONSE_START", conversationResult)
