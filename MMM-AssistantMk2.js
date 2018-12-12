@@ -8,6 +8,7 @@ Module.register("MMM-AssistantMk2", {
     projectId: "", // Google Assistant ProjectId (Required only when you use gAction.)
     useGactionCLI: false,
     startChime: "connection.mp3",
+    noChimeOnSay: false,
     deviceModelId: "", // It should be described in your config.json
     deviceInstanceId: "", // It should be described in your config.json
     deviceLocation: { // (optional)
@@ -164,6 +165,9 @@ Module.register("MMM-AssistantMk2", {
     responseScreen: true, // If available, Assistant will response with some rendered HTML
     responseAlert: true, // If available, Assistant will response with Alert module of MM
     // Sometimes, any response could not be returned.
+    ignoreNoVoiceError: true, //To avoid some annoying youtube stop bug.
+
+
 
     screenZoom: "80%",
     screenDuration: 0, //If you set 0, Screen Output will be closed after Response speech finishes.
@@ -261,7 +265,6 @@ Module.register("MMM-AssistantMk2", {
       this.notificationReceived(this.config.notifications.TEXT_QUERY, handler.args, "MMM-TelegramBot")
     }
     if (command == "s" && handler.args) {
-      console.log("s", handler.args)
       handler.reply("TEXT", "AssistantMk2 will repeat your text: " + handler.args)
       this.notificationReceived(this.config.notifications.SAY_TEXT, handler.args, "MMM-TelegramBot")
     }
@@ -329,7 +332,7 @@ Module.register("MMM-AssistantMk2", {
           sender = sender.name
         }
         this.currentProfile = this.config.profiles[this.config.defaultProfile]
-        this.assistant.activate(this.currentProfile, payload, sender)
+        this.assistant.activate(this.currentProfile, payload, sender, true /* sayMode */)
         break
     }
   },
@@ -337,14 +340,13 @@ Module.register("MMM-AssistantMk2", {
   socketNotificationReceived: function (notification, payload) {
     switch(notification) {
       case "INITIALIZED":
-        //do nothing
         if (this.config.useWelcomeMessage) {
           this.assistant.activate(this.config.profiles[this.config.defaultProfile], this.config.useWelcomeMessage)
           this.config.useWelcomeMessage = ""
         }
         break
-      case "PREPARED":
-
+      case "ASSISTANT_READY":
+        //do nothing
         break
       case "MIC_ON": //necessary?????
         this.assistant.micStatus(true)
@@ -370,7 +372,7 @@ Module.register("MMM-AssistantMk2", {
         break
       case "CONVERSATION_ERROR":
       case "ASSISTANT_ERROR":
-        this.asistant.onError(notification)
+        this.assistant.onError(notification)
         break
     }
   },
@@ -567,7 +569,7 @@ class AssistantHelper {
     }, 3000)
   }
 
-  activate(profile, textQuery=null, sender=null, id=null) {
+  activate(profile, textQuery=null, sender=null, id=null, sayMode=false) {
     if (this.youtubePlaying && this.config.pauseOnYoutube) {
       this.log("Assistant will not work during Youtube playing.")
       return false
@@ -577,7 +579,7 @@ class AssistantHelper {
       //this.deactivate()
       this.changeStatus("READY")
       this.sendNotification(this.config.notifications.ASSISTANT_ACTIVATED)
-      this.sendSocketNotification("START", {profile:profile, textQuery:textQuery, sender:sender, id:id})
+      this.sendSocketNotification("START", {profile:profile, textQuery:textQuery, sender:sender, id:id, sayMode:sayMode})
       if (this.config.onActivate) {
         setTimeout(()=>{
           this.doCommand(this.config.onActivate, "onActivate")

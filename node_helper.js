@@ -122,12 +122,18 @@ module.exports = NodeHelper.create({
     if (this.continueConversation) {
       payload = this.currentPayload
     }
-    this.playChime(()=>{
+
+    var cb = ()=>{
       if (textQuery) {
         this.sendSocketNotification("TRANSCRIPTION", {done:true, transcription:textQuery})
       }
       this.activate(payload, textQuery, sender)
-    })
+    };
+    if (pObj.sayMode == true && this.config.noChimeOnSay) {
+      cb()
+    } else {
+      this.playChime(cb)
+    }
   },
 
   activate: function(payload, textQuery=null, sender=null) {
@@ -326,9 +332,11 @@ module.exports = NodeHelper.create({
             this.sendSocketNotification("CONVERSATION_END", conversationResult)
           } else {
             if (conversationResult.audioSize <= 0) {
-              conversationResult.audioError = "NO RESPONSE AUDIO IS RETURNED."
-              conversationResult.error = conversationResult.audioError
-              console.log("[AMK2]", conversationResult.audioError)
+              if (!this.config.ignoreNoVoiceError) {
+                conversationResult.audioError = "NO RESPONSE AUDIO IS RETURNED."
+                conversationResult.error = conversationResult.audioError
+                console.log("[AMK2]", conversationResult.audioError)
+              }
               this.sendSocketNotification("CONVERSATION_END", conversationResult)
             } else {
               this.sendSocketNotification("RESPONSE_START", conversationResult)

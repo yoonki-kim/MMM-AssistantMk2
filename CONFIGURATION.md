@@ -104,8 +104,10 @@ This empty configuration will even work if you use;
 
 
     verbose:false, // You can get error or some logs when this value is set as true.
+    ignoreNoVoiceError: true, //To avoid some annoying youtube stop bug.
 
     startChime: "connection.mp3", // you can use `mp3` to play chime when your mic is ready. It should be playable with your `play.playProgram`
+    noChimeOnSay: false, // When using the `ASSISTANT_SAY` trigger, you can prevent the chime from being played before your words
 
     auth: { // I believe you don't need to change this.
       keyFilePath: "./credentials.json"

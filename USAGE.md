@@ -255,6 +255,7 @@ If Youtube video is not played :
     - NOTICE:
       - This feature is somekind of Assistant hooking. If you say "Repeat after me SOMETHING", Google Assistant will repeat SOMETHING. So, there could be a possibility of not responding as intend. Too long or complex text might be not available.
       - Currently I can't find correspondence of `Repeat after me` for **German/Japanese/Korean** language. PR please.
+      - You can prevent the starting chime from being played before your own text is pronounced: set the config variable `noChimeOnSay` to `true`.
     - Thanks to [Valerio Pilo](https://github.com/vpilo). His brilliant idea and PR could make this feature.
 
 
