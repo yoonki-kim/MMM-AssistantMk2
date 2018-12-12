@@ -5,24 +5,17 @@
 [![2.1.0 demo](https://img.youtube.com/vi/7yI_9NfhpwI/1.jpg)](https://youtu.be/7yI_9NfhpwI)
 
 ### New Update
-#### [2.1.1] - 2018.11.23
-- TTS feature is added. Now, Other modules can order MMM-AssistantMk2 to say something. It can be used like something similar TEXT-TO-SPEECH. By example, you can build your customClock module say current time via MMM-AssistantMk2
-  - USAGE:
-    - `this.sendNotification("ASSISTANT_SAY", "Time to go to bed")`
-    - `this.sendNotification("ASSISTANT_SAY", {text:"C'est trop chaud", lang:"fr-FR"})`
-  - NOTICE:
-    - This feature is somekind of Assistant hooking. If you say "Repeat after me SOMETHING", Google Assistant will repeat SOMETHING. So, there could be a possibility of not responding as intend. Too long or complex text might be not available.
-    - Currently I can't find correspondence of `Repeat after me` for **German/Japanese/Korean** language. PR please.
-  - Thanks to [Valerio Pilo](https://github.com/vpilo). His brilliant idea and PR could make this feature.
-- For TelegramBot, TTS feature is also added. Now you can make your Home Mirror to say something with MMM-TelegramBot even you are in your office.
-  - `/s Please open the door, mom!`
-- Youtube playing status in frontend dev console added.
-  - At least you can get status of Youtube player event when video fails to be played.
+#### [2.1.2] - 2018.12.12
+- Fixed: Youtube playlist playing bug
+- Added:
+  - youtubePlayerVars
+  - youtubePlayQuality
 - For update from 2.1.0
 ```
 cd ~/MagicMirror/modules/MMM-AssistantMk2
 git pull
 ```
+
 ### Install & Update
 Read [INSTALL.md](/INSTALL.md)
 
@@ -106,6 +99,25 @@ npm install --save-dev electron-rebuild
 
 
 ### Old Updates
+#### [2.1.1] - 2018.11.23
+- TTS feature is added. Now, Other modules can order MMM-AssistantMk2 to say something. It can be used like something similar TEXT-TO-SPEECH. By example, you can build your customClock module say current time via MMM-AssistantMk2
+  - USAGE:
+    - `this.sendNotification("ASSISTANT_SAY", "Time to go to bed")`
+    - `this.sendNotification("ASSISTANT_SAY", {text:"C'est trop chaud", lang:"fr-FR"})`
+  - NOTICE:
+    - This feature is somekind of Assistant hooking. If you say "Repeat after me SOMETHING", Google Assistant will repeat SOMETHING. So, there could be a possibility of not responding as intend. Too long or complex text might be not available.
+    - Currently I can't find correspondence of `Repeat after me` for **German/Japanese/Korean** language. PR please.
+  - Thanks to [Valerio Pilo](https://github.com/vpilo). His brilliant idea and PR could make this feature.
+- For TelegramBot, TTS feature is also added. Now you can make your Home Mirror to say something with MMM-TelegramBot even you are in your office.
+  - `/s Please open the door, mom!`
+- Youtube playing status in frontend dev console added.
+  - At least you can get status of Youtube player event when video fails to be played.
+- For update from 2.1.0
+```
+cd ~/MagicMirror/modules/MMM-AssistantMk2
+git pull
+```
+
 #### [2.1.0] - 2018.11.14
 - Customizable `command` feature is added. Now you can control your device and MM without other module's help.
   And notification system of `transcriptionHook` is changed. New configuration is needed.

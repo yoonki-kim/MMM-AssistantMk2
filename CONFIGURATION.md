@@ -80,6 +80,13 @@ This empty configuration will even work if you use;
     youtubeAutoplay: true, //If set as true, found Youtube video will be played automatically.
     pauseOnYoutube:true, //If set as true, You cannot activate Assistant during youtube playing. Recommended for the performance (Because permanent hotword detecting might make performance lower)
 
+    youtubePlayerVars: { // You can set youtube playerVars for your purpose, but should be careful.
+      "controls": 0,
+      "loop": 1,
+      "rel": 0,
+    },
+    youtubePlayQuality: "default", //small, medium, large, hd720, hd1080, highres or default
+
     useWelcomeMessage: "", //Try "brief today" as this value. You can use this value to check module working when MM is starting.
 
     onIdle: {

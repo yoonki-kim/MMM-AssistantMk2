@@ -170,6 +170,14 @@ Module.register("MMM-AssistantMk2", {
 
     youtubeAutoplay: true,
     pauseOnYoutube:true,
+    youtubePlayerVars: { // You can set youtube playerVars for your purpose, but should be careful.
+      "controls": 0,
+      "loop": 1,
+      "rel": 0,
+    },
+    youtubePlayQuality: "default", //small, medium, large, hd720, hd1080, highres or default
+
+
     alertError: true,
 
     useWelcomeMessage: "",
@@ -805,32 +813,58 @@ class AssistantHelper {
     }
     holder.appendChild(close)
     this.youtubePlaying = true
-    ytp = new YT.Player(yt.id, {
-      playerVars: {
-        "controls": 0,
-        "loop": 1,
-        "rel": 0,
-      },
-      events: {
-        "onReady": (event)=>{
-          console.log("Youtube player: on ready.")
-          if (type == "video") {
-            event.target.loadVideoById(id)
-          } else {
-            event.target.loadPlaylist(id)
-          }
-          event.target.playVideo()
-        },
-        "onStateChange": (event)=>{
-          if (event.data == 0) {
-            console.log("Youtube player: playing ends")
+    var quality = this.config.youtubePlayQuality
+    var playerVars = this.config.youtubePlayerVars
+    var index = 0
+    var pl = []
+    var onReady = (event) => {
+      console.log("Youtube player: on ready.")
+      if (type == "video") {
+        event.target.loadVideoById(id)
+      } else {
+        event.target.loadPlaylist({
+          listType: "playlist",
+          list:id
+        })
+      }
+      event.target.playVideo()
+      event.target.setPlaybackQuality(quality)
+    }
+
+    var currentIndex = 0
+    var onStateChange = (event)=>{
+      var playlist = event.target.getPlaylist()
+      if (event.data == YT.PlayerState.PLAYING) {
+        currentIndex = event.target.getPlaylistIndex();
+      }
+      if (event.data == YT.PlayerState.ENDED) {
+        if (Array.isArray(playlist)) {
+          if (currentIndex == (playlist.length - 1)) {
+            console.log("Youtube player: All list ends")
             setTimeout(()=>{
               onClose(holder, cb)
             }, 100)
           } else {
-            console.log("youtube status:", event.data)
+            console.log("Youtube player: Next Video")
+            event.target.nextVideo()
           }
-        },
+        } else {
+          console.log("Youtube player: Video ends")
+          setTimeout(()=>{
+            onClose(holder, cb)
+          }, 100)
+        }
+
+      } else {
+        console.log("youtube status:", event.data)
+      }
+    }
+
+    ytp = new YT.Player(yt.id, {
+      playerVars: playerVars,
+      events: {
+        "onReady": onReady,
+        "onStateChange": onStateChange,
         "onError": (event)=> {
           console.log("youtube error:", id, event)
         }
