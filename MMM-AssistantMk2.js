@@ -696,9 +696,15 @@ class AssistantHelper {
       var notification = (ne.notification) ? ne.notification : this.config.notifications.DEFAULT_HOOK_NOTIFICATION
       var fn = (typeof notification == "function") ? notification(hook.payload, key) : notification
       var payload = (ne.payload) ? ne.payload : hook.payload
-
-      var fp = (typeof payload == "function") ? payload(hook.payload, key) : Object.assign({}, payload)
-        this.sendNotification(fn, fp)
+      var fp
+      if (typeof payload == "function") {
+        fp = payload(hook.payload, key)
+      } else if (typeof payload == "object") {
+        fp = Object.assign({}, payload)
+      } else {
+        fp = payload
+      }
+      this.sendNotification(fn, fp)
     }
 
     if (hook.hasOwnProperty("shellExec")) {
