@@ -9,7 +9,7 @@
 - Fixed: Youtube playlist playing bug
 - Added:
   - youtubePlayerVars
-  - youtubePlayQuality
+  - youtubePlayQuality - This is not worked any more. It is deprecated from Youtube API. Sorry.
 - For update from 2.1.0
 ```
 cd ~/MagicMirror/modules/MMM-AssistantMk2
