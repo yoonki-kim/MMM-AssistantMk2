@@ -21,7 +21,7 @@ module.exports = NodeHelper.create({
   },
 
   play: function(file, command, option, cb=()=>{}) {
-    const player = require('play-sound')()
+    const player = require('play-sound')({player : command})
     this.sendSocketNotification("SPEAKER_ON")
     var co = {}
     co[command] = option
