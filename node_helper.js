@@ -99,7 +99,7 @@ module.exports = NodeHelper.create({
       break
     case "SHELLEXEC":
       var command = payload.command
-      command += (payload.option) ? (" " + payload.option) : ""
+      command += (payload.options) ? (" " + payload.options) : ""
       exec (command, (e,so,se)=> {
         console.log("[AMK2] ShellExec command:", command)
         if (e) console.log(e)

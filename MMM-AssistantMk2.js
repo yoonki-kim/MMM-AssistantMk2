@@ -230,7 +230,7 @@ Module.register("MMM-AssistantMk2", {
   },
 
   magicQueryToSay: {
-    "de" : "Repeat after me : '%TEXT%'", // I cannot find proper query for Deutsch
+    "de" : "Sprich mir nach : '%TEXT%'",
     "en" : "Repeat after me : '%TEXT%'",
     "fr" : "Répétez après moi : '%TEXT%'",
     "it" : "Ripeti dopo di me : '%TEXT%'",
@@ -582,14 +582,14 @@ class AssistantHelper {
       this.sendSocketNotification("START", {profile:profile, textQuery:textQuery, sender:sender, id:id, sayMode:sayMode})
       if (this.config.onActivate) {
         setTimeout(()=>{
-          this.doCommand(this.config.onActivate, "onActivate")
+          this.doCommand(this.config.onActivate, "onActivate", "onActivate")
         }, this.config.onActivate.timer)
       }
 
       if (this.config.onIdle && this.config.onIdle.timer > 0) {
         clearTimeout(this.idleTimer)
         this.idleTimer = setTimeout(()=>{
-          this.doCommand(this.config.onIdle, "onIdle")
+          this.doCommand(this.config.onIdle, "onIdle", "onIdle")
         }, this.config.onIdle.timer)
       }
       return true
@@ -684,7 +684,7 @@ class AssistantHelper {
     }
   }
 
-  doCommand (hooked, key) {
+  doCommand (hooked, param, key) {
     var hook
     if (this.config.command.hasOwnProperty(hooked.command)) {
       hook = this.config.command[hooked.command]
@@ -694,11 +694,12 @@ class AssistantHelper {
     if (hook.hasOwnProperty("notificationExec")) {
       var ne = hook.notificationExec
       var notification = (ne.notification) ? ne.notification : this.config.notifications.DEFAULT_HOOK_NOTIFICATION
-      var fn = (typeof notification == "function") ? notification(hook.payload, key) : notification
+      //var fn = (typeof notification == "function") ? notification(hook.payload, key) : notification
+      var fn = (typeof notification == "function") ? notification(param, key) : notification
       var payload = (ne.payload) ? ne.payload : hook.payload
       var fp
       if (typeof payload == "function") {
-        fp = payload(hook.payload, key)
+        fp = payload(param, key)
       } else if (typeof payload == "object") {
         fp = Object.assign({}, payload)
       } else {
@@ -710,9 +711,9 @@ class AssistantHelper {
     if (hook.hasOwnProperty("shellExec")) {
       var se = hook.shellExec
       if (se.exec) {
-        var fs = (typeof se.exec == "function") ? se.exec(hook.payload, key) : se.exec
+        var fs = (typeof se.exec == "function") ? se.exec(param, key) : se.exec
         var options = (se.options) ? se.options : null
-        var fo = (typeof options == "function") ? options(hook.payload, key) : Object.assign({}, options)
+        var fo = (typeof options == "function") ? options(param, key) : options
         this.sendSocketNotification("SHELLEXEC", {command:fs, options:fo})
       }
     }
@@ -720,12 +721,12 @@ class AssistantHelper {
       var me = hook.moduleExec
       var m = me.module
       if (typeof me.module == 'function') {
-        m = me.module(hook.payload)
+        m = me.module(param)
       }
       if (Array.isArray(m)) {
         MM.getModules().enumerate((module)=>{
           if (m.length == 0 || (m.indexOf(module.name) >=0)) {
-            var payload = Object.assign({}, hook.payload)
+            var payload = Object.assign({}, param)
             me.exec(module, payload, key)
           }
         })
@@ -738,7 +739,7 @@ class AssistantHelper {
       for(var i in foundHook) {
         var res = foundHook[i]
         var hook = this.config.transcriptionHook[res.key]
-        this.doCommand(hook, res.key)
+        this.doCommand(hook, res.match, res.key)
       }
     }
   }
@@ -747,7 +748,7 @@ class AssistantHelper {
     if (foundAction) {
       if (this.config.action.hasOwnProperty(foundAction.command)) {
         var action = this.config.action[foundAction.command]
-        this.doCommand(action, foundAction.params)
+        this.doCommand(action, foundAction.params, foundAction.command)
       }
     }
   }
