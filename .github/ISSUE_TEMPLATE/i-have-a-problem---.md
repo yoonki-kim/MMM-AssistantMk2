@@ -26,7 +26,7 @@ If applicable, add screenshots to help explain your problem.
  - Etc.
 
 **Before you post issue, try this first**
-- Confirm you have complete installation with instruction. (If you have a problem on instruction step, find other similar issues or follow instruction carefully)
+- Confirm you have completed installation with instruction. (If you have a problem on installation step, find other similar issues or follow instruction carefully. But if you failed again, post issue here.)
 - To make things simple, disable or omit or outcomment other modules from config.js except MMM-AssistantMk2 and MMM-Hotword.
 - Add `verbose:true` to MMM-Assistant `config:{}` and `testMic:true` to MMM-Hotword `config:{}`. 
 - Copy your content of `config.js` and paste it into http://esprima.org/demo/validate.html to check whether you have syntax error or not. If there might be errors, usually your issue will be solved by fix those errors.
