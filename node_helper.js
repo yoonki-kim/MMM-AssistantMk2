@@ -235,6 +235,7 @@ module.exports = NodeHelper.create({
       })
       // the device needs to complete an action
       .on("device-action", (action) => {
+        console.log(action, payload)
         console.log("[AMK2] Device Action:", action)
         if (typeof action["inputs"] !== "undefined") {
           var intent = action.inputs[0].payload.commands[0].execution[0]

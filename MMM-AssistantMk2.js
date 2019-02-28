@@ -4,7 +4,7 @@
 var ytp
 Module.register("MMM-AssistantMk2", {
   defaults: {
-    verbose:false,
+    verbose:true,
     projectId: "", // Google Assistant ProjectId (Required only when you use gAction.)
     useGactionCLI: false,
     startChime: "connection.mp3",
@@ -58,35 +58,7 @@ Module.register("MMM-AssistantMk2", {
         command: "SHUTDOWN"
       }
     },
-    action: {
-      /*
-      "com.example.commands.REBOOT" : {
-        notification: "SHOW_ALERT",
-        payload: {
-          message: "You've ordered REBOOT",
-          timer: 3000,
-        }
-      },
-      "com.example.commands.PAGE" : {
-        notification: (params) => {
-          if (params.number) {
-            return "PAGE_CHANGED"
-          } else if (params.incordec == "INC") {
-            return "PAGE_INCREMENT"
-          } else {
-            return "PAGE_DECREMENT"
-          }
-        },
-        payload: (params) => {
-          if (params.number) {
-            return params.number
-          } else {
-            return null
-          }
-        }
-      }
-      */
-    },
+    action: {},
 
     command: {
       "HIDEMODULES": {
