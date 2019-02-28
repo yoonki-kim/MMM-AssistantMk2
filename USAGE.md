@@ -238,6 +238,7 @@ pauseOnYoutube: true,
 If Youtube video is not played :
   - You might have some front-end error. Check front-end errors with `npm start dev`
   - Some videos are not allowed to be played on embedded player by owner.
+  - Don't use `PLAY` to play youtube. it is reserved keyword allowed only to REAL Google Home devices. The SDK is still on the beta stage, so that is not supported feature yet. Search video clip like "Thriller Michael Jakson" instead "PLAY Thriller of Michael Jackson on Youtube"
 
 ## MMM-TelegramBot & Other module can query.
 - External Query
