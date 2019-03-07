@@ -5,11 +5,12 @@
 [![2.1.0 demo](https://img.youtube.com/vi/7yI_9NfhpwI/1.jpg)](https://youtu.be/7yI_9NfhpwI)
 
 ### New Update
-#### [2.1.2] - 2018.12.12
-- Fixed: Youtube playlist playing bug
-- Added:
-  - youtubePlayerVars
-  - youtubePlayQuality - This is not worked any more. It is deprecated from Youtube API. Sorry.
+#### [2.1.3] - 2019.03.07
+- Changed : `verbose:true` by default for convenience of debugging
+- Added : Two notifications are added (Request from @ejay-ibm)
+  - ASSISTANT_UNDERSTOOD : this notification will be bursted with payload which contains transcription when user saying is finished and understtod by Assistant.
+  - ASSISTANT_RESPONSE_END : this notification will be bursted when Assistant's voice responsing is ended.
+
 - For update from 2.1.0
 ```
 cd ~/MagicMirror/modules/MMM-AssistantMk2
@@ -99,6 +100,13 @@ npm install --save-dev electron-rebuild
 
 
 ### Old Updates
+#### [2.1.2] - 2018.12.12
+- Fixed: Youtube playlist playing bug
+- Added:
+  - youtubePlayerVars
+  - youtubePlayQuality - This is not worked any more. It is deprecated from Youtube API. Sorry.
+
+
 #### [2.1.1] - 2018.11.23
 - TTS feature is added. Now, Other modules can order MMM-AssistantMk2 to say something. It can be used like something similar TEXT-TO-SPEECH. By example, you can build your customClock module say current time via MMM-AssistantMk2
   - USAGE:
