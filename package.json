@@ -1,6 +1,6 @@
 {
   "name": "MMM-AssistantMk2",
-  "version": "2.1.2",
+  "version": "2.1.3",
   "description": "An embedded Google Assistant on MagicMirror.",
   "main": "MMM-AssistantMk2.js",
   "keywords": [

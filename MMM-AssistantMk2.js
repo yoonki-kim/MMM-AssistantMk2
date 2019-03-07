@@ -193,6 +193,8 @@ Module.register("MMM-AssistantMk2", {
       ASSISTANT_ACTIVATED: "ASSISTANT_ACTIVATED",
       ASSISTANT_DEACTIVATED: "ASSISTANT_DEACTIVATED",
       ASSISTANT_ACTION: "ASSISTANT_ACTION",
+      ASSISTANT_UNDERSTOOD: "ASSISTANT_UNDERSTOOD",
+      ASSISTANT_RESPONSE_END: "ASSISTANT_RESPONSE_END",
       DEFAULT_HOOK_NOTIFICATION: "ASSISTANT_HOOK",
       TEXT_QUERY: "ASSISTANT_QUERY",
       SAY_TEXT: "ASSISTANT_SAY"
@@ -338,6 +340,7 @@ Module.register("MMM-AssistantMk2", {
         this.assistant.responseStart(payload)
         break
       case "RESPONSE_END":
+        this.sendNotification(this.config.notifications.ASSISTANT_RESPONSE_END)
         break
       case "CONVERSATION_END":
         this.assistant.conversationEnd(payload)
@@ -509,6 +512,10 @@ class AssistantHelper {
 
     if (key == "STANDBY") {
       this.subdom.mic.className = ""
+    }
+
+    if (key == "UNDERSTANDING") {
+      this.sendNotification(this.config.notifications.ASSISTANT_UNDERSTOOD, payload.transcription)
     }
   }
 
