@@ -515,7 +515,7 @@ class AssistantHelper {
     }
 
     if (key == "UNDERSTANDING") {
-      this.sendNotification(this.config.notifications.ASSISTANT_UNDERSTOOD, payload.transcription)
+      this.sendNotification(this.config.notifications.ASSISTANT_UNDERSTOOD)
     }
   }
 

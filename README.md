@@ -8,7 +8,7 @@
 #### [2.1.3] - 2019.03.07
 - Changed : `verbose:true` by default for convenience of debugging
 - Added : Two notifications are added (Request from @ejay-ibm)
-  - ASSISTANT_UNDERSTOOD : this notification will be bursted with payload which contains transcription when user saying is finished and understtod by Assistant.
+  - ASSISTANT_UNDERSTOOD : this notification will be bursted when user saying is finished and understtod by Assistant.
   - ASSISTANT_RESPONSE_END : this notification will be bursted when Assistant's voice responsing is ended.
 
 - For update from 2.1.0
