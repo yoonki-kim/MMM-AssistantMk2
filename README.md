@@ -8,7 +8,7 @@
 #### [2.1.3] - 2019.03.07
 - Changed : `verbose:true` by default for convenience of debugging
 - Added : Two notifications are added (Request from @ejay-ibm)
-  - ASSISTANT_UNDERSTOOD : this notification will be bursted when user saying is finished and understtod by Assistant.
+  - ASSISTANT_UNDERSTOOD : this notification will be bursted when user saying is finished and understood by Assistant.
   - ASSISTANT_RESPONSE_END : this notification will be bursted when Assistant's voice responsing is ended.
 
 - For update from 2.1.0
@@ -31,7 +31,7 @@ Read [USAGE.md](/USAGE.md)
 |Notification|Payload|Description|
 |---|---|---|
 |ASSISTANT_ACTIVATE|{profile:`String`}|Assistant will start with this profile name.
-|ASSISTANT_CLEAR|null|Current playing video or content will be disappeared. And Assistant turns to sleep mode for waiting invocation.
+|ASSISTANT_CLEAR|null|Current playing video or content will disappear. And Assistant will turn to sleep mode for waiting invocation.
 |ASSISTANT_QUERY| `String` | Ask to Assistant about `String`,
 |ASSISTANT_SAY| `String` or `{text:String, lang:"en-US"}` | Assistant will say this `String`
 
@@ -40,7 +40,7 @@ Read [USAGE.md](/USAGE.md)
 |---|---|---|
 |ASSISTANT_ACTIVATED|null|Assistant is started now.
 |ASSISTANT_DEACTIVATED|null|Assistant is stopped now.
-|ASSISTANT_HOOK|{hook:"`HOOKED_STRING`"}|Your defined hooking phrase is caught in your speech.
+|ASSISTANT_HOOK|{hook:"`HOOKED_STRING`"}|Your defined hooking phrase caught from your speech.
 |ASSISTANT_ACTION|`FOUND_ACTION_OBJECT`|When the response is defined or customized action of Assistant.
 
 
@@ -108,7 +108,7 @@ npm install --save-dev electron-rebuild
 
 
 #### [2.1.1] - 2018.11.23
-- TTS feature is added. Now, Other modules can order MMM-AssistantMk2 to say something. It can be used like something similar TEXT-TO-SPEECH. By example, you can build your customClock module say current time via MMM-AssistantMk2
+- TTS feature is added. Now, Other modules can request MMM-AssistantMk2 to say something. It can be used like something similar TEXT-TO-SPEECH. By example, you can build your customClock module to say the current time via MMM-AssistantMk2
   - USAGE:
     - `this.sendNotification("ASSISTANT_SAY", "Time to go to bed")`
     - `this.sendNotification("ASSISTANT_SAY", {text:"C'est trop chaud", lang:"fr-FR"})`
