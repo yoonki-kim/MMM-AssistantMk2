@@ -177,6 +177,7 @@ module.exports = NodeHelper.create({
       let foundAction = null
       let foundVideo = null
       let foundVideoList = null
+      let foundOpenSpotify = null
       let foundTextResponse = ""
       let finalTranscription = ""
       let audioError = null
@@ -286,7 +287,15 @@ module.exports = NodeHelper.create({
           console.log("[AMK2] video list found:", youtubeList[1])
           foundVideoList = youtubeList[1]
         }
-      })
+        
+        var re = new RegExp("https:\/\/open\.spotify\.com\/([a-zA-Z0-9?\/]+)", "gm")
+        var openSpotify = re.exec(str)
+        if (openSpotify) {
+          console.log("[AMK2] openSpotify found:", openSpotify[0])
+          foundOpenSpotify = openSpotify[0]
+        }
+      }
+         )
 
       // once the conversation is ended, see if we need to follow up
       .on("ended", (error, continueConversation) => {
@@ -295,6 +304,7 @@ module.exports = NodeHelper.create({
           foundHook = []
           foundVideo = null
           foundVideoList = null
+          foundOpenSpotify = null
         } else {
           var tr = (textQuery) ? textQuery : finalTranscription
           foundHook = this.findHook(transcriptionHook, tr)
@@ -317,6 +327,7 @@ module.exports = NodeHelper.create({
             "foundAction": foundAction,
             "foundVideo": foundVideo,
             "foundVideoList": foundVideoList,
+	    "foundOpenSpotify": foundOpenSpotify,
             "foundTextResponse" : foundTextResponse,
             "finalTranscription" : finalTranscription,
             "spoken": spoken,
