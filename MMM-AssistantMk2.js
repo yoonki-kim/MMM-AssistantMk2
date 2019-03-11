@@ -4,7 +4,7 @@
 var ytp
 Module.register("MMM-AssistantMk2", {
   defaults: {
-    verbose:true,
+    verbose: true,
     projectId: "", // Google Assistant ProjectId (Required only when you use gAction.)
     useGactionCLI: false,
     startChime: "connection.mp3",
@@ -145,6 +145,7 @@ Module.register("MMM-AssistantMk2", {
     screenDuration: 0, //If you set 0, Screen Output will be closed after Response speech finishes.
 
     youtubeAutoplay: true,
+    spotifyAutoplay: true,
     pauseOnYoutube:true,
     youtubePlayerVars: { // You can set youtube playerVars for your purpose, but should be careful.
       "controls": 0,
@@ -588,9 +589,9 @@ class AssistantHelper {
 
   clearResponse() {
     this.subdom.message.innerHTML = ""
-    this.subdom.youtube.innerHTML = ""
-    this.subdom.youtube.style.display = "none"
-    this.youtubePlaying = false
+    this.subdom.youtube.innerHTML = ""  // comment this line to not stop youtube when calling assistant
+    this.subdom.youtube.style.display = "none"  // comment this line to not stop youtube when calling assistant
+    this.youtubePlaying = false  // comment this line to not stop youtube when calling assistant
     //this.sendSocketNotification(this.config.notifications.ASSISTANT_DEACTIVATED)
   }
 
@@ -737,6 +738,11 @@ class AssistantHelper {
     this.foundAction(payload.foundAction)
     this.foundHook(payload.foundHook)
 
+	if (payload.foundOpenSpotify) {
+		this.sendNotification("PLAY_SPOTIFY", {
+			url: payload.foundOpenSpotify
+		})
+    };
 
     if (payload.foundVideo || payload.foundVideoList) {
       if (this.config.youtubeAutoplay) {
@@ -756,6 +762,16 @@ class AssistantHelper {
         if (!this.config.pauseOnYoutube) {
           this.deactivate()
         }
+      }
+	  if (this.config.spotifyAutoplay) {
+        var after = ()=>{}
+        if (this.config.pauseOnYoutube) {
+          after = ()=>{
+            this.clearResponse()
+            this.deactivate()
+          }
+        }
+        
       }
     } else {
       var thenAfter
