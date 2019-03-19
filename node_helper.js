@@ -276,18 +276,18 @@ module.exports = NodeHelper.create({
 
         var re = new RegExp("youtube\.com\/watch\\?v\=([0-9a-zA-Z\-\_]+)", "ig")
         var youtubeVideo = re.exec(str)
-        if (youtubeVideo) {
+        if (youtubeVideo && this.config.youtubeAutoplay) {
           console.log("[AMK2] video found:", youtubeVideo[1])
           foundVideo = youtubeVideo[1]
         }
 
         var re = new RegExp("youtube\.com\/playlist\\?list\=([a-zA-Z0-9\-\_]+)", "ig")
         var youtubeList = re.exec(str)
-        if (youtubeList) {
+        if (youtubeList && this.config.youtubeAutoplay) {
           console.log("[AMK2] video list found:", youtubeList[1])
           foundVideoList = youtubeList[1]
         }
-        
+
         var re = new RegExp("https:\/\/open\.spotify\.com\/([a-zA-Z0-9?\/]+)", "gm")
         var openSpotify = re.exec(str)
         if (openSpotify) {
@@ -327,7 +327,7 @@ module.exports = NodeHelper.create({
             "foundAction": foundAction,
             "foundVideo": foundVideo,
             "foundVideoList": foundVideoList,
-	    "foundOpenSpotify": foundOpenSpotify,
+	          "foundOpenSpotify": foundOpenSpotify,
             "foundTextResponse" : foundTextResponse,
             "finalTranscription" : finalTranscription,
             "spoken": spoken,
