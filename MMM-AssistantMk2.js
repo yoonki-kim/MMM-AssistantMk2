@@ -31,108 +31,10 @@ Module.register("MMM-AssistantMk2", {
         // https://developers.google.com/assistant/sdk/reference/rpc/languages
       },
     },
-
-    transcriptionHook: {
-      "HIDE_ALL_MODULES": {
-        pattern: "hide all",
-        command: "HIDEMODULES"
-      },
-      "SHOW_ALL_MODULES": {
-        pattern: "show all",
-        command: "SHOWMODULES"
-      },
-      "SCREEN_ON": {
-        pattern: "wake up",
-        command: "SCREENON"
-      },
-      "SCREEN_OFF": {
-        pattern: "go to sleep",
-        command: "SCREENOFF"
-      },
-      "REBOOT": {
-        pattern: "reboot yourself",
-        command: "REBOOT"
-      },
-      "SHUTDOWN": {
-        pattern: "shutdown yourself",
-        command: "SHUTDOWN"
-      }
-    },
+    recipes:["hide_and_show_all_modules.js", "reboot.js", "screen_onoff.js", "shutdown.js"],
+    transcriptionHook: {},
     action: {},
-
-    command: {
-      "HIDEMODULES": {
-        moduleExec: {
-          module:()=>{
-            return []
-          },
-          exec: (module, params, key) => {
-            module.hide(1000, null, {lockString:"AMK2"})
-          }
-        }
-      },
-      "SHOWMODULES": {
-        moduleExec: {
-          module:[],
-          exec: (module, params, key) => {
-            module.show(1000, null, {lockString:"AMK2"})
-          }
-        }
-      },
-      "SCREENON": {
-        shellExec: {
-          exec: (params, key) => {
-            return "~/MagicMirror/modules/MMM-AssistantMk2/scripts/screenon.sh"
-            //return "ls -al"
-          },
-          options: (params, key)=> {
-            return ""
-          },
-        }
-      },
-      "SCREENOFF": {
-        shellExec: {
-          exec: "~/MagicMirror/modules/MMM-AssistantMk2/scripts/screenoff.sh",
-          options: null,
-        }
-      },
-      "REBOOT": {
-        /*
-        notificationExec: {
-          notification: "SHOW_ALERT",
-          payload: {
-            message: "You've ordered REBOOT. I'm showing just alert, but you can modify config.js to reboot really.",
-            timer: 5000,
-          }
-        },
-        */
-
-        shellExec: {
-          exec: "sudo reboot now"
-        }
-
-      },
-      "SHUTDOWN": {
-        /*
-        notificationExec: {
-          notification: (params, key) => {
-            return "SHOW_ALERT"
-          },
-          payload: (params, key)=> {
-            return {
-              message: "You've ordered SHUTDOWN. I'm showing just alert, but you can modify config.js to reboot really.",
-              timer: 5000,
-            }
-          }
-        },
-        */
-
-        shellExec: {
-          exec: "sudo shutdown now"
-        }
-
-      },
-    },
+    command: {},
     responseVoice: true, // If available, Assistant will response with her voice.
     responseScreen: true, // If available, Assistant will response with some rendered HTML
     responseAlert: true, // If available, Assistant will response with Alert module of MM
@@ -179,13 +81,16 @@ Module.register("MMM-AssistantMk2", {
     },
 
     onIdle: {
-      timer: 1000*60*30, // if you don't want to use this feature, just set timer as `0` or command as ""
-      command: "HIDEMODULES"
+      //timer: 1000*60*30, // if you don't want to use this feature, just set timer as `0` or command as ""
+      //command: "HIDEMODULES",
+      timer: 0,
+      command: null,
     },
 
     onActivate: {
       timer: 0,
-      command: "SHOWMODULES"
+      //command: "SHOWMODULES"
+      command: null,
     },
 
     notifications: {
@@ -217,6 +122,10 @@ Module.register("MMM-AssistantMk2", {
 
   getStyles: function () {
     return ["MMM-AssistantMk2.css"]
+  },
+
+  getScripts: function() {
+    return ["modules/MMM-AssistantMk2/vendor/serialize.js"]
   },
 
   getCommands: function () {
@@ -262,8 +171,6 @@ Module.register("MMM-AssistantMk2", {
   getDom : function() {
     return this.assistant.drawDom()
   },
-
-
 
   notificationReceived: function (notification, payload, sender) {
     switch(notification) {
@@ -314,7 +221,20 @@ Module.register("MMM-AssistantMk2", {
 
   socketNotificationReceived: function (notification, payload) {
     switch(notification) {
+      case "LOAD_RECIPE":
+        var p = serialize.unserialize(payload)
+        if (p.transcriptionHook) {
+          this.config.transcriptionHook = Object.assign({}, this.config.transcriptionHook, p.transcriptionHook)
+        }
+        if (p.action) {
+          this.config.action = Object.assign({}, this.config.action, p.action)
+        }
+        if (p.command) {
+          this.config.command = Object.assign({}, this.config.command, p.command)
+        }
+        break
       case "INITIALIZED":
+        console.log("!", this.config.command)
         if (this.config.useWelcomeMessage) {
           this.assistant.activate(this.config.profiles[this.config.defaultProfile], this.config.useWelcomeMessage)
           this.config.useWelcomeMessage = ""
@@ -771,7 +691,7 @@ class AssistantHelper {
             this.deactivate()
           }
         }
-        
+
       }
     } else {
       var thenAfter
