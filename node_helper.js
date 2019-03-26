@@ -74,14 +74,12 @@ module.exports = NodeHelper.create({
     var recipes = this.config.recipes
     for (var i = 0; i < recipes.length; i++) {
       var p = require("./recipes/" + recipes[i]).recipe
-
-      console.log("!!!", p.command)
       if (p.transcriptionHook) this.config.transcriptionHook = Object.assign({}, this.config.transcriptionHook, p.transcriptionHook)
       if (p.action) this.config.action = Object.assign({}, this.config.action, p.action)
       if (p.command) this.config.command = Object.assign({}, this.config.command, p.command)
+      console.log("[AMK2] Recipe is loaded:", recipes[i])
       this.sendSocketNotification("LOAD_RECIPE", serialize.serialize(p))
     }
-    console.log(this.config.command)
     cb()
   },
 

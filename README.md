@@ -5,11 +5,9 @@
 [![2.1.0 demo](https://img.youtube.com/vi/7yI_9NfhpwI/1.jpg)](https://youtu.be/7yI_9NfhpwI)
 
 ### New Update
-#### [2.1.3] - 2019.03.07
-- Changed : `verbose:true` by default for convenience of debugging
-- Added : Two notifications are added (Request from @ejay-ibm)
-  - ASSISTANT_UNDERSTOOD : this notification will be bursted when user saying is finished and understood by Assistant.
-  - ASSISTANT_RESPONSE_END : this notification will be bursted when Assistant's voice responsing is ended.
+#### [2.1.4] - 2019.03.26
+- Added : Now you can use `recipes`. `recipe` is extern js file to contain definitions of `command`, `transcriptionHook` and `action`. Your configuration could be more shorter.
+- Changed : `onIdle`, `onDetected` features are disabled by default.
 
 - For update from 2.1.0
 ```
@@ -18,13 +16,13 @@ git pull
 ```
 
 ### Install & Update
-Read [INSTALL.md](/INSTALL.md)
+Read [WIKI:Installation](https://github.com/eouia/MMM-AssistantMk2/wiki/Installation)
 
 ### Configuration
-Read [CONFIGURATION.md](/CONFIGURATION.md)
+Read [WIKI:Configuration](https://github.com/eouia/MMM-AssistantMk2/wiki/Configuration)
 
 ### Usage
-Read [USAGE.md](/USAGE.md)
+Read [WIKI:Usage](https://github.com/eouia/MMM-AssistantMk2/wiki/Usage)
 
 
 #### Incoming Notifications as ASSISTANT request.
@@ -100,6 +98,13 @@ npm install --save-dev electron-rebuild
 
 
 ### Old Updates
+
+#### [2.1.3] - 2019.03.07
+- Changed : `verbose:true` by default for convenience of debugging
+- Added : Two notifications are added (Request from @ejay-ibm)
+  - ASSISTANT_UNDERSTOOD : this notification will be bursted when user saying is finished and understood by Assistant.
+  - ASSISTANT_RESPONSE_END : this notification will be bursted when Assistant's voice responsing is ended.
+
 #### [2.1.2] - 2018.12.12
 - Fixed: Youtube playlist playing bug
 - Added:

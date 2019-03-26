@@ -234,7 +234,6 @@ Module.register("MMM-AssistantMk2", {
         }
         break
       case "INITIALIZED":
-        console.log("!", this.config.command)
         if (this.config.useWelcomeMessage) {
           this.assistant.activate(this.config.profiles[this.config.defaultProfile], this.config.useWelcomeMessage)
           this.config.useWelcomeMessage = ""
