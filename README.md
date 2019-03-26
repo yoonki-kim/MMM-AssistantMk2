@@ -8,7 +8,7 @@
 #### [2.1.4] - 2019.03.26
 - Added : Now you can use `recipes`. 
     
-  `recipe` is extern js file to contain definitions of `command`, `transcriptionHook` and `action`. Your configuration could be more shorter.
+  `recipe` is an external js file containing definitions of `command`, `transcriptionHook` and `action`. Your configuration could be more shorter.
   
   Feel free to request PR to share your recipes to others.
 - Changed : `onIdle`, `onDetected` features are disabled by default.
