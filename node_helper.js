@@ -9,6 +9,8 @@ const record = require("node-record-lpcm16")
 const GoogleAssistant = require("google-assistant")
 const exec = require("child_process").exec
 const fs = require("fs")
+const serialize = require("./vendor/serialize.js")
+
 
 var NodeHelper = require("node_helper")
 
@@ -68,13 +70,28 @@ module.exports = NodeHelper.create({
     })
   },
 
-  initializeAfterLoading: function (config) {
+  loadRecipes: function(cb) {
+    var recipes = this.config.recipes
+    for (var i = 0; i < recipes.length; i++) {
+      var p = require("./recipes/" + recipes[i]).recipe
+      if (p.transcriptionHook) this.config.transcriptionHook = Object.assign({}, this.config.transcriptionHook, p.transcriptionHook)
+      if (p.action) this.config.action = Object.assign({}, this.config.action, p.action)
+      if (p.command) this.config.command = Object.assign({}, this.config.command, p.command)
+      console.log("[AMK2] Recipe is loaded:", recipes[i])
+      this.sendSocketNotification("LOAD_RECIPE", serialize.serialize(p))
+    }
+    cb()
+  },
+
+
+  initializeAfterLoading: function (config, cb) {
     this.config = config
     if (!this.config.verbose) {
       console.log = function() {}
     }
     this.gactionCLI()
     this.clearTmp()
+    this.loadRecipes(cb)
   },
 
   gactionCLI: function() {
@@ -91,8 +108,10 @@ module.exports = NodeHelper.create({
   socketNotificationReceived: function (notification, payload) {
     switch(notification) {
     case "INIT":
-      this.initializeAfterLoading(payload)
-      this.sendSocketNotification("INITIALIZED")
+      this.initializeAfterLoading(payload, ()=>{
+        this.sendSocketNotification("INITIALIZED", this.config)
+      })
+
       break
     case "START":
       this.prepareActivate(payload)
