@@ -6,7 +6,7 @@
 
 ### New Update
 #### [2.1.4] - 2019.03.26
-- Added : Now you can use `recipes`. 
+- Added : Now you can use `recipes`. https://github.com/eouia/MMM-AssistantMk2/wiki/Usage#recipes
     
   `recipe` is an external js file containing definitions of `command`, `transcriptionHook` and `action`. Your configuration could be more shorter.
   
