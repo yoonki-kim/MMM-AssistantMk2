@@ -7,7 +7,7 @@ var recipe = {
   },
   command: {
     // Describe your command here.
-  }
+  },
 }
 
 exports.recipe = recipe // Don't remove this line.

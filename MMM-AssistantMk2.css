@@ -1,206 +1,119 @@
-#ASSISTANT {
-  min-height:64px;
-  min-width:64px;
-  border-radius:32px;
+@keyframes blink {
+   50% { border-color: #000; }
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+@keyframes waiting {
+  0% { border-color:#000; }
+}
+
+
+
+#AMK2 {
+  position:relative;
+  min-height:48px;
+  min-width:48px;
+  border-radius:50%;
+  border:4px solid #000;
   padding:4px;
-  background-color:#333;
   text-align:center;
-  display:inline-block;
   line-height:100%;
+  background-image: url("/modules/MMM-AssistantMk2/resources/images/assistant.png");
+  background-size: 80%;
+  background-position: 8px 8px;
+  background-repeat: no-repeat;
   box-sizing: border-box;
 }
 
-#ASSISTANT.STANDBY {
-  background-color:#999;
-}
-
-#ASSISTANT.READY {
-  background-color:#999;
-}
-
-#ASSISTANT.UNDERSTANDING {
-  background-color:#FFF;
-}
-
-#ASSISTANT.RESPONSING {
-  background-color:#FFF;
-}
-
-#ASSISTANT.ERROR {
-  background-color:#F99;
-}
-
-
-#ASSISTANT_SCREEN {
-  width:100%;
-  height:90%;
-  overflow:auto;
-  border:none;
-  display:none;
-  position:fixed;
-  top:10%;
-  bottom:0;
-  left:0;
-  z-index:99999;
-}
-
-#ASSISTANT_YOUTUBE {
-  width:100%;
-  height:100%;
-  border:none;
-  display:none;
-  position:fixed;
-  top:0;
-  left:0;
-  background-color:rgba(0,0,0,0.5);
-  z-index:99999;
-}
-
-#ASSISTANT_YOUTUBE iframe {
-  width:100%;
-  height:100%;
-  margin:0;
-  padding:0;
-}
-
-#ASSISTANT .button_close {
+#AMK2_STATUS {
   position:absolute;
   top:0;
   left:0;
   width:100%;
   height:100%;
-  background-color:rgba(0,0,0,0.1);
-  z-index:99999;
+  z-index:auto;
+  border:4px solid rgba(0,0,0,0.5);
+  border-radius:50%;
+}
+
+#AMK2.sleeping {
+  filter:grayscale(50%) brightness(50%);
+}
+
+#AMK2.hotword_waiting #AMK2_STATUS {
+  border-color:#FFF;
+  animation: waiting 2s ease-in-out infinite;
+}
+
+#AMK2.hotword_detected #AMK2_STATUS {
+  border-color:#FFF;
+  animation: blink 0.3s ease-in-out infinite;
+}
+
+#AMK2.ready #AMK2_STATUS {
+  border-top-color:#FFF;
+  border-bottom-color:#FFF;
+  border-left-color:#FFF;
+  animation: spin 2s linear infinite;
 }
 
 
-#ASSISTANT .show {
+#AMK2.response #AMK2_STATUS {
+  border-color:#33F;
+
+}
+
+#AMK2.speaking #AMK2_STATUS {
+  border-top-color:#FFF;
+  border-bottom-color:#FFF;
+  animation: spin 2s linear infinite;
+}
+
+
+#AMK2_RESULT_WINDOW {
+  position:absolute;
+  width:100%;
+  height:50%;
+  bottom:0;
   display:block;
 }
-#ASSISTANT .hide {
-  display:none;
+
+#AMK2_RESULT_WINDOW.hidden {
+  height:0%;
+  opacity:0;
+  transition:
+    height 1s ease-in-out,
+    opacity 1s 1s linear;
 }
 
-#ASSISTANT_MIC {
-  box-sizing:border-box;
-  height:48px;
-  width:48px;
-  margin-top:4px;
-  margin-left:4px;
-  background-size:contain;
-  border-radius:24px;
-  display:inline-block;
-  background-color:#333;
-  background-image:url('resources/assistant.png');
-}
-
-#ASSISTANT_MIC.MIC {
-  background-image:url('resources/mic_black.png');
-  background-color:#FFF;
-}
-
-#ASSISTANT_MIC.SPEAKER {
-  background-image:url('resources/speaker_black.png');
-  background-color:#FFF;
-}
-
-#ASSISTANT_MESSAGE {
-  min-height:48px;
-  display:inline-block;
-  vertical-align:top;
-  margin-left:4px;
-  box-sizing: border-box;
-}
-
-#ASSISTANT_MESSAGE.final {
-  color:#FFF;
-}
-
-#ASSISTANT_MESSAGE p {
-  min-height:48px;
-  min-width:48px;
-  box-sizing: border-box;
-  line-height:48px;
-  padding-left:4px;
-  background-color:#39F;
-  color:#FFF;
-  border-radius:24px;
-  padding:0 8px;
-  margin:4px;
-
+#AMK2_RESULT_SCREENOUTPUT {
+  width:100%;
+  height:100%;
+  margin:0;
+  padding:0;
+  border:none;
 }
 
 
-
-
-/*
-sleeping, waiting, listening, understanding, error,
-*/
-
-/* sleeping */
-#ASSISTANT.sleeping {
-  background-color:#999;
+#AMK2_RESULT_TIMER {
+  width:100%;
+  height:5px;
+  background-color:#666;
+  position:relative;
+  top:0;
 }
 
-.sleeping #ASSISTANT_MIC {
-  background-image:url('resources/mic_black_192x192.png');
-  background-color:#999;
-}
-
-/* waiting */
-#ASSISTANT.waiting {
-  background-color:#FFF;
-}
-
-.waiting #ASSISTANT_MIC {
-  background-image:url('resources/mic_white_192x192.png');
-  background-color:#999;
-}
-
-/* listening */
-#ASSISTANT.listening {
-  background-color:#999;
-  padding-left:4px;
-  padding-right:4px;
-  border:4px solid #FFF;
-}
-
-.listening #ASSISTANT_MIC {
-  background-image:url('resources/mic_white_192x192.png');
-  background-color:#3D5AFE;
-}
-
-.listening #ASSISTANT_MESSAGE {
-  color:#FFF;
-  margin-left:4px;
-}
-
-
-/* understanding */
-#ASSISTANT.understanding {
-  background-color:#3D5AFE;
-  padding-left:4px;
-  padding-right:4px;
-  border:4px solid #FFF;
-}
-
-.understanding #ASSISTANT_MIC {
-  background-image:url('resources/mic_black_192x192.png');
-  background-color:#FFF;
-}
-
-.understanding #ASSISTANT_MESSAGE {
-  color:#FFF;
-  margin-left:4px;
-}
-
-
-/* error */
-#ASSISTANT.error {
-  background-color:#FE5A3D;
-}
-
-.error #ASSISTANT_MIC {
-  background-image:url('resources/mic_grey_192x192.png');
-  background-color:#999;
+#AMK2_RESULT_TIMER_INDICATOR {
+  width:0%;
+  height:5px;
+  background-color:#EEE;
+  position:absolute;
+  top:0;
+  left:0;
+  transition-timing-function: linear;
+  transition-property: width;
 }
