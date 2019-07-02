@@ -1,6 +1,8 @@
 ## MMM-AssistantMk2
 `MMM-AssistantMk2` is an embedded google assistant on MagicMirror.
 
+**WARNING** In the newest `Raspbian Buster`, this module wouldn't work yet. Use after being stabled.
+
 ### Screenshot
 [![2.1.0 demo](https://img.youtube.com/vi/7yI_9NfhpwI/1.jpg)](https://youtu.be/7yI_9NfhpwI)
 
