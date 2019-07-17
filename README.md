@@ -1,8 +1,6 @@
 ## MMM-AssistantMk2
 `MMM-AssistantMk2` is an embedded google assistant on MagicMirror.
 
-**WARNING** In the newest `Raspbian Buster`, this module wouldn't work yet. Use after being stabled.
-
 ### Screenshot
 [![2.1.0 demo](https://img.youtube.com/vi/7yI_9NfhpwI/1.jpg)](https://youtu.be/7yI_9NfhpwI)
 
@@ -48,12 +46,11 @@ Read [WIKI:Usage](https://github.com/eouia/MMM-AssistantMk2/wiki/Usage)
 |ASSISTANT_ACTION|`FOUND_ACTION_OBJECT`|When the response is defined or customized action of Assistant.
 
 
-### Tested
-- MagicMirror : 2.5.1
-- nodeJS : 8.11.3 & 10.0.x
-- SBC : Asus TinkerBoard & Raspberry Pi 3 / Kiosk mode and Serveronly mode both work.
-- `Raspbian Stretch` is recommended. Many problems would be possible in `Raspbian Jessie`.
-- on Pi Zero (or ARMv6 Architecture), You might need to rebuild modules from source. That is out of my ability, so I cannot help about that.
+### Last Tested (2019-Jul-17)
+- MagicMirror : 2.8.0
+- nodeJS : 8.11.3 & 10.16.x
+- SBC(OS) : Asus TinkerBoard(TinkerOS) & Raspberry Pi 3 B+(Raspbian Buster), Raspberry Pi 4 B+(Raspbian Buster).
+- Raspbian Jessie or RPI 0 will not work.
 
 
 ### Known Issues
@@ -68,40 +65,17 @@ Read [WIKI:Usage](https://github.com/eouia/MMM-AssistantMk2/wiki/Usage)
 sudo apt-get update
 sudo apt-get upgrade
 sudo apt-get install build-essentials
-sudo apt-get install gcc-5
+sudo apt-get install gcc-5   #or gcc-7
 ```
-- grpc Electron-rebuild issues. (until proper binaries provided)
-`grpc` was updated recently, but their team havn't dispatched proper binaries for new version. So it could make problem when you try electron-rebuild.
-Here are some experimental trials;
-1) use `grpc-js` instead `grpc`
+- grpc Electron-rebuild or `Raspbian Buster` issues. (on Raspbian Buster)
+Downgrade your gcc to gcc7. (default of Buster would be gcc8)
+```sh
+sudo apt-get install gcc-7
+sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-7 10
+sudo update-alternatives --config gcc
+# Then select gcc-7 
 ```
-cd ~/MagicMirror/modules
-rm -rf MMM-AssistantMk2/
-git clone https://github.com/eouia/MMM-AssistantMk2
-cd MMM-AssistantMk2
-npm install
-cd node_modules
-rm -rf grpc
-cd ..
-npm install @grpc/grpc-js
-npm install --save-dev electron-rebuild
-./node_modules/.bin/electron-rebuild
-```
-2) downgrade grpc to v1.13
-```
-cd ~/MagicMirror/modules
-rm -rf MMM-AssistantMk2/
-git clone https://github.com/eouia/MMM-AssistantMk2
-cd MMM-AssistantMk2
-npm install
-cd node_modules
-rm -rf grpc
-cd ..
-npm install grpc@1.13
-npm install --save-dev electron-rebuild
-./node_modules/.bin/electron-rebuild
-```
-
+Then try `electron-rebuild` again.
 
 ### TODO
 - debugging??
