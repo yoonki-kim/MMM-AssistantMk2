@@ -60,6 +60,18 @@ Read [WIKI:Usage](https://github.com/eouia/MMM-AssistantMk2/wiki/Usage)
 - Result of Image search? web search? : I'm considering how it could be used. it is not easy as my expectation.
 
 #### Some Troubleshootings more
+- `../deps/grpc/third_party/upb/upb/upb.h:27:10: fatal error: upb/port_def.inc: No such file or directory`
+`grpc@1.24.0` has some issue to use with electron.(It will be fixed later, but at this moment-2019.Oct.10th still be the issue.) You can check your grpc version like this. (After `npm install`)
+```sh
+cd ~/MagicMirror/modules/MMM-AssistantMk2
+npm list | grep grpc
+```
+When you can see `grpc@1.24.0`, do this;
+```
+npm install grpc@1.23
+```
+Then do `electron-rebuild`
+
 - Error: /urs/lib/arm-linux-gnueabihf/libstdc++.so.6: version 'GLIBCXX_3.4.21' not found
 ```
 sudo apt-get update
