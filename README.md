@@ -1,5 +1,5 @@
 ## MMM-AssistantMk2
-`MMM-AssistantMk2` is an embedded google assistant on MagicMirror.
+`MMM-AssistantMk2` is an embedded Google assistant on MagicMirror.
 
 ### Screenshot
 [![2.1.0 demo](https://img.youtube.com/vi/7yI_9NfhpwI/1.jpg)](https://youtu.be/7yI_9NfhpwI)
@@ -8,7 +8,7 @@
 #### [2.1.4] - 2019.03.26
 - Added : Now you can use `recipes`. https://github.com/eouia/MMM-AssistantMk2/wiki/Usage#recipes
     
-  `recipe` is an external js file containing definitions of `command`, `transcriptionHook` and `action`. Your configuration could be more shorter.
+  `recipe` is an external js file containing definitions of `command`, `transcriptionHook` and `action`. Your configuration could be shorter.
   
   Feel free to request PR to share your recipes to others.
 - Changed : `onIdle`, `onDetected` features are disabled by default.
@@ -33,7 +33,7 @@ Read [WIKI:Usage](https://github.com/eouia/MMM-AssistantMk2/wiki/Usage)
 |Notification|Payload|Description|
 |---|---|---|
 |ASSISTANT_ACTIVATE|{profile:`String`}|Assistant will start with this profile name.
-|ASSISTANT_CLEAR|null|Current playing video or content will disappear. And Assistant will turn to sleep mode for waiting invocation.
+|ASSISTANT_CLEAR|null|Current playing video or content will disappear. Assistant will turn to sleep mode for waiting invocation.
 |ASSISTANT_QUERY| `String` | Ask to Assistant about `String`,
 |ASSISTANT_SAY| `String` or `{text:String, lang:"en-US"}` | Assistant will say this `String`
 
@@ -54,14 +54,14 @@ Read [WIKI:Usage](https://github.com/eouia/MMM-AssistantMk2/wiki/Usage)
 
 
 ### Known Issues
-- Invalid Parameters when youtube playing : Most of those cases, owner of video doesn't allow playing video out of youtube. try another.
+- Invalid Parameters when YouTube playing : Most of those cases, owner of video doesn't allow playing video out of YouTube. Try another video.
 - Sometimes response without voice. : Yes, Google Tech team also knows that.
-- Some functions are not supported : Originally, screen output is made for REAL SMART TV (e.g. LG TV) with Google Assistant, thus REAL TV can interact the screen output with remotecontroller or something automatic processed. but we aren't.
-- Result of Image search? web search? : I'm considering how it could be used. it is not easy as my expectation.
+- Some functions are not supported : Originally, screen output is made for REAL SMART TV (e.g. LG TV) with Google Assistant, thus REAL TV can interact the screen output with remotecontroller or an automated processed. But, we aren't.
+- Result of Image search? Web search? : I'm considering how it could be used, it is not easy as my expectation.
 
-#### Some Troubleshootings more
+#### Some More Troubleshooting 
 - `../deps/grpc/third_party/upb/upb/upb.h:27:10: fatal error: upb/port_def.inc: No such file or directory`
-`grpc@1.24.0` has some issue to use with electron.(It will be fixed later, but at this moment-2019.Oct.10th still be the issue.) You can check your grpc version like this. (After `npm install`)
+`grpc@1.24.0` has some issue to use with electron.(It will be fixed later, at this moment-2019.Oct.10th is still the issue.) You can check your grpc version like this. (After `npm install`)
 ```sh
 cd ~/MagicMirror/modules/MMM-AssistantMk2
 npm list | grep grpc
@@ -90,7 +90,7 @@ sudo update-alternatives --config gcc
 Then try `electron-rebuild` again.
 
 ### TODO
-- debugging??
+- Debugging?
 - Touchscreen friendly
-- If response has additional info with external web page, showing full website. (But... how to control? eg. scrolling???)
-- map or carousel displaying... (screenOut for Assistant was developed for TV device, so not perfectly matched with UX on Mirror.)
+- Response has additional info with external web page, showing full website. (But... how to control? eg. scrolling???)
+- Map or carousel display... (screenOut for Assistant was developed for TV device, so not perfectly matched with UX on Mirror.)
