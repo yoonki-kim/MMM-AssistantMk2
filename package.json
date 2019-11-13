@@ -22,10 +22,11 @@
   },
   "homepage": "https://github.com/eouia/MMM-AssistantMk2",
   "dependencies": {
-    "google-assistant": "^0.5.2",
-    "node-record-lpcm16": "^0.3.0"
+    "google-assistant": "^0.5.4",
+    "node-html-parser": "^1.1.16",
+    "node-record-lpcm16": "^1.0.1"
   },
   "devDependencies": {
-    "electron-rebuild": "^1.8.2"
+    "electron-rebuild": "^1.8.5"
   }
 }

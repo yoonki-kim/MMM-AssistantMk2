@@ -1,11 +1,11 @@
 var recipe = {
-  transcriptionHook: {
+  transcriptionHooks: {
     "REBOOT": {
       pattern: "reboot yourself",
       command: "REBOOT"
     },
   },
-  command: {
+  commands: {
     "REBOOT": {
       shellExec: {
         exec: "sudo reboot now"

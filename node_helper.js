@@ -4,296 +4,124 @@
 const path = require("path")
 const exec = require("child_process").exec
 const fs = require("fs")
-const record = require('./components/lpcm16.js')
-const eos = require('end-of-stream')
-const PassThrough = require('stream').PassThrough;
-const serialize = require("./components/serialize.js")
-const Assistant = require("./components/googleAssistant.js")
-const Snowboy = require("./components/snowboy.js")
-const B2W = require("./components/bufferToWav.js")
+const Assistant = require("./components/assistant.js")
+const ScreenParser = require("./components/screenParser.js")
+const ActionManager = require("./components/actionManager.js")
 
+var _log = function() {
+    var context = "[AMK2]"
+    return Function.prototype.bind.call(console.log, console, context)
+}()
 
-
-class Tunnel {
-  constructor(module) {
-    this.module = module
-  }
-
-  transmit(ev, payload=null) {
-    this.module.status(ev, payload)
-  }
+var log = function() {
+  //do nothing
 }
-
-
 
 var NodeHelper = require("node_helper")
 
 module.exports = NodeHelper.create({
   start: function () {
     this.config = {}
-    this.mic = null
-    this.assistant = null
-    this.tunnel = new Tunnel(this)
-    this.session = null
   },
 
-  status: function(ev, payload=null) {
-    this.sendSocketNotification("STATUS", {
-      event: ev,
-      payload:payload
-    })
-    if (ev == "HOTWORD_DIRECT_COMMAND") {
-      //console.log("command!", payload)
-    } else {
-      var time = Date.now()
-      if (payload) {
-        console.log(`[AMK2:${time}]`, ev, payload)
-      } else {
-        console.log(`[AMK2:${time}]`, ev)
-      }
-    }
-    switch(ev) {
-      case "":
+  socketNotificationReceived: function (noti, payload) {
+    switch (noti) {
+      case "INIT":
+        this.initialize(payload)
+        break
+      case "ACTIVATE_ASSISTANT":
+        this.activateAssistant(payload)
         break
     }
   },
 
-  socketNotificationReceived: function(noti, payload) {
-    if (noti == "INIT") {
-      this.initializeAfterLoading(payload)
-    }
-
-    /*
-    payload: {
-      type: "TEXT", // REQUIRED
-      key: "music video linkin park crawling", // REQUIRED
-      useScreenOutput: true, //OPTIONAL
-      useAudioOutput: true, //OPTIONAL
-      callback: (result)=>{} //OPTIONAL
-      id: null, //OPTIONAL, IF not provided, will be created automatically.
-      profileName : //OPTIONAL, If not provided, current profile will be used.
-    }
-    */
-    if (noti == "ACTIVATE") {
-      switch(payload.type) {
-        case "DETECTOR":
-          this.activateSN(payload)
-          break
-        case "MIC":
-          this.activateMC(payload)
-          break
-        case "TEXT":
-        case "WAVFILE":
-          this.activateGA(payload)
-          break
-      }
-    }
-
-    if (noti == "DEACTIVATE") {
-      this.deactivate()
-      this.session = null
-      setTimeout(()=>{
-        this.status("DEACTIVATED")
-        this.sendSocketNotification("DEACTIVATED")
-      }, 500)
-    }
+  tunnel: function(payload) {
+    this.sendSocketNotification("TUNNEL", payload)
   },
 
-  deactivate: function() {
-    record.stop()
-  },
+  activateAssistant: function(payload) {
+    log("QUERY:", payload)
+    // payload: {
+    //    type: "TEXT", "MIC", "WAVEFILE",
+    //    key : "query" for "TEXT"
+    //    profile: "",
+    //    lang: "" (optional) // if you want to force to change language
+    //    useScreenOutput: true (optional) // if you want to force to set using screenoutput
+    // }
 
-  activateMC: function(payload) {
-    var size = 0
-    this.status("MIC_START")
-    var mic = record.start(this.config.mic)
-    var counter = new PassThrough()
-    var temp = new PassThrough()
-    mic.pipe(counter).pipe(temp)
-    counter.on("data", (chunk)=>{
-      size += chunk.length
-    })
-    mic.on("end", ()=>{
-      this.status("MIC_STOP")
-      //this.deactivate()
-      if (size >= 50) {
-        this.status("MIC_RECORDING_ENOUGH", size)
-        var filePath = path.resolve(__dirname, "tmp", "lastQuery.wav")
-        var file = fs.createWriteStream(filePath, { encoding: 'binary' })
-        temp.pipe(file)
-        eos(file, (err) => {
-          this.status("EOS")
-          if (err) {
-            this.status("MIC_RECORDING_ERROR", err)
-            this.sendSocketNotification("TURN_OVER")
-          } else {
-            payload.type = "WAVFILE"
-            payload.key = filePath
-            this.activateGA(payload)
-          }
+    var assistantConfig = Object.assign({}, this.config.assistantConfig)
+    assistantConfig.debug = this.config.debug
+    assistantConfig.session = payload.session
+    this.assistant = new Assistant(assistantConfig, (obj)=>{this.tunnel(obj)})
+
+
+    var parserConfig = {
+      screenOutputCSS: this.config.screenOutputCSS,
+      screenOutputURI: "tmp/lastScreenOutput.html",
+    }
+    var parser = new ScreenParser(parserConfig, this.config.debug)
+    result = null
+    this.assistant.activate(payload, (response)=> {
+      if (response.screen) {
+        parser.parse(response, (result)=>{
+          delete result.screen.originalContent
+          log(result)
+          this.sendSocketNotification("ASSISTANT_RESULT", result)
         })
       } else {
-        this.status("MIC_TOO_SHORT_RECORDING", size)
-        this.sendSocketNotification("TURN_OVER")
+        log (response)
+        this.sendSocketNotification("ASSISTANT_RESULT", response)
       }
     })
   },
 
-  activateSN: function(payload) {
-    var detector = new Snowboy(this.tunnel, this.config, (hotword, queryFile)=>{
-      detector.stop()
-      payload.type = "WAVFILE"
-      payload.key = queryFile
-      if (hotword.profile) payload.profile = hotword.profile
-      this.activateGA(payload)
-    })
-    detector.addTunnel(this.tunnel)
-    detector.start()
-  },
 
-  activateGA: function(payload) {
-    this.assistant = new Assistant(this.tunnel, this.config)
-    this.assistant.activate(payload, (result)=>{
-      if (result.screenOutput) {
-        this.getInfo(result)
-        delete result.screenOutput.content
-      }
-      this.sendSocketNotification("RESULT", result)
-    })
-  },
 
-  getInfo: function(result) {
-    var html = result.screenOutput.content
-    var links = /data-url=\"([^\"]+)\"/gmi
-    var r = null
-
-    var isch = /tbm=isch\&amp;q=([^<]+)/i
-    r = isch.exec(html)
-    if (r) result.screenOutput.isch = r[1]
-    var youtube = /http[^ ]+youtube\.com([^ ]+)/i
-    r = youtube.exec(html)
-    if (r) result.screenOutput.youtube = r[1]
-    var res = []
-    while ((r = links.exec(html)) !== null) {
-      res.push(r[1])
-    }
-    result.screenOutput.links = res
-    var inlinks = /\( [^ ]+ - (http[^ ]+) \)/i
-    r = inlinks.exec(html)
-    if (r) result.screenOutput.links.push(r[1])
-  },
-
-  initializeAfterLoading: function(config) {
+  initialize: function (config) {
     this.config = config
-    this.config.modulePath = __dirname
-    this.assistant = null
+    this.config.assistantConfig["modulePath"] = __dirname
+    if (this.config.debug) log = _log
     this.loadRecipes(()=>{
-      this.status("INIT_AFTER_LOADING")
       this.sendSocketNotification("INITIALIZED")
     })
   },
 
   loadRecipes: function(callback=()=>{}) {
-    var recipes = this.config.recipes
-    for (var i = 0; i < recipes.length; i++) {
-      var p = require("./recipes/" + recipes[i]).recipe
-      if (p.transcriptionHook) this.config.transcriptionHook = Object.assign({}, this.config.transcriptionHook, p.transcriptionHook)
-      if (p.action) this.config.action = Object.assign({}, this.config.action, p.action)
-      if (p.command) this.config.command = Object.assign({}, this.config.command, p.command)
-      this.status("RECIPE_LOAD", recipes[i])
-      this.sendSocketNotification("LOAD_RECIPE", serialize.serialize(p))
-    }
-    if (Object.keys(this.config.action).length > 1) {
-      this.makeAction(this.config.action, callback)
-    } else {
-      callback()
-    }
-  },
-
-  makeAction: function(actions, callback=()=>{}) {
-    if (!this.config.autoMakeAction) {
-      callback()
-      return
-    }
-    this.status("MAKE_ACTION_PACKAGE")
-    var template = {
-      manifest: {
-        displayName: "MIRROR CUSTOM DEVICE ACTION",
-        invocationName : "MIRROR CUSTOM DEVICE ACTION",
-        category: "PRODUCTIVITY"
-      },
-      actions: [],
-      types: [],
-    }
-    if (this.config.actionLocale) {
-      template.locale = this.config.actionLocale
-    }
-    for (var key in actions) {
-      if (actions.hasOwnProperty(key)) {
-        var name = key
-        var action = actions[key]
-        if (Array.isArray(action.patterns)) {
-          var at = {
-            name: "",
-            availability: {deviceClasses: [{assistantSdkDevice: {}}]},
-            intent: {
-              name: "",
-              parameters: [],
-              trigger: {queryPatterns:[]},
-            },
-            fulfillment:{
-              staticFulfillment: {
-                templatedResponse: {
-                  items: []
-                }
-              }
-            }
-          }
-          at.name = "AMK2.action." + name
-          at.intent.name = (action.intentName) ? action.intentName : "AMK2.intent." + name
-          at.intent.trigger.queryPatterns = action.patterns
-          at.intent.parameters = (action.parameters) ? action.parameters : []
-          at.fulfillment.staticFulfillment.templatedResponse.items[0] = {
-            simpleResponse:{
-              textToSpeech:(action.response) ? action.response : ""
-            }
-          }
-          at.fulfillment.staticFulfillment.templatedResponse.items[1] = {
-            deviceExecution: {
-              command: (action.commandName) ? action.commandName : "AMK2.command." + name,
-              params: (action.commandParams) ? action.commandParams : {}
-            }
-          }
-          template.actions.push(at)
-          if (action.types) {
-            template.types = template.types.concat(action.types)
-          }
+    if (this.config.recipes) {
+      let replacer = (key, value) => {
+        if (typeof value == "function") {
+          return "__FUNC__" + value.toString()
+        }
+        return value
+      }
+      var recipes = this.config.recipes
+      for (var i = 0; i < recipes.length; i++) {
+        try {
+          var p = require("./recipes/" + recipes[i]).recipe
+          this.sendSocketNotification("LOAD_RECIPE", JSON.stringify(p, replacer, 2))
+          if (p.actions) this.config.actions = Object.assign({}, this.config.actions, p.actions)
+          log("RECIPE_LOADED:", recipes[i])
+        } catch (e) {
+          log("RECIPE_ERROR:", e)
         }
       }
-    }
-    var jsonTxt = JSON.stringify(template, null, 2)
-    fs.writeFile(path.resolve(__dirname, "tmp/action_package.json"), jsonTxt, "utf8", (err)=>{
-      if (err) {
-        this.status("ACTION_PACKAGE_JSON_FILE_CREATE_ERROR", err)
-        callabck()
+
+      if (this.config.actions && Object.keys(this.config.actions).length > 1) {
+        var actionConfig = Object.assign({}, this.customActionConfig)
+        actionConfig.actions = [].concat(this.config.actions)
+        actionConfig.projectId = this.config.assistantConfig.projectId
+        var Manager = new ActionManager(actionConfig, this.config.debug)
+        Manager.makeAction(callback)
+        //this.makeAction(this.config.actions, callback)
       } else {
-        this.gactionCLI(callback)
+        log("NO_ACTION_TO_MANAGE")
+        callback()
       }
-    })
+    } else {
+      log("NO_RECIPE_TO_LOAD")
+      callback()
+    }
   },
 
-  gactionCLI: function(callback=()=>{}) {
-    if (!this.config.autoRefreshAction) {
-      callback()
-      return
-    }
-    var actionFile = path.resolve(__dirname, "tmp/action_package.json")
-    var cdPath = path.resolve(__dirname, "utility/gaction_cli")
-    var cmd = `cd ${cdPath}; ./gactions test --action_package ${actionFile} --project ${this.config.projectId}`
-    exec(cmd, (e, so, se)=>{
-      this.status("ACTION_PACKAGE_UPDATE", [so, se])
-      if (e) this.status("ACTION_PACKAGE_UPDATE_ERROR", e)
-      callback()
-    })
-  },
+
 })

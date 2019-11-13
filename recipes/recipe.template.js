@@ -1,11 +1,11 @@
 var recipe = {
-  transcriptionHook: {
+  transcriptionHooks: {
     // Describe your transcriptionHook here.
   },
-  action: {
-    // Describe your gAction here.
+  actions: {
+    // Describe your custom Action here.
   },
-  command: {
+  commands: {
     // Describe your command here.
   },
 }

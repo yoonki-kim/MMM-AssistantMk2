@@ -1,5 +1,5 @@
 var recipe = {
-  action: {
+  actions: {
     "test": {
       "patterns": [
         "hide $SchemaOrg_Text:modulename",
