@@ -1,3 +1,5 @@
+/* to be deprecated */
+
 const GoogleAssistant = require("google-assistant")
 
 const path = require("path")
@@ -5,7 +7,7 @@ const fs = require("fs")
 const record = require('node-record-lpcm16')
 const eos = require('end-of-stream')
 const B2W = require("./bufferToWav.js")
-const StatusTunnel = require("./statusTunnel.js")
+
 
 function disableTimeoutFromScreenOutput (str) {
   return str.replace(/document\.body,"display","none"/gim,(x)=>{
