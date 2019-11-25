@@ -1,7 +1,7 @@
 const fs = require("fs")
 
 var _log = function() {
-    var context = "[AMK2:BT]"
+    var context = "[AMK2:BW]"
     return Function.prototype.bind.call(console.log, console, context)
 }()
 

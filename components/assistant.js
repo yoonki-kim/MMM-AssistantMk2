@@ -187,7 +187,7 @@ class ASSISTANT {
           endCallback(this.response)
         })
       } else {
-        log("CONVERSATION_PP:RESPONSE_AUDIO_TOO_SHORT_OR_EMPTY")
+        log("CONVERSATION_PP:RESPONSE_AUDIO_TOO_SHORT_OR_EMPTY - ", b2w.getAudioLength())
         endCallback(this.response)
       }
     })

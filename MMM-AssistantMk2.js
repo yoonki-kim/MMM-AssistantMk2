@@ -16,9 +16,7 @@ var log = function() {
 Module.register("MMM-AssistantMk2", {
   defaults: {
     debug:true,
-    autoStart: true,
-    useDisplay:true,
-    responseTimer:10000,
+    showModule:true,
     assistantConfig: {
       credentialPath: "credentials.json",
       projectId: "",
@@ -28,7 +26,12 @@ Module.register("MMM-AssistantMk2", {
       longitude: -0.076132,
       useScreenOutput:true,
     },
-    screenOutputCSS: "screen_output.css",
+    responseConfig: {
+      useScreenOutput: true,
+      useAudioOutput: true,
+      reactiveTimer: 5000,
+      screenOutputCSS: "screen_output.css",
+    },
     micConfig: {
       recorder: "sox",
       device: null,
@@ -54,7 +57,7 @@ Module.register("MMM-AssistantMk2", {
   start: function () {
     const helperConfig = [
       "debug", "recipes", "customActionConfig", "assistantConfig", "micConfig",
-      "screenOutputCSS"
+      "responseConfig"
     ]
     this.helperConfig = {}
     if (this.config.debug) log = _log
@@ -63,8 +66,10 @@ Module.register("MMM-AssistantMk2", {
     }
     this.config.assistantConfig["micConfig"] = this.config.micConfig
     this.setProfile(this.config.defaultProfile)
-    this.responseTimer = null
+    this.aliveTimer = null
     this.showingResponse = false
+    this.continue = false
+    this.lastQuery = null
     this.session = {}
   },
 
@@ -75,7 +80,8 @@ Module.register("MMM-AssistantMk2", {
   getDom: function() {
     var dom = document.createElement("div")
     dom.id = "AMK2"
-    dom.className = (this.config.useDisplay) ? "shown" : "hidden"
+    dom.className = (this.config.showModule) ? "shown" : "hidden"
+    dom.innerHTML = "test"
     return dom
   },
 
@@ -88,7 +94,7 @@ Module.register("MMM-AssistantMk2", {
   prepareResponse: function() {
     var dom = document.createElement("div")
     dom.id = "AMK2_HELPER"
-    dom.className = (this.config.useDisplay) ? "shown" : "hidden"
+    dom.className = "shown"
     var scoutpan = document.createElement("div")
     scoutpan.id = "AMK2_RESULT_WINDOW"
     var scout = document.createElement("iframe")
@@ -142,10 +148,6 @@ Module.register("MMM-AssistantMk2", {
         */
         break
       case "ASSISTANT_RESULT":
-        console.log(payload.session, this.session)
-
-        // this.startResponse 먼저하고. 그런데 조건부로 해야 함.
-        // this.startResponse(payload)
         if (payload.session && this.session.hasOwnProperty(payload.session)) {
           var session = this.session[payload.session]
           if (typeof session.callback == "function") {
@@ -156,6 +158,8 @@ Module.register("MMM-AssistantMk2", {
             })
           }
           delete this.session[payload.session]
+        } else {
+          this.startResponse(payload)
         }
 
         break
@@ -193,18 +197,19 @@ Module.register("MMM-AssistantMk2", {
   },
 
   activateAssistant: function(payload, session) {
+    this.lastQuery = null
+    this.continue = false
     var options = {
       type: "TEXT",
       profile: this.config.profiles[this.profile],
       key: null,
       lang: null,
       useScreenOutput: this.config.assistantConfig.useScreenOutput,
-      useAudioOutput: true,
+      useAudioOutput: this.config.assistantConfig.useAudioOutput,
       session: session,
     }
 
     var options = Object.assign({}, options, payload)
-
     if (payload.hasOwnProperty("profile") && typeof this.config.profiles[payload.profile] !== "undefined") {
       options.profile = this.config.profiles[payload.profile]
     }
@@ -228,17 +233,19 @@ Module.register("MMM-AssistantMk2", {
     if (this.showingResponse) {
       this.endResponse()
     }
+    this.continue = response.continue
+    this.lastQuery = response.lastQuery
     var url = (uri) => {
       return "/modules/MMM-AssistantMk2/" + uri + "?seed=" + Date.now()
     }
-    if (response.screen && this.config.useDisplay) {
+    if (response.screen && this.config.responseConfig.useScreenOutput) {
       this.showingResponse = true
       var iframe = document.getElementById("AMK2_SCREENOUTPUT")
       iframe.src = url(response.screen.uri)
       var winh = document.getElementById("AMK2_HELPER")
       winh.classList.remove("hidden")
     }
-    if (response.audio) {
+    if (response.audio && this.config.responseConfig.useAudioOutput) {
       this.showingResponse = true
       var audioSrc = document.getElementById("AMK2_AUDIO_RESPONSE")
       audioSrc.src = url(response.audio.uri)
@@ -248,20 +255,33 @@ Module.register("MMM-AssistantMk2", {
   },
 
   onEndedAudioResponse: function() {
-    console.log("ended")
+    log("Audio response is finished.")
     this.endResponse()
   },
 
   endResponse: function() {
-    clearTimeout(this.responseTimer)
-    this.responseTimer = null
-    this.responseTimer = setTimeout(()=>{
+    clearTimeout(this.aliveTimer)
+    this.aliveTimer = null
+    this.aliveTimer = setTimeout(()=>{
       this.stopResponse()
-      this.showingResponse = false
-    }, this.config.responseTimer)
+      log("Conversation ends.")
+    }, this.config.responseConfig.reactiveTimer)
+    if (this.continue) {
+      log("Continuous Conversation")
+      this.activateAssistant({
+        type: "MIC",
+        profile: this.lastQuery.profile,
+        key: null,
+        lang: this.lastQuery.lang,
+        useScreenOutput: this.lastQuery.useScreenOutput,
+      }, null)
+    }
   },
 
   stopResponse:function() {
+    this.showingRespoonse = false
+    this.continue = false
+    this.lastQuery = null
     var winh = document.getElementById("AMK2_HELPER")
     winh.classList.add("hidden")
     var iframe = document.getElementById("AMK2_SCREENOUTPUT")

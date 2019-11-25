@@ -56,12 +56,13 @@ module.exports = NodeHelper.create({
 
 
     var parserConfig = {
-      screenOutputCSS: this.config.screenOutputCSS,
+      screenOutputCSS: this.config.responseConfig.screenOutputCSS,
       screenOutputURI: "tmp/lastScreenOutput.html",
     }
     var parser = new ScreenParser(parserConfig, this.config.debug)
-    result = null
+    var result = null
     this.assistant.activate(payload, (response)=> {
+      response.lastQuery = payload
       if (response.screen) {
         parser.parse(response, (result)=>{
           delete result.screen.originalContent
