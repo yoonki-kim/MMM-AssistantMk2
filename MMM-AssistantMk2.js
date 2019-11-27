@@ -584,6 +584,7 @@ class AssistantHelper {
   }
 
   doCommand (hooked, param, key) {
+    console.log(hooked, param, key)
     var hook
     if (this.config.command.hasOwnProperty(hooked.command)) {
       hook = this.config.command[hooked.command]
@@ -604,6 +605,7 @@ class AssistantHelper {
       } else {
         fp = payload
       }
+      console.log(fn, fp)
       this.sendNotification(fn, fp)
     }
 

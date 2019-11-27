@@ -156,6 +156,7 @@ module.exports = NodeHelper.create({
   },
 
   activate: function(payload, textQuery=null, sender=null) {
+    var mic
     var transcriptionHook = this.config.transcriptionHook
 
     var cfgInstance = {
@@ -230,7 +231,7 @@ module.exports = NodeHelper.create({
       // done speaking, close the mic
       .on("end-of-utterance", () => {
         console.log("[AMK2] end-of-utterance")
-        record.stop()
+        mic.stop()
         this.sendSocketNotification("MIC_OFF")
       })
       // just to spit out to the console what was said (as we say it)
@@ -390,13 +391,13 @@ module.exports = NodeHelper.create({
         this.sendSocketNotification("CONVERSATION_ERROR", error)
       })
       if (!textQuery) {
-        var mic = record.start(this.config.record)
+        mic = record.record(this.config.record)
         this.sendSocketNotification("MIC_ON")
-        mic.on("data", (data) => {
+        mic.stream().on("data", (data) => {
           try {
             conversation.write(data)
           } catch (err) {
-            record.stop()
+            mic.stop()
             this.sendSocketNotification("MIC_OFF")
             console.error("[AMK2] mic error:", err)
           }
@@ -414,7 +415,7 @@ module.exports = NodeHelper.create({
     })
     .on("started", startConversation)
     .on("error", (error) => {
-      record.stop()
+      mic.stop()
       this.sendSocketNotification("MIC_OFF")
       console.error("[AMK2] Assistant Error:", error)
       this.sendSocketNotification("ASSISTANT_ERROR", error)
@@ -433,6 +434,7 @@ module.exports = NodeHelper.create({
         }
       }
     }
+    console.log("foundHook", foundHook)
     return foundHook
   }
 })
