@@ -31,7 +31,7 @@
 5. `electron-rebuild` step.
 6. restore your backup jsons.
 
-## Configuration (with MMM-Hotword)
+## Configuration (with MMM-Hotword) on OSX.
 ```js
 {
   module: "MMM-Hotword",
