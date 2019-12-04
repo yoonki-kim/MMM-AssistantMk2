@@ -249,7 +249,7 @@ Module.register("MMM-AssistantMk2", {
     this.lastQuery = response.lastQuery
     if (response.error) {
       var err = document.getElementById("AMK2_ERROR")
-      err.innerHTML = response.error 
+      err.innerHTML = response.error
     }
     var url = (uri) => {
       return "/modules/MMM-AssistantMk2/" + uri + "?seed=" + Date.now()
@@ -281,6 +281,7 @@ Module.register("MMM-AssistantMk2", {
     this.aliveTimer = setTimeout(()=>{
       this.stopResponse()
       log("Conversation ends.")
+      this.restart()
     }, this.config.responseConfig.reactiveTimer)
     if (this.continue) {
       log("Continuous Conversation")
@@ -302,6 +303,10 @@ Module.register("MMM-AssistantMk2", {
     winh.classList.add("hidden")
     var iframe = document.getElementById("AMK2_SCREENOUTPUT")
     iframe.src = "about:blank"
+  },
+
+  restart: function() {
+    //not yet implement. 
   }
 
 })
