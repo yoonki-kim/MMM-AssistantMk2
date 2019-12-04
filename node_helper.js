@@ -52,8 +52,9 @@ module.exports = NodeHelper.create({
     var assistantConfig = Object.assign({}, this.config.assistantConfig)
     assistantConfig.debug = this.config.debug
     assistantConfig.session = payload.session
+    assistantConfig.lang = (payload.lang) ? payload.lang : ((payload.profile.lang) ? payload.profile.lang : null)
+    assistantConfig.useScreenOutput = payload.useScreenOutput
     this.assistant = new Assistant(assistantConfig, (obj)=>{this.tunnel(obj)})
-
 
     var parserConfig = {
       screenOutputCSS: this.config.responseConfig.screenOutputCSS,

@@ -24,7 +24,6 @@ Module.register("MMM-AssistantMk2", {
       instanceId: "",
       latitude: 51.508530,
       longitude: -0.076132,
-      useScreenOutput:true,
     },
     responseConfig: {
       useScreenOutput: true,
@@ -64,7 +63,7 @@ Module.register("MMM-AssistantMk2", {
     for(var i = 0; i < helperConfig.length; i++) {
       this.helperConfig[helperConfig[i]] = this.config[helperConfig[i]]
     }
-    this.config.assistantConfig["micConfig"] = this.config.micConfig
+    //this.config.assistantConfig["micConfig"] = this.config.micConfig
     this.setProfile(this.config.defaultProfile)
     this.aliveTimer = null
     this.showingResponse = false
@@ -81,7 +80,15 @@ Module.register("MMM-AssistantMk2", {
     var dom = document.createElement("div")
     dom.id = "AMK2"
     dom.className = (this.config.showModule) ? "shown" : "hidden"
-    dom.innerHTML = "test"
+    var status = document.createElement("div")
+    status.id = "AMK2_STATUS"
+    dom.appendChild(status)
+    var transcription = document.createElement("div")
+    transcription.id = "AMK2_TRANSCRIPTION"
+    dom.appendChild(transcription)
+    var error = document.createElement("div")
+    error.id = "AMK2_ERROR"
+    dom.appendChild(error)
     return dom
   },
 
@@ -141,6 +148,7 @@ Module.register("MMM-AssistantMk2", {
         this.parseLoadedRecipe(payload)
         break
       case "INITIALIZED":
+        log("Initialized.")
         /*
         if (this.config.onReady && typeof this.config.onReady == "function") {
           this.config.onReady(this)
@@ -165,6 +173,10 @@ Module.register("MMM-AssistantMk2", {
         break
       case "TUNNEL":
         console.log(payload.type, payload.payload.transcription, payload.payload.done)
+        if (payload.payload.transcription) {
+          var tr = document.getElementById("AMK2_TRANSCRIPTION")
+          tr.innerHTML = payload.payload.transcription
+        }
         break
     }
   },
@@ -204,8 +216,8 @@ Module.register("MMM-AssistantMk2", {
       profile: this.config.profiles[this.profile],
       key: null,
       lang: null,
-      useScreenOutput: this.config.assistantConfig.useScreenOutput,
-      useAudioOutput: this.config.assistantConfig.useAudioOutput,
+      useScreenOutput: this.config.responseConfig.useScreenOutput,
+      useAudioOutput: this.config.responseConfig.useAudioOutput,
       session: session,
     }
 
@@ -235,6 +247,10 @@ Module.register("MMM-AssistantMk2", {
     }
     this.continue = response.continue
     this.lastQuery = response.lastQuery
+    if (response.error) {
+      var err = document.getElementById("AMK2_ERROR")
+      err.innerHTML = response.error 
+    }
     var url = (uri) => {
       return "/modules/MMM-AssistantMk2/" + uri + "?seed=" + Date.now()
     }

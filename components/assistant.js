@@ -58,6 +58,7 @@ class ASSISTANT {
 
 
   activate (payload, callback=()=>{}) {
+    console.log("A:", payload)
     var converse = null
     var profile = payload.profile
     var type = payload.type
@@ -70,6 +71,7 @@ class ASSISTANT {
     //if (type == "WAVFILE") filePath = payload.key
     this.assistantConfig.conversationConfig.lang = (payload.lang) ? payload.lang : profile.lang
     this.assistantConfig.conversationConfig.screen.isOn = payload.useScreenOutput
+    console.log("B:", this.assistantConfig.conversationConfig)
     converse = (conversation) => {
       this.initConversation(payload, conversation, callback)
     }
@@ -81,6 +83,7 @@ class ASSISTANT {
     this.assistant = new GoogleAssistant(this.assistantConfig.auth)
     this.assistant
     .on('ready', () => {
+      console.log("C:", this.assistantConfig.conversationConfig)
       this.assistant.start(this.assistantConfig.conversationConfig)
     })
     .on('started', conversation)
@@ -188,6 +191,7 @@ class ASSISTANT {
         })
       } else {
         log("CONVERSATION_PP:RESPONSE_AUDIO_TOO_SHORT_OR_EMPTY - ", b2w.getAudioLength())
+        this.response.error = "TOO_SHORT"
         endCallback(this.response)
       }
     })
@@ -195,7 +199,7 @@ class ASSISTANT {
       log('CONVERSATION_ERROR', error.message)
       this.response.error = error
       if (error.code == "14") {
-        log (">> This error might happen when improper configuration or invlid query.")
+        log (">> This error might happen when improper configuration or invlid Mic setup.")
       }
       conversation.end()
       endCallback(this.response)
