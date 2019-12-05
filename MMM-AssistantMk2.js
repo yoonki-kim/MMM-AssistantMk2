@@ -68,8 +68,10 @@ Module.register("MMM-AssistantMk2", {
     this.aliveTimer = null
     this.showingResponse = false
     this.continue = false
+    this.notEnd = false
     this.lastQuery = null
     this.session = {}
+    this.Tcount = 0
   },
 
   getStyles: function () {
@@ -113,7 +115,7 @@ Module.register("MMM-AssistantMk2", {
     auout.id = "AMK2_AUDIO_RESPONSE"
     auout.autoplay = true;
     auout.addEventListener("ended", ()=>{
-      this.onEndedAudioResponse()
+      this.endResponse()
     })
     auoutpan.appendChild(auout)
     dom.appendChild(auoutpan)
@@ -176,6 +178,15 @@ Module.register("MMM-AssistantMk2", {
         if (payload.payload.transcription) {
           var tr = document.getElementById("AMK2_TRANSCRIPTION")
           tr.innerHTML = payload.payload.transcription
+
+	  // temp -> for continue conversation -> hide when transcription
+	  if(this.notEnd && this.Tcount == 0) { // run it one time
+		var winh = document.getElementById("AMK2_HELPER")
+          	winh.classList.add("hidden")
+	  	var iframe = document.getElementById("AMK2_SCREENOUTPUT")
+	  	iframe.src = "about:blank" // and unset
+	  }
+	  this.Tcount += 1
         }
         break
     }
@@ -209,7 +220,7 @@ Module.register("MMM-AssistantMk2", {
   },
 
   activateAssistant: function(payload, session) {
-    this.lastQuery = null
+    if(!this.continue) this.lastQuery = null
     this.continue = false
     var options = {
       type: "TEXT",
@@ -246,6 +257,7 @@ Module.register("MMM-AssistantMk2", {
       this.endResponse()
     }
     this.continue = response.continue
+    this.notEnd = response.continue // needed !
     this.lastQuery = response.lastQuery
     if (response.error) {
       var err = document.getElementById("AMK2_ERROR")
@@ -266,23 +278,22 @@ Module.register("MMM-AssistantMk2", {
       var audioSrc = document.getElementById("AMK2_AUDIO_RESPONSE")
       audioSrc.src = url(response.audio.uri)
     } else {
+      log("Error !")
       this.endResponse()
     }
   },
 
+/* not needed -> to del ?
   onEndedAudioResponse: function() {
-    log("Audio response is finished.")
+    log("Audio response is finished."
     this.endResponse()
   },
+*/
 
   endResponse: function() {
-    clearTimeout(this.aliveTimer)
-    this.aliveTimer = null
-    this.aliveTimer = setTimeout(()=>{
-      this.stopResponse()
-      log("Conversation ends.")
-      this.restart()
-    }, this.config.responseConfig.reactiveTimer)
+    log("Audio response is finished.")
+    this.Tcount = 0 // Response end -> reset Tcount
+
     if (this.continue) {
       log("Continuous Conversation")
       this.activateAssistant({
@@ -293,20 +304,48 @@ Module.register("MMM-AssistantMk2", {
         useScreenOutput: this.lastQuery.useScreenOutput,
       }, null)
     }
+    else {
+	clearTimeout(this.aliveTimer)
+    	this.aliveTimer = null
+    	this.aliveTimer = setTimeout(()=>{
+		if (!this.continue) this.lastQuery = null
+		if (!this.notEnd) {
+			log("Conversation ends.")
+        		this.stopResponse()
+        		this.restart()
+		}
+    	},  this.config.responseConfig.reactiveTimer)
+    }
+
   },
 
   stopResponse:function() {
-    this.showingRespoonse = false
-    this.continue = false
-    this.lastQuery = null
-    var winh = document.getElementById("AMK2_HELPER")
-    winh.classList.add("hidden")
-    var iframe = document.getElementById("AMK2_SCREENOUTPUT")
-    iframe.src = "about:blank"
+	this.showingResponse = false
+    	var winh = document.getElementById("AMK2_HELPER")
+    	winh.classList.add("hidden")
+    	var iframe = document.getElementById("AMK2_SCREENOUTPUT")
+    	iframe.src = "about:blank"
+	var err = document.getElementById("AMK2_ERROR")
+        err.innerHTML = ""
+	var audioSrc = document.getElementById("AMK2_AUDIO_RESPONSE")
+        audioSrc.src = ""
+        var tr = document.getElementById("AMK2_TRANSCRIPTION")
+        tr.innerHTML = ""
   },
 
   restart: function() {
-    //not yet implement. 
+	log("Need Restart: Main loop !")
+
+	// unset all var
+	clearTimeout(this.aliveTimer) // clear timer ?
+	this.aliveTimer = null
+	this.lastQuery = null
+	this.showingResponse = false
+    	this.session = {}
+	this.Tcount = 0
+
+	// send RESUME notification to Hotword... I'm Ready !
+	this.sendNotification("HOTWORD_RESUME")
   }
 
 })

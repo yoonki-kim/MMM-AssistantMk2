@@ -17,6 +17,7 @@
 - Screen Output hooking part.
 - Code refactoring.
 - Manual (I hate this!)
+- Bash installer script for npm install
 - Related modules(MMM-Telegram, MMM-YouTube, MMM-Spotify, MMM-News, ...) update for using together
 - Real RPI test.
 - And more tests.
@@ -112,7 +113,7 @@ var recipe = {
           }
           if (afterRecord) {
             ret.type = "WAVEFILE"
-            ret.key = "~/MagicMirror/modules/MMM-Hotword/" + afterRecord
+            ret.key = "modules/MMM-Hotword/" + afterRecord
           }
           return ret
         }
