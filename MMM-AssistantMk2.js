@@ -15,6 +15,7 @@ var log = function() {
 
 Module.register("MMM-AssistantMk2", {
   defaults: {
+    developer: false,
     debug:true,
     showModule:true,
     assistantConfig: {
@@ -28,6 +29,7 @@ Module.register("MMM-AssistantMk2", {
     responseConfig: {
       useScreenOutput: true,
       useAudioOutput: true,
+      useFullScreenAnswer: true,
       reactiveTimer: 5000,
       screenOutputCSS: "screen_output.css",
     },
@@ -54,16 +56,25 @@ Module.register("MMM-AssistantMk2", {
   },
 
   start: function () {
+    this.config = this.configAssignment({}, this.defaults, this.config)
+
+/* really don't work ... this.default is not set ! back to configAssignment()
+
     const helperConfig = [
       "debug", "recipes", "customActionConfig", "assistantConfig", "micConfig",
       "responseConfig"
     ]
     this.helperConfig = {}
     if (this.config.debug) log = _log
+
     for(var i = 0; i < helperConfig.length; i++) {
       this.helperConfig[helperConfig[i]] = this.config[helperConfig[i]]
     }
-    //this.config.assistantConfig["micConfig"] = this.config.micConfig
+*/
+
+    this.helperConfig = this.config
+    if (this.config.debug) log = _log
+
     this.setProfile(this.config.defaultProfile)
     this.aliveTimer = null
     this.showingResponse = false
@@ -74,11 +85,40 @@ Module.register("MMM-AssistantMk2", {
     this.Tcount = 0
   },
 
+  configAssignment : function (result) {
+    var stack = Array.prototype.slice.call(arguments, 1)
+    var item
+    var key
+    while (stack.length) {
+      item = stack.shift()
+      for (key in item) {
+        if (item.hasOwnProperty(key)) {
+          if (typeof result[key] === "object" && result[key] && Object.prototype.toString.call(result[key]) !== "[object Array]" ) {
+            	if (typeof item[key] === "object" && item[key] !== null) {
+              		result[key] = this.configAssignment({}, result[key], item[key])
+            	} else {
+              		result[key] = item[key]
+            	}
+          } else {
+            	result[key] = item[key]
+          }
+        }
+      }
+    }
+    return result
+  },
+
   getStyles: function () {
     return ["MMM-AssistantMk2.css"]
   },
 
   getDom: function() {
+    var dom = document.createElement("div")
+    dom.id = "AMK2"
+    dom.className = (this.config.showModule) ? "shown" : "hidden"
+
+   //dom.src = "url('https://upload.wikimedia.org/wikipedia/commons/thumb/c/cb/Google_Assistant_logo.svg/240px-Google_Assistant_logo.svg.png')"
+
     var dom = document.createElement("div")
     dom.id = "AMK2"
     dom.className = (this.config.showModule) ? "shown" : "hidden"
@@ -90,6 +130,7 @@ Module.register("MMM-AssistantMk2", {
     dom.appendChild(transcription)
     var error = document.createElement("div")
     error.id = "AMK2_ERROR"
+	error.innerHTML = "err"
     dom.appendChild(error)
     return dom
   },
@@ -126,6 +167,7 @@ Module.register("MMM-AssistantMk2", {
     switch (noti) {
       case "DOM_OBJECTS_CREATED":
         this.sendSocketNotification("INIT", this.helperConfig)
+	if (this.config.developer) this.FullScreen(true) // for developing Dom
         this.prepareResponse()
         break
       case "ASSISTANT_PROFILE":
@@ -141,7 +183,28 @@ Module.register("MMM-AssistantMk2", {
           delete payload.callback
         }
         this.activateAssistant(payload, session)
+
+	if (this.config.responseConfig.useScreenOutput && this.config.responseConfig.useFullScreenAnswer) this.FullScreen(true)
     }
+  },
+
+  FullScreen: function(status) {
+	var self = this;
+	if (status) {
+		// fullscreen on
+		log("Fullscreen: " + status)
+		MM.getModules().exceptModule(this).enumerate(function(module) {
+               		module.hide(15, null, {lockString: self.identifier})
+            	});
+	}
+	else {
+		// fullscreen off
+		log("Fullscreen: false")
+		MM.getModules().exceptModule(this).enumerate(function(module) {
+			module.show(1000, null, {lockString: self.identifier})
+		});
+	}
+
   },
 
   socketNotificationReceived: function(noti, payload) {
@@ -177,7 +240,7 @@ Module.register("MMM-AssistantMk2", {
         console.log(payload.type, payload.payload.transcription, payload.payload.done)
         if (payload.payload.transcription) {
           var tr = document.getElementById("AMK2_TRANSCRIPTION")
-          tr.innerHTML = payload.payload.transcription
+          tr.innerHTML = "<p>" + payload.payload.transcription + "</p>"
 
 	  // temp -> for continue conversation -> hide when transcription
 	  if(this.notEnd && this.Tcount == 0) { // run it one time
@@ -343,6 +406,8 @@ Module.register("MMM-AssistantMk2", {
 	this.showingResponse = false
     	this.session = {}
 	this.Tcount = 0
+
+	if (this.config.responseConfig.useScreenOutput && this.config.responseConfig.useFullScreenAnswer) this.FullScreen(false)
 
 	// send RESUME notification to Hotword... I'm Ready !
 	this.sendNotification("HOTWORD_RESUME")

@@ -1,5 +1,11 @@
 # Developer Notes
 
+## 2019/12/06 -- Bugsounet
+
+- add FullScreenAnswer Feature
+- to eouia > correct merge this.config / this.default / this.helperConfig
+- temp code to correct this merge
+
 ## 2019/12/04 -- Bugsounet
 
 - write main loop

@@ -62,6 +62,7 @@
     responseConfig: {
       useScreenOutput: true,
       useAudioOutput: true,
+      useFullScreenAnswer: true,
       reactiveTimer: 5000,
       screenOutputCSS: "screen_output.css",
     },
