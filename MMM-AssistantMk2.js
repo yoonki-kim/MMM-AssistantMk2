@@ -114,8 +114,6 @@ Module.register("MMM-AssistantMk2", {
   },
 
   getDom: function() {
-   //https://upload.wikimedia.org/wikipedia/commons/thumb/c/cb/Google_Assistant_logo.svg/240px-Google_Assistant_logo.svg.png
-
     var dom = document.createElement("div")
     dom.id = "AMK2"
 
@@ -439,7 +437,7 @@ Module.register("MMM-AssistantMk2", {
 	if (this.config.developer) log("Status : " + status)
 
 	// if no Assistant Error, take place to the new one
-/*
+
 	if (this.AError) {
 		myStatus.classList.add("error")
 		setTimeout(() => {
@@ -447,9 +445,8 @@ Module.register("MMM-AssistantMk2", {
 			this.AError = false
 		} , this.config.responseConfig.reactiveTimer )
 	} else {
-*/
 		 myStatus.classList.add(status)
 		 if (this.config.developer) console.log("---> Set Status Value : " + status + " " + myStatus.classList.contains(status));
-	//}
+	}
   },
 })
