@@ -13,6 +13,7 @@ var log = function() {
   //do nothing
 }
 
+
 Module.register("MMM-AssistantMk2", {
   defaults: {
     developer: false,
@@ -74,7 +75,6 @@ Module.register("MMM-AssistantMk2", {
 
     this.helperConfig = this.config
     if (this.config.debug) log = _log
-
     this.setProfile(this.config.defaultProfile)
     this.aliveTimer = null
     this.showingResponse = false
@@ -83,6 +83,7 @@ Module.register("MMM-AssistantMk2", {
     this.lastQuery = null
     this.session = {}
     this.Tcount = 0
+    this.AError = false
   },
 
   configAssignment : function (result) {
@@ -113,25 +114,24 @@ Module.register("MMM-AssistantMk2", {
   },
 
   getDom: function() {
-    var dom = document.createElement("div")
-    dom.id = "AMK2"
-    dom.className = (this.config.showModule) ? "shown" : "hidden"
-
-   //dom.src = "url('https://upload.wikimedia.org/wikipedia/commons/thumb/c/cb/Google_Assistant_logo.svg/240px-Google_Assistant_logo.svg.png')"
+   //https://upload.wikimedia.org/wikipedia/commons/thumb/c/cb/Google_Assistant_logo.svg/240px-Google_Assistant_logo.svg.png
 
     var dom = document.createElement("div")
     dom.id = "AMK2"
-    dom.className = (this.config.showModule) ? "shown" : "hidden"
+
+    //dom.className = (this.config.showModule) ? "shown" : "hidden"
+    // ----> actual coding is only for fullscreen
+    dom.className = "hidden"
+
     var status = document.createElement("div")
     status.id = "AMK2_STATUS"
+    //status.className = "standby"
     dom.appendChild(status)
+
     var transcription = document.createElement("div")
     transcription.id = "AMK2_TRANSCRIPTION"
     dom.appendChild(transcription)
-    var error = document.createElement("div")
-    error.id = "AMK2_ERROR"
-	error.innerHTML = "err"
-    dom.appendChild(error)
+
     return dom
   },
 
@@ -184,25 +184,32 @@ Module.register("MMM-AssistantMk2", {
         }
         this.activateAssistant(payload, session)
 
+	this.AMK2Status("think")
 	if (this.config.responseConfig.useScreenOutput && this.config.responseConfig.useFullScreenAnswer) this.FullScreen(true)
     }
   },
 
   FullScreen: function(status) {
-	var self = this;
+	var self = this
+	var AMK2 = document.getElementById("AMK2")
 	if (status) {
 		// fullscreen on
 		log("Fullscreen: " + status)
 		MM.getModules().exceptModule(this).enumerate(function(module) {
                		module.hide(15, null, {lockString: self.identifier})
             	});
+		AMK2.classList.remove("hidden")
+		AMK2.classList = "in"
 	}
 	else {
-		// fullscreen off
 		log("Fullscreen: false")
-		MM.getModules().exceptModule(this).enumerate(function(module) {
-			module.show(1000, null, {lockString: self.identifier})
-		});
+                AMK2.classList.remove("in")
+                AMK2.classList = "out"
+		setTimeout (() => {
+			MM.getModules().exceptModule(this).enumerate(function(module) {
+				module.show(1000, null, {lockString: self.identifier})
+			});
+		} , 1000) // timeout set to 1s for fadeout
 	}
 
   },
@@ -238,6 +245,7 @@ Module.register("MMM-AssistantMk2", {
         break
       case "TUNNEL":
         console.log(payload.type, payload.payload.transcription, payload.payload.done)
+	if (payload.payload.done) this.AMK2Status("confirmation")
         if (payload.payload.transcription) {
           var tr = document.getElementById("AMK2_TRANSCRIPTION")
           tr.innerHTML = "<p>" + payload.payload.transcription + "</p>"
@@ -322,13 +330,20 @@ Module.register("MMM-AssistantMk2", {
     this.continue = response.continue
     this.notEnd = response.continue // needed !
     this.lastQuery = response.lastQuery
+
     if (response.error) {
-      var err = document.getElementById("AMK2_ERROR")
-      err.innerHTML = response.error
+      var err = document.getElementById("AMK2_TRANSCRIPTION")
+      err.innerHTML = "<p>" + response.error + "</p>"
+      this.AError = true
+      this.AMK2Status("error")
+    } else {
+	this.AMK2Status("reply")
     }
+
     var url = (uri) => {
       return "/modules/MMM-AssistantMk2/" + uri + "?seed=" + Date.now()
     }
+
     if (response.screen && this.config.responseConfig.useScreenOutput) {
       this.showingResponse = true
       var iframe = document.getElementById("AMK2_SCREENOUTPUT")
@@ -341,7 +356,7 @@ Module.register("MMM-AssistantMk2", {
       var audioSrc = document.getElementById("AMK2_AUDIO_RESPONSE")
       audioSrc.src = url(response.audio.uri)
     } else {
-      log("Error !")
+      log("Error: No Audio !")
       this.endResponse()
     }
   },
@@ -359,6 +374,7 @@ Module.register("MMM-AssistantMk2", {
 
     if (this.continue) {
       log("Continuous Conversation")
+      this.AMK2Status("continue")
       this.activateAssistant({
         type: "MIC",
         profile: this.lastQuery.profile,
@@ -368,6 +384,7 @@ Module.register("MMM-AssistantMk2", {
       }, null)
     }
     else {
+	if(!this.notEnd) this.AMK2Status("standby")
 	clearTimeout(this.aliveTimer)
     	this.aliveTimer = null
     	this.aliveTimer = setTimeout(()=>{
@@ -388,8 +405,6 @@ Module.register("MMM-AssistantMk2", {
     	winh.classList.add("hidden")
     	var iframe = document.getElementById("AMK2_SCREENOUTPUT")
     	iframe.src = "about:blank"
-	var err = document.getElementById("AMK2_ERROR")
-        err.innerHTML = ""
 	var audioSrc = document.getElementById("AMK2_AUDIO_RESPONSE")
         audioSrc.src = ""
         var tr = document.getElementById("AMK2_TRANSCRIPTION")
@@ -411,6 +426,30 @@ Module.register("MMM-AssistantMk2", {
 
 	// send RESUME notification to Hotword... I'm Ready !
 	this.sendNotification("HOTWORD_RESUME")
-  }
+  },
 
+  AMK2Status: function(status) { // live change of AMK2 icons
+	var myStatus = document.getElementById("AMK2_STATUS")
+
+	var allStatus = [ "standby", "replay", "error", "think", "continue", "listen", "confirmation" ]
+	for (let [item,value] of Object.entries(allStatus)) {
+		if(myStatus.classList.contains(value)) myStatus.classList.remove(value)
+	}
+
+	if (this.config.developer) log("Status : " + status)
+
+	// if no Assistant Error, take place to the new one
+/*
+	if (this.AError) {
+		myStatus.classList.add("error")
+		setTimeout(() => {
+			this.AMK2Status("standby")
+			this.AError = false
+		} , this.config.responseConfig.reactiveTimer )
+	} else {
+*/
+		 myStatus.classList.add(status)
+		 if (this.config.developer) console.log("---> Set Status Value : " + status + " " + myStatus.classList.contains(status));
+	//}
+  },
 })

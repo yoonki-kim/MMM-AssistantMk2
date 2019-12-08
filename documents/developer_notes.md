@@ -1,5 +1,11 @@
 # Developer Notes
 
+
+## 2019/12/08 -- Bugsounet
+
+- write fullscreen css AMK2 v3
+- create icon and display style with full animated icons 
+
 ## 2019/12/06 -- Bugsounet
 
 - add FullScreenAnswer Feature
@@ -10,7 +16,7 @@
 
 - write main loop
 - debug -> continue conversation seems to be ok (see eouia inspection)
-- to eouia > can you see MMM-Hotword, afterRecordLimit does not work when there is silence but when there some noise
+- to eouia > can you see MMM-Hotword, afterRecordLimit does not work when there is silence but when there some noise <---- ok issue closed
 - ret.key -> change it : ret.key = "modules/MMM-Hotword/" + afterRecord
 - create tmp folder -> error when writing tmp file
 
@@ -43,3 +49,4 @@
      session: 1575819784757 } }
 ```
 Have you experienced? In this case,(If `TOO_SHORT` && `transcription.done:false` && `transcription.transcription:something not null`), Is it better to query again by TEXT with `transcription.transcription` ?
+Bugsounet ->> I have it sometime, i have not inpect this bug
