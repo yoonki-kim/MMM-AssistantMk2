@@ -204,6 +204,7 @@ Module.register("MMM-AssistantMk2", {
                 AMK2.classList.remove("in")
                 AMK2.classList = "out"
 		setTimeout (() => {
+			AMK2.classList.add("hidden")
 			MM.getModules().exceptModule(this).enumerate(function(module) {
 				module.show(1000, null, {lockString: self.identifier})
 			});
