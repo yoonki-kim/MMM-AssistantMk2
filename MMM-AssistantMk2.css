@@ -29,6 +29,7 @@
   width:93vw;
   height:100%;
   border:none;
+  border-radius: 20px;
   background-color:#f3f3f3;
 }
 
@@ -73,7 +74,8 @@ AMK2_HELPER {
 
   margin-top:4px;
   margin-left:4px;
-  display:inline-block;    
+  display:inline-block;
+  border-radius: 10px;
   background-color:#f3f3f3;
   background-image:url('resources/standby.gif');
   background-position: 0px 2px;
