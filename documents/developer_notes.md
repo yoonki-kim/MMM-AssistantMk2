@@ -61,5 +61,14 @@
      useAudioOutput: true,
      session: 1575819784757 } }
 ```
-Have you experienced? In this case,(If `TOO_SHORT` && `transcription.done:false` && `transcription.transcription:something not null`), Is it better to query again by TEXT with `transcription.transcription` ?
-Bugsounet ->> I have it sometime, i have not inpect this bug
+- Have you experienced? In this case,(If `TOO_SHORT` && `transcription.done:false` && `transcription.transcription:something not null`), Is it better to query again by TEXT with `transcription.transcription` ?
+- Bugsounet ->> I have it sometime, i have not inpect this bug
+
+### RPI test : 
+* grpc@1.23.4 
+* node : v10.17.0
+* gcc : 7.3.0
+* electron-rebuild : 1.8.8
+* MagicMirror : 2.9.0
+* > install : ok
+
