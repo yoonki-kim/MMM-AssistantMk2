@@ -354,9 +354,7 @@ Module.register("MMM-AssistantMk2", {
 	err.innerHTML = "<p>" + this.translate(response.error) + "</p>"
       	this.AError = true
       	this.AMK2Status("error")
-    } else {
-	this.AMK2Status("reply")
-    }
+    } else this.AMK2Status("reply")
 
     var url = (uri) => {
       return "/modules/MMM-AssistantMk2/" + uri + "?seed=" + Date.now()
@@ -387,7 +385,6 @@ Module.register("MMM-AssistantMk2", {
 */
 
   endResponse: function() {
-    //log("Audio response is finished.")
     this.Tcount = 0 // Response end -> reset Tcount
     if (this.continue) {
       log("Continuous Conversation")
@@ -415,7 +412,7 @@ Module.register("MMM-AssistantMk2", {
 
   },
 
-  stopResponse:function(except) {
+  stopResponse:function() {
 	this.showingResponse = false
     	var winh = document.getElementById("AMK2_HELPER")
     	winh.classList.add("hidden")
@@ -424,7 +421,7 @@ Module.register("MMM-AssistantMk2", {
 	var audioSrc = document.getElementById("AMK2_AUDIO_RESPONSE")
         audioSrc.src = ""
         var tr = document.getElementById("AMK2_TRANSCRIPTION")
-        if (!except) tr.innerHTML = ""
+        tr.innerHTML = ""
   },
 
   restart: function() {
@@ -476,10 +473,7 @@ Module.register("MMM-AssistantMk2", {
   myActivateStatus: function(payload) { // set status by type
 	if (payload == "WAVEFILE" || payload == "TEXT") this.AMK2Status("think")
         if (payload == "MIC") {
-		if (this.notEnd) {
-			this.AMK2Status("continue")
-			//this.playChime("continue")
-		}
+		if (this.notEnd) this.AMK2Status("continue")
 		else this.AMK2Status("listen")
 	}
   },
