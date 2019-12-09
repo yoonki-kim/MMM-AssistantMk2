@@ -1,5 +1,6 @@
 # Version 3.0.0 Developing.
 
+![](https://raw.githubusercontent.com/eouia/MMM-AssistantMk2/3-dev/resources/AMk2_Small.png)
 
 ## Main difference
 - Deprecating sound output dependencies, using HTML5 audio instead
