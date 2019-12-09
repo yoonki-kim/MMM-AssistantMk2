@@ -9,8 +9,8 @@ const ScreenParser = require("./components/screenParser.js")
 const ActionManager = require("./components/actionManager.js")
 
 var _log = function() {
-    var context = "[AMK2]"
-    return Function.prototype.bind.call(console.log, console, context)
+  var context = "[AMK2]"
+  return Function.prototype.bind.call(console.log, console, context)
 }()
 
 var log = function() {
@@ -54,7 +54,7 @@ module.exports = NodeHelper.create({
     assistantConfig.session = payload.session
     assistantConfig.lang = (payload.lang) ? payload.lang : ((payload.profile.lang) ? payload.profile.lang : null)
     assistantConfig.useScreenOutput = payload.useScreenOutput
-    assistantConfig.micConfig = this.config.micConfig // so eouia ! Set micConfig !!! 
+    assistantConfig.micConfig = this.config.micConfig // so eouia ! Set micConfig !!!
     this.assistant = new Assistant(assistantConfig, (obj)=>{this.tunnel(obj)})
 
     var parserConfig = {
@@ -77,8 +77,6 @@ module.exports = NodeHelper.create({
       }
     })
   },
-
-
 
   initialize: function (config) {
     this.config = config
@@ -108,14 +106,12 @@ module.exports = NodeHelper.create({
           log("RECIPE_ERROR:", e)
         }
       }
-
       if (this.config.actions && Object.keys(this.config.actions).length > 1) {
         var actionConfig = Object.assign({}, this.customActionConfig)
         actionConfig.actions = [].concat(this.config.actions)
         actionConfig.projectId = this.config.assistantConfig.projectId
         var Manager = new ActionManager(actionConfig, this.config.debug)
         Manager.makeAction(callback)
-        //this.makeAction(this.config.actions, callback)
       } else {
         log("NO_ACTION_TO_MANAGE")
         callback()
@@ -125,6 +121,5 @@ module.exports = NodeHelper.create({
       callback()
     }
   },
-
 
 })

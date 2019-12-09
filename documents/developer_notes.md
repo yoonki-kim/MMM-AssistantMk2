@@ -1,5 +1,11 @@
 # Developer Notes
 
+## 2019/12/09 -- eouia
+**[commit:eouia_191209]**
+- Retry Query by TEXT when transcription exists but not `done:true`
+- fix configuration merging.
+- Cleaning indentation convention. (Sorry, I prefer `2 spaces` conventions than `tab` on github project.)
+
 ## 2019/12/09 -- Bugsounet
 
 - create translation FR / EN for error
@@ -10,14 +16,14 @@
 - create script to display status when activeassistant (using types / continous converstation)
 - css dispatch fullscreen or not
 - send status notification to other modules
-- create logo for AMk2 v3 (big and small) 
+- create logo for AMk2 v3 (big and small)
 
 ![](https://raw.githubusercontent.com/eouia/MMM-AssistantMk2/3-dev/resources/AMk2_Small.png)
 
 ## 2019/12/08 -- Bugsounet
 
 - write fullscreen css AMK2 v3
-- create icon and display style with full animated icons 
+- create icon and display style with full animated icons
 
 ## 2019/12/06 -- Bugsounet
 
@@ -64,11 +70,10 @@
 - Have you experienced? In this case,(If `TOO_SHORT` && `transcription.done:false` && `transcription.transcription:something not null`), Is it better to query again by TEXT with `transcription.transcription` ?
 - Bugsounet ->> I have it sometime, i have not inpect this bug
 
-### RPI test : 
-* grpc@1.23.4 
+### RPI test :
+* grpc@1.23.4
 * node : v10.17.0
 * gcc : 7.3.0
 * electron-rebuild : 1.8.8
 * MagicMirror : 2.9.0
 * > install : ok
-
