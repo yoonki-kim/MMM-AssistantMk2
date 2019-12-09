@@ -3,7 +3,7 @@
 ## 2019/12/09 -- eouia
 **[commit:eouia_191209]**
 - Retry Query by TEXT when transcription exists but not `done:true`
-- fix configuration merging.
+- *fix configuration merging.* - **It will back again tomorrow. I found some mistakes.**
 - Cleaning indentation convention. (Sorry, I prefer `2 spaces` conventions than `tab` on github project.)
 
 ## 2019/12/09 -- Bugsounet
