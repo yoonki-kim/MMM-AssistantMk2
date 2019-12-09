@@ -23,6 +23,7 @@ class ASSISTANT {
     this.modulePath = config.modulePath
     this.screenZoom = config.screenZoom
     this.micConfig = config.micConfig
+
     this.assistantConfig = {
       auth:{
         keyFilePath : path.resolve(config.modulePath, config.credentialPath),
@@ -58,7 +59,7 @@ class ASSISTANT {
 
 
   activate (payload, callback=()=>{}) {
-    console.log("A:", payload)
+    log("A:", payload)
     var converse = null
     var profile = payload.profile
     var type = payload.type
@@ -71,7 +72,7 @@ class ASSISTANT {
     //if (type == "WAVFILE") filePath = payload.key
     this.assistantConfig.conversationConfig.lang = (payload.lang) ? payload.lang : profile.lang
     this.assistantConfig.conversationConfig.screen.isOn = payload.useScreenOutput
-    console.log("B:", this.assistantConfig.conversationConfig)
+    log("B:", this.assistantConfig.conversationConfig)
     converse = (conversation) => {
       this.initConversation(payload, conversation, callback)
     }
@@ -83,7 +84,7 @@ class ASSISTANT {
     this.assistant = new GoogleAssistant(this.assistantConfig.auth)
     this.assistant
     .on('ready', () => {
-      console.log("C:", this.assistantConfig.conversationConfig)
+      log("C:", this.assistantConfig.conversationConfig)
       this.assistant.start(this.assistantConfig.conversationConfig)
     })
     .on('started', conversation)
@@ -115,11 +116,12 @@ class ASSISTANT {
         endOnSilence: true,
         verbose:this.debug
       }
+      //console.log(this.micConfig)
       mic = Record.record(Object.assign({}, defaultOption, this.micConfig))
       log("MIC:RECORDING START.")
-      mic.stream().on("data", (data) => {
-        conversation.write(data)
-      })
+      mic.stream()
+	.on("data", (data) => { conversation.write(data) })
+	.on("error", (err) => { log("Recorder Error: " + err) }) // for RPI arecord error
     }
 
     conversation
@@ -196,10 +198,10 @@ class ASSISTANT {
       }
     })
     .on('error', (error) => {
-      log('CONVERSATION_ERROR', error.message)
-      this.response.error = error
+      log("CONVERSATION_ERROR :", error)
+      this.response.error = "CONVERSATION_ERROR"
       if (error.code == "14") {
-        log (">> This error might happen when improper configuration or invlid Mic setup.")
+        log (">> This error might happen when improper configuration or invalid Mic setup.")
       }
       conversation.end()
       endCallback(this.response)
