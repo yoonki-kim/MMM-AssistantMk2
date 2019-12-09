@@ -194,7 +194,7 @@ Module.register("MMM-AssistantMk2", {
 	if (this.config.showModule && this.config.responseConfig.useFullScreenAnswer) this.FullScreen(true)
 
 	// Activation Chime only on notificationReceived
-	this.playChime("beep")
+	if (this.config.responseConfig.useChime) this.playChime("beep")
     }
   },
 
