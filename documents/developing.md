@@ -39,6 +39,8 @@
   module: "MMM-Hotword",
   position: "top_left",
   config: {
+      useDisplay: false,
+      chimeOnFinish: null,
     mic: {
       recordProgram:"rec",
       verbose:false
@@ -64,6 +66,7 @@
       useScreenOutput: true,
       useAudioOutput: true,
       useFullScreenAnswer: true,
+      usrChime: true,
       reactiveTimer: 5000,
       screenOutputCSS: "screen_output.css",
     },

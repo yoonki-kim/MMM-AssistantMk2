@@ -1,5 +1,18 @@
 # Developer Notes
 
+## 2019/12/09 -- Bugsounet
+
+- create translation FR / EN for error
+- create chime (activate / error / continue) and feature UseChime (true/false)
+- create if UsefullScreenAnswer set to false (only show icon)
+- correct showmodule (true/false)
+- correct little bug with continuous conversation and display
+- create script to display status when activeassistant (using types / continous converstation)
+- css dispatch fullscreen or not
+- send status notification to other modules
+- create logo for AMk2 v3 (big and small) 
+
+![](https://raw.githubusercontent.com/eouia/MMM-AssistantMk2/3-dev/resources/AMk2_Small.png)
 
 ## 2019/12/08 -- Bugsounet
 
