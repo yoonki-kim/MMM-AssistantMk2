@@ -156,6 +156,19 @@ Module.register("MMM-AssistantMk2", {
 
   start: function () {
     this.config = this.configAssignment({}, this.defaults, this.config)
+
+    // /!\ newconfig ==> new format of this.config.record (transparent for user)
+    var newconfig = {
+      "sampleRate": this.config.record.sampleRate,
+      "threshold":  this.config.record.threshold,
+      "thresholdStart":  this.config.record.thresholdStart,
+      "thresholdEnd":  this.config.record.thresholdEnd,
+      "silence":  this.config.record.silence,
+      "verbose":  this.config.record.verbose,
+      "recorder":  this.config.record.recordProgram,
+      "device":  this.config.record.device,
+    }
+    this.config.record = newconfig
     this.sendSocketNotification("INIT", this.config)
     var assistant = new AssistantHelper(this.config)
     assistant.setProfile(this.config.profiles[this.config.defaultProfile])

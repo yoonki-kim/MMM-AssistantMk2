@@ -393,7 +393,9 @@ module.exports = NodeHelper.create({
       if (!textQuery) {
         mic = record.record(this.config.record)
         this.sendSocketNotification("MIC_ON")
-        mic.stream().on("data", (data) => {
+        mic.stream()
+	  .on("data", (data) => {
+	/*
           try {
             conversation.write(data)
           } catch (err) {
@@ -401,7 +403,13 @@ module.exports = NodeHelper.create({
             this.sendSocketNotification("MIC_OFF")
             console.error("[AMK2] mic error:", err)
           }
-        })
+	*/
+	    conversation.write(data) })
+	  .on("error", (error) => { console.log("[AMK2] Recorder Error: " + error) }) // for RPI debug (AMk2v3)
+	// so there is the same error with RPI and arecord
+	// arecord has exited with error code 1.
+	// i don't know if you want to set mic.stop() + noti ?
+	// Bugsounet
       }
     }
 
