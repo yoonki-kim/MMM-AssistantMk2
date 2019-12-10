@@ -58,8 +58,7 @@ Module.register("MMM-AssistantMk2", {
   },
 
   start: function () {
-    //this.config = this.configAssignment({}, this.defaults, this.config)
-
+    this.config = this.configAssignment({}, this.defaults, this.config)
 
     const helperConfig = [
       "debug", "recipes", "customActionConfig", "assistantConfig", "micConfig",
@@ -89,7 +88,7 @@ Module.register("MMM-AssistantMk2", {
     this.AError = false
   },
 
-/* // Reserved for potential problem.
+
   configAssignment : function (result) {
     var stack = Array.prototype.slice.call(arguments, 1)
     var item
@@ -112,7 +111,6 @@ Module.register("MMM-AssistantMk2", {
     }
     return result
   },
-*/
 
   getStyles: function () {
     return ["MMM-AssistantMk2.css"]

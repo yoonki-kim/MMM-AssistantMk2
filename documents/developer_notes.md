@@ -1,5 +1,9 @@
 # Developer Notes
 
+#2019/12/10 -- eouia
+**[commit:eouia_191210_1]**
+- configuration merging with `configAssignment`
+
 ## 2019/12/09 -- eouia
 **[commit:eouia_191209]**
 - Retry Query by TEXT when transcription exists but not `done:true`
