@@ -1,7 +1,7 @@
 # Developer Notes
 
 ## 2019/12/10 -- Bugsounet
-- Correct fullscrenn Hidden / Showing
+- Correct fullscreen Hidden / Showing
 - Add Official Google Open / Close Beep (will be use later)
 
 ## 2019/12/10 -- eouia
