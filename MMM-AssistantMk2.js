@@ -555,6 +555,7 @@ class AssistantHelper {
     if (this.config.responseScreen) {
       if (this.config.screenDuration > 0 && !force) {
         this.screenTimer = setTimeout(()=>{
+          this.subdom.screen.src = "" // unset the src
           this.subdom.screen.className = "hide"
           after()
         }, this.config.screenDuration)

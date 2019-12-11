@@ -63,7 +63,7 @@ module.exports = NodeHelper.create({
 
   clearTmp: function() {
     var dir = path.resolve(__dirname, "tmp")
-    var cmd = "cd " + dir + "; rm *.mp3"
+    var cmd = "cd " + dir + "; rm *.mp3; rm *.html"
     exec(cmd, (e,so,se)=>{
       console.log("[AMK2] Temporal storage directory is clearing.")
       //if (e) console.log(e)
