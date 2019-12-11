@@ -1,5 +1,8 @@
 # Developer Notes
 
+## 2019/12/10 -- Bugsounet
+- Correct fullscrenn Hidden / Showing
+
 ## 2019/12/10 -- eouia
 **[commit:eouia_191210_1]**
 - configuration merging with `configAssignment`

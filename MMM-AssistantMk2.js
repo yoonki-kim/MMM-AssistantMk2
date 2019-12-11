@@ -198,29 +198,27 @@ Module.register("MMM-AssistantMk2", {
   },
 
   FullScreen: function(status) {
-  var self = this
-  var AMK2 = document.getElementById("AMK2FS")
-  if (status) {
-  // fullscreen on
-  log("Fullscreen: " + status)
-  MM.getModules().exceptModule(this).enumerate(function(module) {
-                   module.hide(15, null, {lockString: self.identifier})
-              });
-  AMK2.classList.remove("hidden")
-  AMK2.classList = "in"
-  }
-  else {
-  log("Fullscreen: false")
-                AMK2.classList.remove("in")
-                AMK2.classList = "out"
-  setTimeout (() => {
-  AMK2.classList.add("hidden")
-  MM.getModules().exceptModule(this).enumerate(function(module) {
-  module.show(1000, null, {lockString: self.identifier})
-  });
-  } , 1000) // timeout set to 1s for fadeout
-  }
-
+    var self = this
+    var AMK2 = document.getElementById("AMK2FS")
+    if (status) {
+    // fullscreen on
+      log("Fullscreen: " + status)
+      MM.getModules().exceptModule(this).enumerate(function(module) {
+        module.hide(0, {lockString: self.identifier})
+      });
+      AMK2.classList.remove("hidden")
+      AMK2.classList = "in"
+    } else {
+      log("Fullscreen: false")
+      AMK2.classList.remove("in")
+      AMK2.classList = "out"
+      setTimeout (() => {
+        AMK2.classList.add("hidden")
+        MM.getModules().exceptModule(this).enumerate(function(module) {
+          module.show(1000, {lockString: self.identifier})
+        });
+      } , 1000) // timeout set to 1s for fadeout
+    }
   },
 
   socketNotificationReceived: function(noti, payload) {
@@ -292,11 +290,11 @@ Module.register("MMM-AssistantMk2", {
   },
 
   suspend: function() {
-    log("This module cannot be suspended.")
+    console.log("[AMK2] This module cannot be suspended.")
   },
 
   resume: function() {
-    log("This module cannot be resumed.")
+    console.log("[AMK2] This module cannot be resumed.")
   },
 
   activateAssistant: function(payload, session) {
