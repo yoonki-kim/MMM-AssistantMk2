@@ -5,7 +5,7 @@
 
 ## 2019/12/10 -- eouia
 **[commit:eouia_191210_1]**
-- configuration merging with `configAssignment`
+- configuration merging with `configAssignment` - **this.config.debug will not set for components (Bugsounet)**
 
 ## 2019/12/09 -- eouia
 **[commit:eouia_191209]**
