@@ -2,6 +2,7 @@
 
 ## 2019/12/10 -- Bugsounet
 - Correct fullscrenn Hidden / Showing
+- Add Official Google Open / Close Beep (will be use later)
 
 ## 2019/12/10 -- eouia
 **[commit:eouia_191210_1]**
