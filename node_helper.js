@@ -32,6 +32,22 @@ module.exports = NodeHelper.create({
       case "ACTIVATE_ASSISTANT":
         this.activateAssistant(payload)
         break
+      case "SHELLEXEC":
+        var command = payload.command
+        command += (payload.options) ? (" " + payload.options) : ""
+        exec (command, (e,so,se)=> {
+          log("ShellExec command:", command)
+          if (e) log("ShellExec Error:", e)
+          this.sendSocketNotification("SHELLEXEC_RESULT", {
+            executed: payload,
+            result: {
+              error: e,
+              stdOut: so,
+              stdErr: se,
+            }
+          })
+        })
+        break
     }
   },
 
@@ -54,7 +70,7 @@ module.exports = NodeHelper.create({
     assistantConfig.session = payload.session
     assistantConfig.lang = (payload.lang) ? payload.lang : ((payload.profile.lang) ? payload.profile.lang : null)
     assistantConfig.useScreenOutput = payload.useScreenOutput
-    assistantConfig.micConfig = this.config.micConfig // so eouia ! Set micConfig !!!
+    assistantConfig.micConfig = this.config.micConfig
     this.assistant = new Assistant(assistantConfig, (obj)=>{this.tunnel(obj)})
 
     var parserConfig = {

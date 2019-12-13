@@ -59,20 +59,17 @@ class ASSISTANT {
 
 
   activate (payload, callback=()=>{}) {
-    log("A:", payload)
     var converse = null
     var profile = payload.profile
     var type = payload.type
 
     if (type == "TEXT") {
       this.assistantConfig.conversationConfig.textQuery = payload.key
-      payload.key = null
     }
     if (type == "MIC") this.micMode = true
     //if (type == "WAVFILE") filePath = payload.key
     this.assistantConfig.conversationConfig.lang = (payload.lang) ? payload.lang : profile.lang
     this.assistantConfig.conversationConfig.screen.isOn = payload.useScreenOutput
-    log("B:", this.assistantConfig.conversationConfig)
     converse = (conversation) => {
       this.initConversation(payload, conversation, callback)
     }
@@ -84,7 +81,6 @@ class ASSISTANT {
     this.assistant = new GoogleAssistant(this.assistantConfig.auth)
     this.assistant
     .on('ready', () => {
-      log("C:", this.assistantConfig.conversationConfig)
       this.assistant.start(this.assistantConfig.conversationConfig)
     })
     .on('started', conversation)
@@ -120,8 +116,12 @@ class ASSISTANT {
       mic = Record.record(Object.assign({}, defaultOption, this.micConfig))
       log("MIC:RECORDING START.")
       mic.stream()
-	.on("data", (data) => { conversation.write(data) })
-	.on("error", (err) => { log("Recorder Error: " + err) }) // for RPI arecord error
+    	.on("data", (data) => {
+        conversation.write(data)
+      })
+    	.on("error", (err) => {
+        log("Recorder Error: " + err)
+      }) // for RPI arecord error
     }
 
     conversation
@@ -179,6 +179,9 @@ class ASSISTANT {
         log('CONVERSATION_END:COMPLETED')
         this.response.continue = false
       }
+      if (originalPayload.type == "TEXT" && !this.response.transcription) {
+        this.response.transcription = originalPayload.key
+      }
       if (b2w.getAudioLength() > 50) {
         log("CONVERSATION_PP:RESPONSE_AUDIO_MAKING")
         var responseFile = "tmp/lastResponse.wav"
@@ -206,8 +209,11 @@ class ASSISTANT {
       conversation.end()
       endCallback(this.response)
     })
-    if (originalPayload.key) {
+    if (originalPayload.key && originalPayload.type == "WAVEFILE") {
       var s = fs.createReadStream(originalPayload.key, {highWaterMark:4096}).pipe(conversation)
+    }
+    if (originalPayload.type == "TEXT") {
+      this.tunnel({type: "TRANSCIPTION", payload:{transcription:originalPayload.key, done:true}})
     }
   }
 }

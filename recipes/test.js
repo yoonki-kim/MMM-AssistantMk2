@@ -1,8 +1,12 @@
 var recipe = {
   transcriptionHooks: {
-    "INTRODUCTION": {
-      pattern: "Testlauf",
+    "HOOKING_TEST": {
+      pattern: "test",
       command: "INTRODUCTION"
+    },
+    "HOOKING_TEST2": {
+      pattern: "test ([a-z 0-9]+)$",
+      command: "INTRODUCTION2"
     },
   },
   commands: {
@@ -10,13 +14,13 @@ var recipe = {
       moduleExec: {
         module: ["MMM-AssistantMk2"],
         exec: (module, params, key) => {
-        setTimeout(()=>{
-        module.sendNotification("SHOW_ALERT", {message:"test", timer:2000})
-                        }, 10000)
-                      }
-                  },
-                }
-      }
+          setTimeout(()=>{
+            module.sendNotification("SHOW_ALERT", {message:"test", timer:2000})
+          }, 100)
+        }
+      },
+    }
+  }
 }
 
 exports.recipe = recipe // Don't remove this line.

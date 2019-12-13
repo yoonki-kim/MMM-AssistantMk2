@@ -45,9 +45,10 @@ Module.register("MMM-AssistantMk2", {
       autoRefreshAction: false,
     },
     recipes: [],
-    transcriptionHooks: [],
-    actions:[],
-    commands:[],
+    transcriptionHooks: {},
+    actions: {},
+    commands: {},
+    plugins: {},
     defaultProfile: "default",
     profiles: {
       "default": {
@@ -57,26 +58,40 @@ Module.register("MMM-AssistantMk2", {
     },
   },
 
-  start: function () {
-    this.config = this.configAssignment({}, this.defaults, this.config)
+  plugins: {
+    onReady: [],
+    onActivated: [], // not yet located
+    onBeforeAudioResponse: [],
+    onAfterAudioResponse: [],
+    onBeforeScreenResponse: [],
+    onAfterScreenResponse: [],
+    onInactivated: [],
+    onError: [],
+    onNotificationReceived: [],
+    onSocketNotificationReceived: [],
+  },
+  commands: {},
+  actions: {},
+  transcriptionHooks: {},
+  responseHooks: {},
 
+  start: function () {
     const helperConfig = [
       "debug", "recipes", "customActionConfig", "assistantConfig", "micConfig",
       "responseConfig"
     ]
     this.helperConfig = {}
     if (this.config.debug) log = _log
-    for(var i = 0; i < helperConfig.length; i++) {
-      if (typeof this.defaults[helperConfig[i]] == "object") {
-        this.helperConfig[helperConfig[i]] = Object.assign({}, this.defaults[helperConfig[i]], this.config[helperConfig[i]])
-      } else {
-        this.helperConfig[helperConfig[i]] = (this.config[helperConfig[i]]) ? this.config[helperConfig[i]] : this.defaults[helperConfig[i]]
-      }
-    }
 
-    console.log(this.helperConfig)
-    //this.helperConfig = this.config
-    if (this.config.debug) log = _log
+    this.config = this.configAssignment({}, this.defaults, this.config)
+    for(var i = 0; i < helperConfig.length; i++) {
+      this.helperConfig[helperConfig[i]] = this.config[helperConfig[i]]
+    }
+    this.registerPluginsObject(this.config.plugins)
+    this.registerResponseHooksObject(this.config.responseHooks)
+    this.registerTranscriptionHooksObject(this.config.transcriptionHooks)
+    this.registerCommandsObject(this.config.commands)
+    this.registerActionsObject(this.config.actions)
     this.setProfile(this.config.defaultProfile)
     this.aliveTimer = null
     this.showingResponse = false
@@ -86,6 +101,64 @@ Module.register("MMM-AssistantMk2", {
     this.session = {}
     this.Tcount = 0
     this.AError = false
+  },
+
+  doPlugin: function(pluginName, args) {
+    if (this.plugins.hasOwnProperty(pluginName)) {
+      var plugins = this.plugins[pluginName]
+      if (Array.isArray(plugins) && plugins.length > 0) {
+        for (var i = 0; i < plugins.length; i++) {
+          var job = plugins[i]
+          this.doCommand(job, args, pluginName)
+        }
+      }
+    }
+  },
+
+  registerPluginsObject: function (obj) {
+    for (var pop in this.plugins) {
+      if (obj.hasOwnProperty(pop)) {
+        var candi = []
+        if (Array.isArray(obj[pop])) {
+          candi = candi.concat(obj[pop])
+        } else {
+          candi.push(obj[pop].toString())
+        }
+        for (var i = 0; i < candi.length; i++) {
+          this.registerPlugin(pop, candi[i])
+        }
+      }
+    }
+  },
+
+  registerPlugin: function (plugin, command) {
+    if (this.plugins.hasOwnProperty(plugin)) {
+      if (Array.isArray(command)) {
+        this.plugins[plugin].concat(command)
+      }
+      this.plugins[plugin].push(command)
+    }
+  },
+
+  registerCommandsObject: function (obj) {
+    this.commands = Object.assign({}, this.commands, obj)
+  },
+
+  registerTranscriptionHooksObject: function (obj) {
+    this.transcriptionHooks = Object.assign({}, this.transcriptionHooks, obj)
+  },
+
+  registerActionsObject: function (obj) {
+    this.actions = Object.assign({}, this.actions, obj)
+  },
+
+  registerResponseHooksObject: function (obj) {
+    this.responseHooks = Object.assign({}, this.actions, obj)
+  },
+
+
+  t: function(a) {
+    log("!!!!!", a)
   },
 
 
@@ -98,13 +171,13 @@ Module.register("MMM-AssistantMk2", {
       for (key in item) {
         if (item.hasOwnProperty(key)) {
           if (typeof result[key] === "object" && result[key] && Object.prototype.toString.call(result[key]) !== "[object Array]" ) {
-              if (typeof item[key] === "object" && item[key] !== null) {
-                  result[key] = this.configAssignment({}, result[key], item[key])
-              } else {
-                  result[key] = item[key]
-              }
-          } else {
+            if (typeof item[key] === "object" && item[key] !== null) {
+              result[key] = this.configAssignment({}, result[key], item[key])
+            } else {
               result[key] = item[key]
+            }
+          } else {
+            result[key] = item[key]
           }
         }
       }
@@ -174,13 +247,14 @@ Module.register("MMM-AssistantMk2", {
     switch (noti) {
       case "DOM_OBJECTS_CREATED":
         this.sendSocketNotification("INIT", this.helperConfig)
-        if (this.config.developer) this.FullScreen(true) // for developing Dom
+        if (this.config.developer) this.fullScreen(true) // for developing Dom
         this.prepareResponse()
         break
       case "ASSISTANT_PROFILE":
         this.setProfile(payload)
         break
       case "ASSISTANT_ACTIVATE":
+        this.doPlugin("onActivated", payload)
         var session = Date.now()
         if (typeof payload.callback == "function") {
           this.session[session] = {
@@ -190,37 +264,11 @@ Module.register("MMM-AssistantMk2", {
           delete payload.callback
         }
         this.activateAssistant(payload, session)
-        if (this.config.showModule && this.config.responseConfig.useFullScreenAnswer) this.FullScreen(true)
+        if (this.config.showModule && this.config.responseConfig.useFullScreenAnswer) this.fullScreen(true)
 
         // Activation Chime only on notificationReceived
         if (this.config.responseConfig.useChime) this.playChime("beep")
     }
-  },
-
-  FullScreen: function(status) {
-  var self = this
-  var AMK2 = document.getElementById("AMK2FS")
-  if (status) {
-  // fullscreen on
-  log("Fullscreen: " + status)
-  MM.getModules().exceptModule(this).enumerate(function(module) {
-                   module.hide(15, null, {lockString: self.identifier})
-              });
-  AMK2.classList.remove("hidden")
-  AMK2.classList = "in"
-  }
-  else {
-  log("Fullscreen: false")
-                AMK2.classList.remove("in")
-                AMK2.classList = "out"
-  setTimeout (() => {
-  AMK2.classList.add("hidden")
-  MM.getModules().exceptModule(this).enumerate(function(module) {
-  module.show(1000, null, {lockString: self.identifier})
-  });
-  } , 1000) // timeout set to 1s for fadeout
-  }
-
   },
 
   socketNotificationReceived: function(noti, payload) {
@@ -250,30 +298,29 @@ Module.register("MMM-AssistantMk2", {
         } else {
           this.startResponse(payload)
         }
-
         break
       case "TUNNEL":
         console.log(payload.type, payload.payload.transcription, payload.payload.done)
-  if (payload.payload.done) this.AMK2Status("confirmation")
+        if (payload.payload.done) this.AMK2Status("confirmation")
         if (payload.payload.transcription) {
           var tr = document.getElementById("AMK2_TRANSCRIPTION")
           tr.innerHTML = "<p>" + payload.payload.transcription + "</p>"
 
-    // temp -> for continue conversation -> hide when transcription
-    if(this.notEnd && this.Tcount == 0) { // run it one time
-  var winh = document.getElementById("AMK2_HELPER")
+          // temp -> for continue conversation -> hide when transcription
+          if(this.notEnd && this.Tcount == 0) { // run it one time
+            var winh = document.getElementById("AMK2_HELPER")
             winh.classList.add("hidden")
-      var iframe = document.getElementById("AMK2_SCREENOUTPUT")
-      iframe.src = "about:blank" // and unset
-    }
-    this.Tcount += 1
+            var iframe = document.getElementById("AMK2_SCREENOUTPUT")
+            iframe.src = "about:blank" // and unset
+          }
+          this.Tcount += 1
         }
         break
     }
   },
 
   parseLoadedRecipe: function(payload) {
-    const keywords = ["commands", "transcriptionHooks"]
+    //const keywords = ["commands", "transcriptionHooks", "responseHooks", "actions", "plugins"]
     let reviver = (key, value) => {
       if (typeof value === 'string' && value.indexOf('__FUNC__') === 0) {
         value = value.slice(8)
@@ -283,11 +330,21 @@ Module.register("MMM-AssistantMk2", {
       return value
     }
     var p = JSON.parse(payload, reviver)
-    for (var i=0; i < keywords.length; i++) {
-      var k = keywords[i]
-      if (p.hasOwnProperty(k)) {
-        this.config[k] = [].concat(this.config[k], p[k])
-      }
+
+    if (p.hasOwnProperty("commands")) {
+      this.registerCommandsObject(p.commands)
+    }
+    if (p.hasOwnProperty("actions")) {
+      this.registerActionsObject(p.actions)
+    }
+    if (p.hasOwnProperty("transcriptionHooks")) {
+      this.registerTranscriptionHooksObject(p.transcriptionHooks)
+    }
+    if (p.hasOwnProperty("responseHooks")) {
+      this.registerResponseHooksObject(p.responseHooks)
+    }
+    if (p.hasOwnProperty("plugins")) {
+      this.registerPluginsObject(p.plugins)
     }
   },
 
@@ -364,7 +421,7 @@ Module.register("MMM-AssistantMk2", {
         }, null)
         return
       } else {
-        err.innerHTML = "<p>" + this.translate(response.error.message) + "</p>"
+        err.innerHTML = "<p>" + this.translate(response.error) + "</p>"
         this.AError = true
         this.AMK2Status("error")
       }
@@ -372,35 +429,138 @@ Module.register("MMM-AssistantMk2", {
       this.AMK2Status("reply")
     }
 
-    var url = (uri) => {
-      return "/modules/MMM-AssistantMk2/" + uri + "?seed=" + Date.now()
+    var normalResponse = () => {
+      var url = (uri) => {
+        return "/modules/MMM-AssistantMk2/" + uri + "?seed=" + Date.now()
+      }
+      if (response.screen && this.config.responseConfig.useScreenOutput) {
+        this.showingResponse = true
+        var iframe = document.getElementById("AMK2_SCREENOUTPUT")
+        iframe.src = url(response.screen.uri)
+        var winh = document.getElementById("AMK2_HELPER")
+        winh.classList.remove("hidden")
+      }
+      if (response.audio && this.config.responseConfig.useAudioOutput) {
+        this.showingResponse = true
+        var audioSrc = document.getElementById("AMK2_AUDIO_RESPONSE")
+        audioSrc.src = url(response.audio.uri)
+      } else {
+        log("Error: No Audio !")
+        this.endResponse()
+      }
     }
 
-    if (response.screen && this.config.responseConfig.useScreenOutput) {
-      this.showingResponse = true
-      var iframe = document.getElementById("AMK2_SCREENOUTPUT")
-      iframe.src = url(response.screen.uri)
-      var winh = document.getElementById("AMK2_HELPER")
-      winh.classList.remove("hidden")
-    }
-    if (response.audio && this.config.responseConfig.useAudioOutput) {
-      this.showingResponse = true
-      var audioSrc = document.getElementById("AMK2_AUDIO_RESPONSE")
-      audioSrc.src = url(response.audio.uri)
+    if (this.AError) {
+      normalResponse()
     } else {
-      log("Error: No Audio !")
-      this.endResponse()
+      this.postProcess(response, ()=>{
+        normalResponse()
+      })
     }
   },
 
-/* not needed -> to del ?
-  onEndedAudioResponse: function() {
-    log("Audio response is finished."
-    this.endResponse()
+  postProcess: function (response, callback=()=>{}) {
+    var postProccessed = false
+    var foundHook = []
+    foundHook = this.findTranscriptionHook(response)
+    if (foundHook.length > 0) {
+      for (var i = 0; i < foundHook.length; i++) {
+        var hook = foundHook[i]
+        this.doCommand(hook.hook.command, hook.match, hook.id)
+        postProcessed = true
+      }
+    }
+
+    console.log("!!!!")
+    if (postProcessed) {
+      this.endResponse()
+      //? How to close transcription part? If postP
+    } else {
+      callback()
+    }
   },
-*/
+
+  closeTranscription: function () {
+    var winh = document.getElementById("AMK2FS")
+    winh.classList.add("hidden")
+  },
+
+  findTranscriptionHook: function (response) {
+    var foundHook = []
+    var transcription = response.transcription
+    for (var k in this.transcriptionHooks) {
+      if (!this.transcriptionHooks.hasOwnProperty(k)) continue
+      var hook = this.transcriptionHooks[k]
+      if (hook.pattern && hook.command) {
+        var pattern = new RegExp(hook.pattern, "ig")
+        var found = pattern.exec(transcription)
+        if (found !== null) {
+          foundHook.push({"id":k, "match":found, "hook":hook})
+          log("TranscriptionHook matched:", k)
+        }
+      } else {
+        log(`TranscriptionHook:${k} has invalid format`)
+        continue
+      }
+    }
+    return foundHook
+  },
+
+  doCommand: function (commandId, originalParam, from) {
+    if (this.commands.hasOwnProperty(commandId)) {
+      var command = this.commands[commandId]
+    } else {
+      return
+    }
+    var param = (typeof originalParam == "object") ? Object.assign({}, originalParam) : originalParam
+
+    if (command.hasOwnProperty("notificationExec")) {
+      var ne = command.notificationExec
+      if (ne.notification) {
+        var fnen = (typeof ne.notification == "function") ?  ne.notification(param, from) : ne.notification
+        var nep = (ne.payload) ? ((typeof ne.payload == "function") ?  ne.payload(param, from) : ne.payload) : null
+        var fnep = (typeof nep == "object") ? Object.assign({}, nep) : nep
+        log (`Command ${commandId} is executed (notificationExec).`)
+        this.sendNotification(fnen, fnep)
+      }
+    }
+
+    if (command.hasOwnProperty("shellExec")) {
+      var se = command.shellExec
+      if (se.exec) {
+        var fs = (typeof se.exec == "function") ? se.exec(param, from) : se.exec
+        var so = (se.options) ? ((typeof se.options == "function") ? se.options(param, from) : se.options) : null
+        var fo = (typeof so == "function") ? so(param, key) : so
+        log (`Command ${commandId} is executed (shellExec).`)
+        this.sendSocketNotification("SHELLEXEC", {command:fs, options:fo})
+      }
+    }
+
+    if (command.hasOwnProperty("moduleExec")) {
+      var me = command.moduleExec
+      var mo = (typeof me.module == 'function') ? me.module(param, from) : me.module
+      var m = (Array.isArray(mo)) ? mo : new Array(mo)
+      if (typeof me.exec == "function") {
+        MM.getModules().enumerate((mdl)=>{
+          if (m.length == 0 || (m.indexOf(mdl.name) >=0)) {
+            log (`Command ${commandId} is executed (moduleExec) for :`, mdl.name)
+            me.exec(mdl, param, from)
+          }
+        })
+      }
+    }
+
+    if (command.hasOwnProperty("functionExec")) {
+      var fe = command.functionExec
+      if (typeof fe.exec == "function") {
+        log (`Command ${commandId} is executed (functionExec)`)
+        fe.exec(param, from)
+      }
+    }
+  },
 
   endResponse: function() {
+    this.closeTranscription()
     this.Tcount = 0 // Response end -> reset Tcount
     if (this.continue) {
       log("Continuous Conversation")
@@ -411,18 +571,20 @@ Module.register("MMM-AssistantMk2", {
         lang: this.lastQuery.lang,
         useScreenOutput: this.lastQuery.useScreenOutput,
       }, null)
-    }
-    else {
+    } else {
       if(!this.notEnd && !this.AError) this.AMK2Status("standby")
       clearTimeout(this.aliveTimer)
       this.aliveTimer = null
       this.aliveTimer = setTimeout(()=>{
+        /*
         if (!this.continue) this.lastQuery = null
         if (!this.notEnd) {
-          log("Conversation ends.")
           this.stopResponse()
-          this.restart()
+          //this.restart()
         }
+        */
+        log("Conversation ends.")
+        this.doPlugin("onInactivated")
       },  this.config.responseConfig.reactiveTimer)
     }
   },
@@ -441,7 +603,6 @@ Module.register("MMM-AssistantMk2", {
 
   restart: function() {
     log("Need Restart: Main loop !")
-
     // unset all var
     clearTimeout(this.aliveTimer) // clear timer ?
     this.aliveTimer = null
@@ -450,9 +611,12 @@ Module.register("MMM-AssistantMk2", {
     this.session = {}
     this.Tcount = 0
 
-    if (this.config.showModule && this.config.responseConfig.useFullScreenAnswer) this.FullScreen(false)
+    if (this.config.showModule && this.config.responseConfig.useFullScreenAnswer) this.fullScreen(false)
 
     // send RESUME notification to Hotword... I'm Ready !
+
+
+
     this.sendNotification("HOTWORD_RESUME")
   },
 
@@ -482,6 +646,31 @@ Module.register("MMM-AssistantMk2", {
     } else {
       myStatus.classList.add(status)
       this.sendMyStatus(status) // send status to other module
+    }
+  },
+
+  fullScreen: function(status) {
+    var self = this
+    var AMK2 = document.getElementById("AMK2FS")
+    if (status) {
+      // fullscreen on
+      log("Fullscreen: " + status)
+      MM.getModules().exceptModule(this).enumerate(function(module) {
+        module.hide(15, null, {lockString: self.identifier})
+      })
+      AMK2.classList.remove("hidden")
+      AMK2.classList = "in"
+    }
+    else {
+      log("Fullscreen: false")
+      AMK2.classList.remove("in")
+      AMK2.classList = "out"
+      setTimeout (() => {
+        AMK2.classList.add("hidden")
+        MM.getModules().exceptModule(this).enumerate(function(module) {
+          module.show(1000, null, {lockString: self.identifier})
+        })
+      }, 1000) // timeout set to 1s for fadeout
     }
   },
 
