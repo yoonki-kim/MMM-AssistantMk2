@@ -1,8 +1,12 @@
 # Developer Notes
 
-#2019/12/10 -- eouia
+## 2019/12/10 -- Bugsounet
+- Correct fullscreen Hidden / Showing
+- Add Official Google Open / Close Beep (will be use later)
+
+## 2019/12/10 -- eouia
 **[commit:eouia_191210_1]**
-- configuration merging with `configAssignment`
+- configuration merging with `configAssignment` - **this.config.debug will not set for components (Bugsounet)**
 
 ## 2019/12/09 -- eouia
 **[commit:eouia_191209]**

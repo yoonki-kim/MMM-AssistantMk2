@@ -349,11 +349,11 @@ Module.register("MMM-AssistantMk2", {
   },
 
   suspend: function() {
-    log("This module cannot be suspended.")
+    console.log("[AMK2] This module cannot be suspended.")
   },
 
   resume: function() {
-    log("This module cannot be resumed.")
+    console.log("[AMK2] This module cannot be resumed.")
   },
 
   activateAssistant: function(payload, session) {

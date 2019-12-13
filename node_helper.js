@@ -101,6 +101,16 @@ module.exports = NodeHelper.create({
     this.loadRecipes(()=>{
       this.sendSocketNotification("INITIALIZED")
     })
+    this.cleanUptmp()
+    console.log("[AMK2] AssistantMk2 v3 is initialized.")
+  },
+
+  cleanUptmp: function() {
+    var tmp = path.resolve(__dirname, "tmp")
+    var command = "cd " + tmp + "; rm *.mp3; rm *.html"
+    exec(command, (error,stdout, stderr)=>{
+      log("tmp directory is now cleaned.")
+    })
   },
 
   loadRecipes: function(callback=()=>{}) {
