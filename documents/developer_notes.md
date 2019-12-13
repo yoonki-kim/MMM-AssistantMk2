@@ -1,4 +1,10 @@
 # Developer Notes
+## 2019/12/13 -- eouia
+**[commit:eouia_191213]**
+- Still working, not completed. just snap.
+- basic `commands`, `plugins`, `transcriptionHooks` mechanism added.
+- Replace `HOTWORD_RESUME` or similar works to `plugins` (See `recipes/with-MMM-Hotword.js`)
+- I'll refactor strategy of conversation and response flow. I don't like current.
 
 ## 2019/12/10 -- Bugsounet
 - Correct fullscreen Hidden / Showing
