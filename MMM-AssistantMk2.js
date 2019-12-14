@@ -247,7 +247,7 @@ Module.register("MMM-AssistantMk2", {
     switch (noti) {
       case "DOM_OBJECTS_CREATED":
         this.sendSocketNotification("INIT", this.helperConfig)
-        if (this.config.developer) this.fullScreen(true) // for developing Dom
+        //if (this.config.developer) this.fullScreen(true) // for developing Dom
         this.prepareResponse()
         break
       case "ASSISTANT_PROFILE":
@@ -460,7 +460,7 @@ Module.register("MMM-AssistantMk2", {
   },
 
   postProcess: function (response, callback=()=>{}) {
-    var postProccessed = false
+    var postProcessed = false
     var foundHook = []
     foundHook = this.findTranscriptionHook(response)
     if (foundHook.length > 0) {
@@ -472,16 +472,16 @@ Module.register("MMM-AssistantMk2", {
     }
 
     console.log("!!!!")
-    if (postProcessed) {
-      this.endResponse()
-      // ? How to close transcription part? If postP (eouia) 
+    if (this.config.developer || postProcessed) {
+      if (this.config.developer) console.log('/!\\ Simulation foundHook ACTIVED')
+      // ? How to close transcription part? If postP (eouia)
       // what do you mean by this ? (Bugsounet)
       // close : by blank ? full hidding ? by pass response ?
       // can you be more clear about what do you want to to :)
       // ------------------------------
       // for me process is foundhook :
-      // -> speak -> google -> response -> analyse foundhook : 
-      // *** if found hook :   
+      // -> speak -> google -> response -> analyse foundhook :
+      // *** if found hook :
       // ** I would have to let the voice command message on the screen. (visual confirmation)
       //    Or in transcription p class : display found hook (the one defined in the configuration)
       // ** by pass normal response
@@ -489,11 +489,20 @@ Module.register("MMM-AssistantMk2", {
       // ** Google beep wand executed
       // ** "normal close" Assistant
       // -------------
-      // I think we write this comment in the "foundhook <-> by pass normal response" part
-      
+      // my approach in foundhook : (test ok  by-passed by this.config.developer)
+
+      log("Found hook")
+      this.endHook("Google_beep_open")
     } else {
       callback()
     }
+  },
+
+  endHook: function (sound) {
+    this.continue = false
+    this.notEnd = false // if a conversation continues in progress : by-pass it
+    this.playChime(sound)
+    this.endResponse()
   },
 
   closeTranscription: function () {
@@ -576,7 +585,7 @@ Module.register("MMM-AssistantMk2", {
   },
 
   endResponse: function() {
-    this.closeTranscription()
+    //this.closeTranscription() -> better to use fullscreen(false) but it close helper screen too
     this.Tcount = 0 // Response end -> reset Tcount
     if (this.continue) {
       log("Continuous Conversation")
@@ -592,13 +601,14 @@ Module.register("MMM-AssistantMk2", {
       clearTimeout(this.aliveTimer)
       this.aliveTimer = null
       this.aliveTimer = setTimeout(()=>{
-        /*
+
         if (!this.continue) this.lastQuery = null
         if (!this.notEnd) {
           this.stopResponse()
-          //this.restart()
+          this.fullScreen(false)
+          this.restart()
         }
-        */
+
         log("Conversation ends.")
         this.doPlugin("onInactivated")
       },  this.config.responseConfig.reactiveTimer)
@@ -619,19 +629,17 @@ Module.register("MMM-AssistantMk2", {
 
   restart: function() {
     log("Need Restart: Main loop !")
-    // unset all var
+    // unset all var ! Remember
     clearTimeout(this.aliveTimer) // clear timer ?
     this.aliveTimer = null
     this.lastQuery = null
     this.showingResponse = false
     this.session = {}
     this.Tcount = 0
-
-    if (this.config.showModule && this.config.responseConfig.useFullScreenAnswer) this.fullScreen(false)
+    this.continue = false
+    this.notEnd = false
 
     // send RESUME notification to Hotword... I'm Ready !
-
-
 
     this.sendNotification("HOTWORD_RESUME")
   },
@@ -666,27 +674,29 @@ Module.register("MMM-AssistantMk2", {
   },
 
   fullScreen: function(status) {
-    var self = this
-    var AMK2 = document.getElementById("AMK2FS")
-    if (status) {
-      // fullscreen on
-      log("Fullscreen: " + status)
-      MM.getModules().exceptModule(this).enumerate(function(module) {
-        module.hide(15, null, {lockString: self.identifier})
-      })
-      AMK2.classList.remove("hidden")
-      AMK2.classList = "in"
-    }
-    else {
-      log("Fullscreen: false")
-      AMK2.classList.remove("in")
-      AMK2.classList = "out"
-      setTimeout (() => {
-        AMK2.classList.add("hidden")
+    if (this.config.showModule && this.config.responseConfig.useFullScreenAnswer) {
+      var self = this
+      var AMK2 = document.getElementById("AMK2FS")
+      if (status) {
+        // fullscreen on
+        log("Fullscreen: " + status)
         MM.getModules().exceptModule(this).enumerate(function(module) {
-          module.show(1000, null, {lockString: self.identifier})
+          module.hide(15, null, {lockString: self.identifier})
         })
-      }, 1000) // timeout set to 1s for fadeout
+        AMK2.classList.remove("hidden")
+        AMK2.classList = "in"
+      }
+      else {
+        log("Fullscreen: false")
+        AMK2.classList.remove("in")
+        AMK2.classList = "out"
+        setTimeout (() => {
+          AMK2.classList.add("hidden")
+          MM.getModules().exceptModule(this).enumerate(function(module) {
+            module.show(1000, null, {lockString: self.identifier})
+          })
+        }, 1000) // timeout set to 1s for fadeout
+      }
     }
   },
 
