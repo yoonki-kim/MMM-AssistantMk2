@@ -1,4 +1,10 @@
 # Developer Notes
+
+## 2019/12/13 -- Bugsounet
+- **my approach of the end of the foundHook code** -- test ok by force-mode (conf developer)
+- create endHook(sound) payload : name of the mp3 sound to play for confirm
+- correct fullScreen(screen) screen: true -> fullscren mode // false -> close fullscreen (with animation)
+
 ## 2019/12/13 -- eouia
 **[commit:eouia_191213]**
 - Still working, not completed. just snap.
