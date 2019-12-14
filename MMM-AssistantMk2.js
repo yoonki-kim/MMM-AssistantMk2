@@ -474,7 +474,23 @@ Module.register("MMM-AssistantMk2", {
     console.log("!!!!")
     if (postProcessed) {
       this.endResponse()
-      //? How to close transcription part? If postP
+      // ? How to close transcription part? If postP (eouia) 
+      // what do you mean by this ? (Bugsounet)
+      // close : by blank ? full hidding ? by pass response ?
+      // can you be more clear about what do you want to to :)
+      // ------------------------------
+      // for me process is foundhook :
+      // -> speak -> google -> response -> analyse foundhook : 
+      // *** if found hook :   
+      // ** I would have to let the voice command message on the screen. (visual confirmation)
+      //    Or in transcription p class : display found hook (the one defined in the configuration)
+      // ** by pass normal response
+      // ** execute foundhook
+      // ** Google beep wand executed
+      // ** "normal close" Assistant
+      // -------------
+      // I think we write this comment in the "foundhook <-> by pass normal response" part
+      
     } else {
       callback()
     }
