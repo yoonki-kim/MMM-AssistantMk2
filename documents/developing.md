@@ -67,6 +67,7 @@
       useAudioOutput: true,
       useFullScreenAnswer: true,
       useChime: true,
+      myMagicWord: false,
       reactiveTimer: 5000,
       screenOutputCSS: "screen_output.css",
     },

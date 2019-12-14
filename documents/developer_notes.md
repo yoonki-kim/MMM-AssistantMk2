@@ -1,5 +1,13 @@
 # Developer Notes
 
+## 2019/12/14 -- Bugsounet
+- Add Hook icon (not tested recipe issue) 
+- Write `displayTranscription(text)` for write text in AMK2_TRANSCRIPTION field
+- Add `MyMagicWord` Feature For IFTTT magicword real say mode
+- Add default Translation to EN and complete FR
+- Add `TelegramBot Command /s & /q`
+- Add code `ASSISTANT_SAY <text>` / `ASSISTANT_QUERY <text>`
+
 ## 2019/12/13 -- Bugsounet
 - **my approach of the end of the foundHook code** -- test ok by force-mode (conf developer)
 - create endHook(sound) payload : name of the mp3 sound to play for confirm

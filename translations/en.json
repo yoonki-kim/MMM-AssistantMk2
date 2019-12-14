@@ -1,4 +1,9 @@
 {
 	"TOO_SHORT_CONTINUE" : "Sorry, I don't understand. Can you repeat please?",
-	"TOO_SHORT" : "Sorry, I don't understand."
+	"TOO_SHORT" : "Sorry, I don't understand.",
+	"REPEAT_WORD" : "Repeat after me",
+	"SAY_REPLY" : "AssistantMk2 will repeat your text: ",
+	"SAY_HELP" : "You can make `MMM-AssistantMk2` to say some text with this command.",
+	"QUERY_REPLY" : "AssistantMk2 will be activated",
+	"QUERY_HELP" : "You can command `AssistantMk2` by text with this command."
 }

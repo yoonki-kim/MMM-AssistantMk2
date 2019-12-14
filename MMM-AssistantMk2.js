@@ -34,6 +34,7 @@ Module.register("MMM-AssistantMk2", {
       useChime: true,
       reactiveTimer: 5000,
       screenOutputCSS: "screen_output.css",
+      myMagicWord: false, // defined word with IFTTT magicword to REAL text to speech or false
     },
     micConfig: {
       recorder: "sox",
@@ -95,12 +96,13 @@ Module.register("MMM-AssistantMk2", {
     this.setProfile(this.config.defaultProfile)
     this.aliveTimer = null
     this.showingResponse = false
-    this.continue = false
-    this.notEnd = false
+    this.continue = false // for continue conversation condition
+    this.notEnd = false // Real Continue conversation Google Flag (Bugsounet)
     this.lastQuery = null
     this.session = {}
-    this.Tcount = 0
-    this.AError = false
+    this.Tcount = 0 // "Letter" Transcription count
+    this.AError = false // Assistant Error Flag
+    this.sayMode = false // ASSISTANT_SAY Flag
   },
 
   doPlugin: function(pluginName, args) {
@@ -264,11 +266,28 @@ Module.register("MMM-AssistantMk2", {
           delete payload.callback
         }
         this.activateAssistant(payload, session)
-        if (this.config.showModule && this.config.responseConfig.useFullScreenAnswer) this.fullScreen(true)
-
+        this.fullScreen(true)
         // Activation Chime only on notificationReceived
         if (this.config.responseConfig.useChime) this.playChime("beep")
-    }
+        break
+      case "ASSISTANT_SAY":
+        var text = payload
+        var magicQuery = "%REPEATWORD% %TEXT%" // initial expression
+        var myWord = this.config.responseConfig.myMagicWord ? this.config.responseConfig.myMagicWord : this.translate("REPEAT_WORD") // config word or default ?
+        this.sayMode = true
+        magicQuery = magicQuery.replace("%REPEATWORD%", myWord) // replace by myWord found
+        magicQuery = magicQuery.replace("%TEXT%", text) // finally place the text
+        this.fullScreen(true)
+        this.activateAssistant({ type: "TEXT", key: magicQuery }, null)
+        break
+      case "ASSISTANT_QUERY":
+        this.fullScreen(true)
+        this.activateAssistant({
+          type: "TEXT",
+          key: payload
+        }, null)
+        break
+     }
   },
 
   socketNotificationReceived: function(noti, payload) {
@@ -303,8 +322,7 @@ Module.register("MMM-AssistantMk2", {
         console.log(payload.type, payload.payload.transcription, payload.payload.done)
         if (payload.payload.done) this.AMK2Status("confirmation")
         if (payload.payload.transcription) {
-          var tr = document.getElementById("AMK2_TRANSCRIPTION")
-          tr.innerHTML = "<p>" + payload.payload.transcription + "</p>"
+          this.displayTranscription(payload.payload.transcription)
 
           // temp -> for continue conversation -> hide when transcription
           if(this.notEnd && this.Tcount == 0) { // run it one time
@@ -465,6 +483,7 @@ Module.register("MMM-AssistantMk2", {
     foundHook = this.findTranscriptionHook(response)
     if (foundHook.length > 0) {
       for (var i = 0; i < foundHook.length; i++) {
+        if (i == 0) this.AMK2Status("hook") // Just display one time hook icon
         var hook = foundHook[i]
         this.doCommand(hook.hook.command, hook.match, hook.id)
         postProcessed = true
@@ -638,6 +657,7 @@ Module.register("MMM-AssistantMk2", {
     this.Tcount = 0
     this.continue = false
     this.notEnd = false
+    this.sayMode = false
 
     // send RESUME notification to Hotword... I'm Ready !
 
@@ -647,7 +667,7 @@ Module.register("MMM-AssistantMk2", {
   AMK2Status: function(status) { // live change of AMK2 icons
     var myStatus = document.getElementById("AMK2_STATUS")
 
-    var allStatus = [ "standby", "replay", "error", "think", "continue", "listen", "confirmation" ]
+    var allStatus = [ "standby", "replay", "error", "think", "continue", "listen", "confirmation", "hook" ]
     for (let [item,value] of Object.entries(allStatus)) {
       if(myStatus.classList.contains(value)) myStatus.classList.remove(value)
     }
@@ -725,8 +745,43 @@ Module.register("MMM-AssistantMk2", {
 
   getTranslations: function() {
     return {
-      fr: "translations/fr.json",
-      en: "translations/en.json"
+      en: "translations/en.json",
+      fr: "translations/fr.json"
+    }
+  },
+
+  displayTranscription: function(text) {
+	if (!this.sayMode) {
+	  var tr = document.getElementById("AMK2_TRANSCRIPTION")
+      tr.innerHTML = "<p>" + text + "</p>"
+    }
+  },
+
+  // *** Optional TelegramBot Commands ** //
+
+  getCommands: function () {
+    return [
+      {
+        command: "q",
+        callback: "telegramCommand",
+        description: this.translate("QUERY_HELP")
+      },
+      {
+        command: "s",
+        callback: "telegramCommand",
+        description: this.translate("SAY_HELP")
+      }
+    ]
+  },
+
+  telegramCommand: function(command, handler) {
+    if (command == "q" && handler.args) {
+      handler.reply("TEXT", this.translate("QUERY_REPLY"))
+      this.notificationReceived("ASSISTANT_QUERY", handler.args, "MMM-TelegramBot")
+    }
+    if (command == "s" && handler.args) {
+      handler.reply("TEXT", this.translate("SAY_REPLY") + handler.args)
+      this.notificationReceived("ASSISTANT_SAY", handler.args, "MMM-TelegramBot")
     }
   },
 })

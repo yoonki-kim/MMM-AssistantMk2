@@ -110,6 +110,13 @@
   background-size: contain;
 }
 
+#AMK2_STATUS.hook {
+  background-image:url('resources/hook.gif');
+  background-position: -52px -20px;
+  background-repeat: no-repeat;
+  background-size: 200%;
+}
+
 #AMK2_STATUS.reply {
   background-image:url('resources/reply.gif');
   background-position: -60px;
