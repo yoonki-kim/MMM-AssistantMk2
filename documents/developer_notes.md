@@ -2,6 +2,9 @@
 ---
 # Change Logs
 
+## 2019/12/15 &3 -- Bugsounet
+- Upload myMagicWord help documents
+
 ## 2019/12/15 &2 -- Bugsounet
 - Add SoundExec code in hook
 - Create recipe `test_with_soundExec.js` sample
