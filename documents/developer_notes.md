@@ -2,7 +2,11 @@
 ---
 # Change Logs
 
-## 2019/12/15
+## 2019/12/15 &2 -- Bugsounet
+- Add SoundExec code in hook
+- Create recipe `test_with_soundExec.js` sample
+
+## 2019/12/15 -- Bugsounet
 - Correct recipe issue in `MMM-Assistant.js`
 - Adjust `Hook icon` and by-pass
 - correct lockidentifier in `fullScrenn()`
@@ -109,8 +113,11 @@
 ---
 # Testing
 
-## RPI and debian Testing (Bugsounet) (2019/15/12)
+## RPI and Debian Testing (Bugsounet) (2019/15/12)
+### Debian : Buster -- Dev VM platform on Windows 10
+### RPI : Buster
 - grpc: 1.23.4
+- google-assistant : 0.60
 - node: v10.17.0
 - gcc: 7.3.0
 - electron-rebuild: 1.8.8
@@ -118,6 +125,16 @@
 - npm: 6.13.2
 --> install : ok
 --> run : ok
+--> It run in prod for discover some bugs
 ---
 # BuGs to solves
-*
+* ?
+---
+# Todo (2019/12/15)
+* test in other platform --> ?
+* review *design code* --> eouia
+* screen_output.css --> bugsounet
+* real translate error (inventory) --> bugsounet / eouia
+* RPI optimization --> eouia
+* Real Cleaning...
+* npm install --> bugsounet

@@ -81,6 +81,7 @@ Module.register("MMM-AssistantMk2", {
       "debug", "recipes", "customActionConfig", "assistantConfig", "micConfig",
       "responseConfig"
     ]
+    allStatus = [ "hook", "standby", "reply", "error", "think", "continue", "listen", "confirmation" ]
     this.helperConfig = {}
     if (this.config.debug) log = _log
 
@@ -487,7 +488,6 @@ Module.register("MMM-AssistantMk2", {
     this.iFoundHook = false
     var foundHook = []
     foundHook = this.findTranscriptionHook(response)
-    console.log(foundHook.length)
     if (foundHook.length > 0) {
       for (var i = 0; i < foundHook.length; i++) {
         if (i == 0) this.AMK2Status("hook") // Just display one time hook icon
@@ -517,17 +517,16 @@ Module.register("MMM-AssistantMk2", {
       // -------------
       // my approach in foundhook : (test ok  by-passed by this.config.developer)
 
-      this.endHook("Google_beep_open")
+      this.endHook()
     } else {
       callback()
     }
   },
 
-  endHook: function (sound) {
+  endHook: function () {
     this.AMK2Status("hook")
     this.continue = false
     this.notEnd = false // if a conversation continues in progress : by-pass it
-    this.playChime(sound)
     this.endResponse()
   },
 
@@ -608,6 +607,17 @@ Module.register("MMM-AssistantMk2", {
         fe.exec(param, from)
       }
     }
+
+    if (command.hasOwnProperty("soundExec")) {
+      var se = command.sound
+      if (se.chime && typeof se.chime == 'string') {
+        if (se.chime == "open") this.playChime("Google_beep_open")
+        if (se.chime == "close") this.playChime("Google_beep_close")
+      }
+      if (se.say && typeof se.say == 'string' && this.config.responseConfig.myMagicWord) {
+        this.notificationReceived("ASSISTANT_SAY", se.say , this.name)
+      }
+    }
   },
 
   endResponse: function() {
@@ -673,8 +683,6 @@ Module.register("MMM-AssistantMk2", {
 
   AMK2Status: function(status) { // live change of AMK2 icons
     var myStatus = document.getElementById("AMK2_STATUS")
-
-    var allStatus = [ "hook", "standby", "reply", "error", "think", "continue", "listen", "confirmation" ]
     for (let [item,value] of Object.entries(allStatus)) {
       if(myStatus.classList.contains(value)) myStatus.classList.remove(value)
     }
