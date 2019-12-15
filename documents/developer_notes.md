@@ -1,4 +1,12 @@
 # Developer Notes
+---
+# Change Logs
+
+## 2019/12/15
+- Correct recipe issue in `MMM-Assistant.js`
+- Adjust `Hook icon` and by-pass
+- correct lockidentifier in `fullScrenn()`
+- (add visual `demo()` icons ... maybe for later)
 
 ## 2019/12/14 -- Bugsounet
 - Add Hook icon (not tested recipe issue) 
@@ -98,10 +106,18 @@
 - Have you experienced? In this case,(If `TOO_SHORT` && `transcription.done:false` && `transcription.transcription:something not null`), Is it better to query again by TEXT with `transcription.transcription` ?
 - Bugsounet ->> I have it sometime, i have not inpect this bug
 
-### RPI test :
-* grpc@1.23.4
-* node : v10.17.0
-* gcc : 7.3.0
-* electron-rebuild : 1.8.8
-* MagicMirror : 2.9.0
-* > install : ok
+---
+# Testing
+
+## RPI and debian Testing (Bugsounet) (2019/15/12)
+- grpc: 1.23.4
+- node: v10.17.0
+- gcc: 7.3.0
+- electron-rebuild: 1.8.8
+- MagicMirror: 2.9.0
+- npm: 6.13.2
+--> install : ok
+--> run : ok
+---
+# BuGs to solves
+*

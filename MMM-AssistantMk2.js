@@ -103,6 +103,7 @@ Module.register("MMM-AssistantMk2", {
     this.Tcount = 0 // "Letter" Transcription count
     this.AError = false // Assistant Error Flag
     this.sayMode = false // ASSISTANT_SAY Flag
+    this.iFoundHook = false // foundHook special Flag
   },
 
   doPlugin: function(pluginName, args) {
@@ -287,6 +288,11 @@ Module.register("MMM-AssistantMk2", {
           key: payload
         }, null)
         break
+       /*
+       case "ASSISTANT_DEMO":
+         this.demo()
+         break
+       */
      }
   },
 
@@ -478,20 +484,21 @@ Module.register("MMM-AssistantMk2", {
   },
 
   postProcess: function (response, callback=()=>{}) {
-    var postProcessed = false
+    this.iFoundHook = false
     var foundHook = []
     foundHook = this.findTranscriptionHook(response)
+    console.log(foundHook.length)
     if (foundHook.length > 0) {
       for (var i = 0; i < foundHook.length; i++) {
         if (i == 0) this.AMK2Status("hook") // Just display one time hook icon
         var hook = foundHook[i]
         this.doCommand(hook.hook.command, hook.match, hook.id)
-        postProcessed = true
+        this.iFoundHook = true
       }
     }
 
     console.log("!!!!")
-    if (this.config.developer || postProcessed) {
+    if (this.config.developer || this.iFoundHook) {
       if (this.config.developer) console.log('/!\\ Simulation foundHook ACTIVED')
       // ? How to close transcription part? If postP (eouia)
       // what do you mean by this ? (Bugsounet)
@@ -510,7 +517,6 @@ Module.register("MMM-AssistantMk2", {
       // -------------
       // my approach in foundhook : (test ok  by-passed by this.config.developer)
 
-      log("Found hook")
       this.endHook("Google_beep_open")
     } else {
       callback()
@@ -518,6 +524,7 @@ Module.register("MMM-AssistantMk2", {
   },
 
   endHook: function (sound) {
+    this.AMK2Status("hook")
     this.continue = false
     this.notEnd = false // if a conversation continues in progress : by-pass it
     this.playChime(sound)
@@ -531,7 +538,7 @@ Module.register("MMM-AssistantMk2", {
 
   findTranscriptionHook: function (response) {
     var foundHook = []
-    var transcription = response.transcription
+    var transcription = response.transcription.transcription // ! object ! :)
     for (var k in this.transcriptionHooks) {
       if (!this.transcriptionHooks.hasOwnProperty(k)) continue
       var hook = this.transcriptionHooks[k]
@@ -616,7 +623,7 @@ Module.register("MMM-AssistantMk2", {
         useScreenOutput: this.lastQuery.useScreenOutput,
       }, null)
     } else {
-      if(!this.notEnd && !this.AError) this.AMK2Status("standby")
+      if(!this.notEnd && !this.AError && !this.iFoundHook) this.AMK2Status("standby")
       clearTimeout(this.aliveTimer)
       this.aliveTimer = null
       this.aliveTimer = setTimeout(()=>{
@@ -667,7 +674,7 @@ Module.register("MMM-AssistantMk2", {
   AMK2Status: function(status) { // live change of AMK2 icons
     var myStatus = document.getElementById("AMK2_STATUS")
 
-    var allStatus = [ "standby", "replay", "error", "think", "continue", "listen", "confirmation", "hook" ]
+    var allStatus = [ "hook", "standby", "reply", "error", "think", "continue", "listen", "confirmation" ]
     for (let [item,value] of Object.entries(allStatus)) {
       if(myStatus.classList.contains(value)) myStatus.classList.remove(value)
     }
@@ -681,14 +688,18 @@ Module.register("MMM-AssistantMk2", {
 
     // if no Assistant Error, take place to the new one
 
-    if (this.AError) {
-      myStatus.classList.add("error")
+    if (this.AError || this.iFoundHook) {
+      myStatus.classList.add((status == "error") ? "error" : "hook")
       setTimeout(() => {
         this.AError = false
+        this.iFoundHook = false
         this.AMK2Status("standby")
       } , this.config.responseConfig.reactiveTimer )
     } else {
       myStatus.classList.add(status)
+      //for (let [item,value] of Object.entries(allStatus)) {
+      //  if(myStatus.classList.contains(value)) console.log("value: " + value + " " + myStatus.classList.contains(value))
+      //}
       this.sendMyStatus(status) // send status to other module
     }
   },
@@ -701,7 +712,7 @@ Module.register("MMM-AssistantMk2", {
         // fullscreen on
         log("Fullscreen: " + status)
         MM.getModules().exceptModule(this).enumerate(function(module) {
-          module.hide(15, null, {lockString: self.identifier})
+          module.hide(15, {lockString: self.identifier})
         })
         AMK2.classList.remove("hidden")
         AMK2.classList = "in"
@@ -713,7 +724,7 @@ Module.register("MMM-AssistantMk2", {
         setTimeout (() => {
           AMK2.classList.add("hidden")
           MM.getModules().exceptModule(this).enumerate(function(module) {
-            module.show(1000, null, {lockString: self.identifier})
+            module.show(1000, {lockString: self.identifier})
           })
         }, 1000) // timeout set to 1s for fadeout
       }
@@ -784,4 +795,60 @@ Module.register("MMM-AssistantMk2", {
       this.notificationReceived("ASSISTANT_SAY", handler.args, "MMM-TelegramBot")
     }
   },
+
+  /** demo for check if icons are ok ... (or for video demo later?) **/
+  /*
+  demo: function() {
+	//this.notificationReceived("ASSISTANT_SAY", "this is a demo with animated icons" , this.name)
+    var allStatus = [ "hook", "standby", "reply", "error", "think", "continue", "listen", "confirmation" ]
+    var myStatus = document.getElementById("AMK2_STATUS")
+    for (let [item,value] of Object.entries(allStatus)) {
+      if(myStatus.classList.contains(value)) myStatus.classList.remove(value)
+    }
+    this.fullScreen(true)
+    myStatus.classList.add("standby")
+    this.displayTranscription("Stand-by icon")
+    setTimeout(() => {
+	  myStatus.classList.remove("standby")
+      myStatus.classList.add("reply")
+      this.displayTranscription("Reply icon")
+    } , 4000)
+    setTimeout(() => {
+      myStatus.classList.remove("reply")
+      myStatus.classList.add("think")
+      this.displayTranscription("Think icon")
+    } , 8000)
+    setTimeout(() => {
+      myStatus.classList.remove("think")
+      myStatus.classList.add("listen")
+      this.displayTranscription("Listen icon")
+    } , 12000)
+    setTimeout(() => {
+      myStatus.classList.remove("listen")
+      myStatus.classList.add("continue")
+      this.displayTranscription("Continue Conversation icon")
+    } , 16000)
+    setTimeout(() => {
+      myStatus.classList.remove("continue")
+      myStatus.classList.add("confirmation")
+      this.displayTranscription("Confirmation icon")
+    } , 20000)
+    setTimeout(() => {
+      myStatus.classList.remove("confirmation")
+      myStatus.classList.add("error")
+      this.displayTranscription("Error icon")
+    } , 24000)
+    setTimeout(() => {
+      myStatus.classList.remove("error")
+      myStatus.classList.add("hook")
+      this.displayTranscription("Hook icon")
+    } , 28000)
+    setTimeout(() => {
+      myStatus.classList.remove("hook")
+      myStatus.classList.add("standby")
+      this.displayTranscription(" ")
+      this.fullScreen(false)
+    } , 32000)
+  },
+  */
 })

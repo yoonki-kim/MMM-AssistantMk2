@@ -94,7 +94,6 @@
 }
 
 #AMK2_STATUS {
-  background-color:#f3f3f3;
   box-sizing:border-box;
   height:100px;
   width:100px;
@@ -108,13 +107,6 @@
   background-position: 0px 2px;
   background-repeat: no-repeat;
   background-size: contain;
-}
-
-#AMK2_STATUS.hook {
-  background-image:url('resources/hook.gif');
-  background-position: -52px -20px;
-  background-repeat: no-repeat;
-  background-size: 200%;
 }
 
 #AMK2_STATUS.reply {
@@ -164,6 +156,13 @@
   background-position: 0px 2px;
   background-repeat: no-repeat;
   background-size: contain;
+}
+
+#AMK2_STATUS.hook {
+  background-image:url('resources/hook.gif');
+  background-position : -46px -15px;
+  background-repeat: no-repeat;
+  background-size: 195%;
 }
 
 #AMK2_TRANSCRIPTION {
