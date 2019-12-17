@@ -2,6 +2,10 @@
 ---
 # Change Logs
 
+## 2019/12/17
+- Create postinstall script
+- Remove MyMagicWord and take place to new
+
 ## 2019/12/15 &3 -- Bugsounet
 - Upload myMagicWord help documents
 
