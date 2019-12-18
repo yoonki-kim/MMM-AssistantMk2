@@ -1,6 +1,13 @@
 # Developer Notes
 ---
 # Change Logs
+## 2019/12/18 -- eouia
+- Refactoring logics about handling response.
+  - Many codes are missing due to Refactoring, sorry.
+- plugins, transcriptionHooks, actions be implemented. (Some features still could be missing. I'll do later). Read added docs.
+- Basically, I want to keep this module as simple and universal as possible. If extended features be needed, it should be extendable with a recipe instead adding specific code for that feature to module source.
+By Example, I don't want to add `YouTube` related feature to module code itself. Instead, serve `youtube.recipe.js` for that. If needed, some kind of code which be required for making extended recipe, could be implemented, but not specific feature itself.
+
 
 ## 2019/12/15
 - Correct recipe issue in `MMM-Assistant.js`
@@ -9,7 +16,7 @@
 - (add visual `demo()` icons ... maybe for later)
 
 ## 2019/12/14 -- Bugsounet
-- Add Hook icon (not tested recipe issue) 
+- Add Hook icon (not tested recipe issue)
 - Write `displayTranscription(text)` for write text in AMK2_TRANSCRIPTION field
 - Add `MyMagicWord` Feature For IFTTT magicword real say mode
 - Add default Translation to EN and complete FR

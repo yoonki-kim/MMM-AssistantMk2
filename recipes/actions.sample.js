@@ -25,6 +25,15 @@ var recipe = {
     }
   },
 
+  commands: {
+    "COMMAND_TEST": {
+      functionExec:{
+        exec: (params)=> {
+          console.log(">", params)
+        }
+      }
+    }
+  }
 }
 
 exports.recipe = recipe // Don't remove this line.

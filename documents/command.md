@@ -1,4 +1,7 @@
 # command
+- `command` will be the main job of all Hooks (transcriptionHook, action, plugin, responseHook)
+
+
 
 ## Structure
 ```js
@@ -16,16 +19,16 @@ commands: {
 
 ## command types
 - notificationExec
-  - notification
-  - payload
+  - notification : string || (param, from)=>{ return string}
+  - payload : object || variables || (param, from)=> {return object or variable}
 - shellExec
-  - exec
-  - options
+  - exec : string || (param, from)=>{ return string}
+  - options : string || (param, from)=>{ return string}
 - moduleExec
-  - module
-  - exec
+  - module : string || Array of string || (param, from)=>{ return string or Array of string}
+  - exec : (module, param, from)=>{}
 - functionExec
-  - exec
+  - exec : (param, from)=>{}
 
 ## static and dynamic execution.
 ### Static example

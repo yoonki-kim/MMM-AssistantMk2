@@ -1,10 +1,4 @@
 var recipe = {
-  transcriptionHooks: {
-    // Describe your transcriptionHook here.
-  },
-  actions: {
-    // Describe your custom Action here.
-  },
   commands: {
     // Describe your command here.
     "CMD_HOTWORD_PAUSE": {
@@ -27,8 +21,8 @@ var recipe = {
     }
   },
   plugins: {
-    onActivated: "CMD_HOTWORD_PAUSE",
-    onInactivated: "CMD_HOTWORD_RESUME"
+    onBeforeActivated: "CMD_HOTWORD_PAUSE",
+    onAfterInactivated: "CMD_HOTWORD_RESUME"
     // Describe your plugin here.
   },
 }

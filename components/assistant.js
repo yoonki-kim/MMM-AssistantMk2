@@ -137,14 +137,14 @@ class ASSISTANT {
     })
     .on('transcription', (data) => {
       log("CONVERSATION:TRANSCRIPTION", data)
-      this.tunnel({type: "TRANSCIPTION", payload:data})
+      this.tunnel({type: "TRANSCRIPTION", payload:data})
       this.response.transcription = data
       // {transcription:String, done:Boolean} or null
       //this.tunnel("TRANSCRIPTION", data)
     })
     .on('device-action', (action) => {
       log("CONVERSATION:ACTION", action)
-      this.response.action = action
+      this.response.action = Object.assign({}, this.response.action, action)
     })
     .on('response', (text) => {
       log("CONVERSATION:RESPONSE", text)
@@ -180,7 +180,7 @@ class ASSISTANT {
         this.response.continue = false
       }
       if (originalPayload.type == "TEXT" && !this.response.transcription) {
-        this.response.transcription = originalPayload.key
+        this.response.transcription = {transcription: originalPayload.key, done: true}
       }
       if (b2w.getAudioLength() > 50) {
         log("CONVERSATION_PP:RESPONSE_AUDIO_MAKING")
@@ -213,7 +213,7 @@ class ASSISTANT {
       var s = fs.createReadStream(originalPayload.key, {highWaterMark:4096}).pipe(conversation)
     }
     if (originalPayload.type == "TEXT") {
-      this.tunnel({type: "TRANSCIPTION", payload:{transcription:originalPayload.key, done:true}})
+      this.tunnel({type: "TRANSCRIPTION", payload:{transcription:originalPayload.key, done:true}})
     }
   }
 }

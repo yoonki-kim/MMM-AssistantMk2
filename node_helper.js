@@ -64,7 +64,6 @@ module.exports = NodeHelper.create({
     //    lang: "" (optional) // if you want to force to change language
     //    useScreenOutput: true (optional) // if you want to force to set using screenoutput
     // }
-
     var assistantConfig = Object.assign({}, this.config.assistantConfig)
     assistantConfig.debug = this.config.debug
     assistantConfig.session = payload.session
@@ -81,6 +80,13 @@ module.exports = NodeHelper.create({
     var result = null
     this.assistant.activate(payload, (response)=> {
       response.lastQuery = payload
+      if (!(response.screen || response.audio)) {
+        response.error = "NO_RESPONSE"
+        if (response.transcription && response.transcription.transcription && !response.transcription.done) {
+          response.error = "TRANSCRIPTION_FAILS"
+        }
+      }
+      if (response.error == "TOO_SHORT" && response) response.error = "TOO_SHORT_CONTINUE"
       if (response.screen) {
         parser.parse(response, (result)=>{
           delete result.screen.originalContent
@@ -98,15 +104,16 @@ module.exports = NodeHelper.create({
     this.config = config
     this.config.assistantConfig["modulePath"] = __dirname
     if (this.config.debug) log = _log
+    log("MMM-AssistantMk2 Version:", require('./package.json').version)
     this.loadRecipes(()=>{
       this.sendSocketNotification("INITIALIZED")
     })
     this.cleanUptmp()
-    console.log("[AMK2] AssistantMk2 v3 is initialized.")
+    log("AssistantMk2 v3 is initialized.")
   },
 
   cleanUptmp: function() {
-    var tmp = path.resolve(__dirname, "tmp")
+    var tmp = path.resolve(this.config.assistantConfig["modulePath"], "tmp")
     var command = "cd " + tmp + "; rm *.mp3; rm *.html"
     exec(command, (error,stdout, stderr)=>{
       log("tmp directory is now cleaned.")
@@ -129,12 +136,12 @@ module.exports = NodeHelper.create({
           if (p.actions) this.config.actions = Object.assign({}, this.config.actions, p.actions)
           log("RECIPE_LOADED:", recipes[i])
         } catch (e) {
-          log("RECIPE_ERROR:", e)
+          log(`RECIPE_ERROR (${recipes[i]}):`, e.message)
         }
       }
       if (this.config.actions && Object.keys(this.config.actions).length > 1) {
-        var actionConfig = Object.assign({}, this.customActionConfig)
-        actionConfig.actions = [].concat(this.config.actions)
+        var actionConfig = Object.assign({}, this.config.customActionConfig)
+        actionConfig.actions = Object.assign({}, this.config.actions)
         actionConfig.projectId = this.config.assistantConfig.projectId
         var Manager = new ActionManager(actionConfig, this.config.debug)
         Manager.makeAction(callback)

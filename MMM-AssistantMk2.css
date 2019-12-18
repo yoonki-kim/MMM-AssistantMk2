@@ -1,55 +1,10 @@
-#AMK2FS.hidden {
-  display: none
-}
-
-#AMK2FS.in {
-  animation-duration: 0.5s;
-  animation-name: fadeInDown;
-}
-
-#AMK2FS.out {
-  animation-duration: 1s;
-  animation-name: fadeOutUp;
-}
-
-@keyframes fadeInDown {
-  from {
-    opacity: 0;
-    transform: translate3d(0, -150%, 0);
-  }
-
-  to {
-    opacity: 1;
-    transform: translate3d(0, 0, 0);
-  }
-}
-
-@keyframes fadeOutUp {
-  from {
-    opacity: 1;
-    transform: translate3d(0, 0, 0);
-  }
-
-  to {
-    opacity: 0;
-    transform: translate3d(0, -200%, 0);
-  }
-}
-
-#AMK2FS {
-  width:93vw;
-  height:100%;
-  border:none;
-  border-radius: 20px;
-  background-color:#f3f3f3;
-}
-
 #AMK2 {
-  width:43%;
-  height:100%;
   border:none;
+  width:100%;
+  height:100%;
   border-radius: 20px;
   background-color:#f3f3f3;
+  display:inline-block;
 }
 
 #AMK2.hidden {
@@ -97,11 +52,9 @@
   box-sizing:border-box;
   height:100px;
   width:100px;
-
-  margin-top:4px;
-  margin-left:4px;
+  border-radius: 20px;
   display:inline-block;
-  border-radius: 10px;
+  margin:4px;
   background-color:#f3f3f3;
   background-image:url('resources/standby.gif');
   background-position: 0px 2px;
@@ -166,12 +119,10 @@
 }
 
 #AMK2_TRANSCRIPTION {
-  min-height:100px;
-  min-width: 100px;
+  min-height:0;
+  min-width: 0;
   display:inline-block;
   vertical-align: top;
-  margin-top: 0px;
-  margin-left: 5px;
   box-sizing: border-box;
   background-color:#f3f3f3;
   border-radius: 20px;
@@ -180,9 +131,13 @@
 #AMK2_TRANSCRIPTION p {
   color:#7b858e;
   margin-left : 10px;
+  margin-right: 10px;
+}
+
+#AMK2_TRANSCRIPTION p.error {
+  color:#FF6633;
 }
 
 #AMK2_TRANSCRIPTION.hidden {
   display: none
 }
-
