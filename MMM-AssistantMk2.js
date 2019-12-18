@@ -389,43 +389,13 @@ Module.register("MMM-AssistantMk2", {
 
   postProcess: function (response, callback_done=()=>{}, callback_none=()=>{}) {
     var foundHook = []
-<<<<<<< HEAD
     foundHook = this.findAllHooks(response)
-=======
-    foundHook = this.findTranscriptionHook(response)
->>>>>>> d4658ece9790b58c3b7e7d986f42d77092742f45
     if (foundHook.length > 0) {
       for (var i = 0; i < foundHook.length; i++) {
         var hook = foundHook[i]
         this.doCommand(hook.command, hook.params, hook.from)
       }
-<<<<<<< HEAD
       callback_done()
-=======
-    }
-
-    console.log("!!!!")
-    if (this.config.developer || this.iFoundHook) {
-      if (this.config.developer) console.log('/!\\ Simulation foundHook ACTIVED')
-      // ? How to close transcription part? If postP (eouia)
-      // what do you mean by this ? (Bugsounet)
-      // close : by blank ? full hidding ? by pass response ?
-      // can you be more clear about what do you want to to :)
-      // ------------------------------
-      // for me process is foundhook :
-      // -> speak -> google -> response -> analyse foundhook :
-      // *** if found hook :
-      // ** I would have to let the voice command message on the screen. (visual confirmation)
-      //    Or in transcription p class : display found hook (the one defined in the configuration)
-      // ** by pass normal response
-      // ** execute foundhook
-      // ** Google beep wand executed
-      // ** "normal close" Assistant
-      // -------------
-      // my approach in foundhook : (test ok  by-passed by this.config.developer)
-
-      this.endHook()
->>>>>>> d4658ece9790b58c3b7e7d986f42d77092742f45
     } else {
       callback_none()
     }
@@ -458,20 +428,11 @@ Module.register("MMM-AssistantMk2", {
               "command":exec.command
             })
 
-<<<<<<< HEAD
           }
         }
       }
     }
     return found
-=======
-  endHook: function () {
-    this.AMK2Status("hook")
-    this.continue = false
-    this.notEnd = false // if a conversation continues in progress : by-pass it
-    this.endResponse()
-  },
->>>>>>> d4658ece9790b58c3b7e7d986f42d77092742f45
 
   },
 
@@ -590,14 +551,6 @@ Module.register("MMM-AssistantMk2", {
   },
 */
 
-<<<<<<< HEAD
-=======
-  AMK2Status: function(status) { // live change of AMK2 icons
-    var myStatus = document.getElementById("AMK2_STATUS")
-    for (let [item,value] of Object.entries(allStatus)) {
-      if(myStatus.classList.contains(value)) myStatus.classList.remove(value)
-    }
->>>>>>> d4658ece9790b58c3b7e7d986f42d77092742f45
 
 
 
