@@ -1,119 +1,166 @@
-@keyframes blink {
-   50% { border-color: #000; }
-}
-
-@keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
-}
-
-@keyframes waiting {
-  0% { border-color:#000; }
-}
-
-
-
 #AMK2 {
-  position:relative;
-  min-height:48px;
-  min-width:48px;
-  border-radius:50%;
-  border:4px solid #000;
-  padding:4px;
-  text-align:center;
-  line-height:100%;
-  background-image: url("/modules/MMM-AssistantMk2/resources/images/assistant.png");
-  background-size: 80%;
-  background-position: 8px 8px;
-  background-repeat: no-repeat;
-  box-sizing: border-box;
+  border:none;
+  width:100px;
+  height:100px;
+  border-radius: 20px;
+  background-color:#f3f3f3;
+  display:inline-block;
 }
 
-#AMK2_STATUS {
+#AMK2.hidden {
+  display: none
+}
+
+#AMK2_CHIME {
+  display: none
+}
+
+
+
+#AMK2_HELPER {
   position:absolute;
-  top:0;
-  left:0;
   width:100%;
   height:100%;
-  z-index:auto;
-  border:4px solid rgba(0,0,0,0.5);
-  border-radius:50%;
+  bottom:0;
+  display:block;
 }
 
-#AMK2.sleeping {
-  filter:grayscale(50%) brightness(50%);
+#AMK2_HELPER.hidden {
+   display:none;
 }
 
-#AMK2.hotword_waiting #AMK2_STATUS {
-  border-color:#FFF;
-  animation: waiting 2s ease-in-out infinite;
-}
-
-#AMK2.hotword_detected #AMK2_STATUS {
-  border-color:#FFF;
-  animation: blink 0.3s ease-in-out infinite;
-}
-
-#AMK2.ready #AMK2_STATUS {
-  border-top-color:#FFF;
-  border-bottom-color:#FFF;
-  border-left-color:#FFF;
-  animation: spin 2s linear infinite;
-}
-
-
-#AMK2.response #AMK2_STATUS {
-  border-color:#33F;
-
-}
-
-#AMK2.speaking #AMK2_STATUS {
-  border-top-color:#FFF;
-  border-bottom-color:#FFF;
-  animation: spin 2s linear infinite;
-}
 
 
 #AMK2_RESULT_WINDOW {
   position:absolute;
   width:100%;
-  height:50%;
+  height:100%;
   bottom:0;
   display:block;
 }
 
-#AMK2_RESULT_WINDOW.hidden {
-  height:0%;
-  opacity:0;
-  transition:
-    height 1s ease-in-out,
-    opacity 1s 1s linear;
+#AMK2_HELPER.hidden #AMK2_RESULT_WINDOW {
+  visibility: hidden;
+  opacity: 0;
+  transition: visibility 0s 1s, opacity 1s linear;
 }
 
-#AMK2_RESULT_SCREENOUTPUT {
+#AMK2_SCREENOUTPUT {
   width:100%;
   height:100%;
-  margin:0;
-  padding:0;
+  display:block;
   border:none;
 }
 
-
-#AMK2_RESULT_TIMER {
-  width:100%;
-  height:5px;
-  background-color:#666;
-  position:relative;
-  top:0;
+#AMK2_STATUS {
+  box-sizing:border-box;
+  height:100px;
+  width:100px;
+  border-radius: 20px;
+  display:inline-block;
+  margin:4px;
+  background-color:#f3f3f3;
+  background-image:url('resources/standby.gif');
+  background-position: 0px 2px;
+  background-repeat: no-repeat;
+  background-size: contain;
 }
 
-#AMK2_RESULT_TIMER_INDICATOR {
-  width:0%;
-  height:5px;
-  background-color:#EEE;
-  position:absolute;
-  top:0;
-  left:0;
-  transition-timing-function: linear;
-  transition-property: width;
+#AMK2_STATUS.reply {
+  background-image:url('resources/reply.gif');
+  background-position: -60px;
+  background-repeat: no-repeat;
+  background-size: 230%;
+}
+
+#AMK2_STATUS.error {
+  background-image:url('resources/error.gif');
+  background-position: -60px;
+  background-repeat: no-repeat;
+  background-size: 230%;
+}
+
+#AMK2_STATUS.think {
+  background-image:url('resources/think.gif');
+  background-position: -60px;
+  background-repeat: no-repeat;
+  background-size: 230%;
+}
+
+#AMK2_STATUS.continue {
+  background-image:url('resources/continue.gif');
+  background-position: -60px;
+  background-repeat: no-repeat;
+  background-size: 230%;
+}
+
+#AMK2_STATUS.listen {
+  background-image:url('resources/listen.gif');
+  background-position: -60px;
+  background-repeat: no-repeat;
+  background-size: 230%;
+}
+
+#AMK2_STATUS.confirmation {
+  background-image:url('resources/confirmation.gif');
+  background-position: -60px;
+  background-repeat: no-repeat;
+  background-size: 230%;
+}
+
+#AMK2_STATUS.standby {
+  background-image:url('resources/standby.gif');
+  background-position: 0px 2px;
+  background-repeat: no-repeat;
+  background-size: contain;
+}
+
+#AMK2_STATUS.hook {
+  background-image:url('resources/hook.gif');
+  background-position : -46px -15px;
+  background-repeat: no-repeat;
+  background-size: 195%;
+}
+
+#AMK2_TRANSCRIPTION {
+  width:100%;
+  height:200px;
+  display: block;
+  box-sizing: border-box;
+  background-color: #3333FF;
+  color: #FFFFFF;
+  margin: 0;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+#AMK2_TRANSCRIPTION p {
+  color:#FFFFFF;
+  font-size: 60px;
+  margin: 0;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  line-height:120%;
+  text-align:center;
+  width:80%;
+}
+
+#AMK2_TRANSCRIPTION p::before,
+#AMK2_TRANSCRIPTION p::after {
+  content: '"';
+}
+
+
+
+#AMK2_TRANSCRIPTION p.error {
+  color:#FF6633;
+  text-align:left;
+}
+
+#AMK2_TRANSCRIPTION.hidden {
+  display: none
 }

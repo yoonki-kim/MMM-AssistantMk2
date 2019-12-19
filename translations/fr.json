@@ -1,0 +1,9 @@
+{
+	"TOO_SHORT_CONTINUE" : "Pardons, je n'ai pas compris. Pouvez-vous répéter ?",
+	"TOO_SHORT" : "Désolé, je n'ai pas compris.",
+	"REPEAT_WORD" : "Répète après moi",
+	"SAY_REPLY" : "AssistantMk2 va répèter le texte suivant: ",
+	"SAY_HELP" : "Vous pouvez demander à `AssistantMk2` de dire du texte avec cette commande.",
+	"QUERY_REPLY" : "AssistantMk2 va être activé.",
+	"QUERY_HELP" : "Vous pouvez commander `AssistantMk2` par texte avec cette commande."
+}

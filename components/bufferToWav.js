@@ -1,9 +1,17 @@
 const fs = require("fs")
-const statusTunnel = require("./statusTunnel.js")
 
-class BufferToWav extends statusTunnel {
-  constructor(config, tunnel) {
-    super(tunnel)
+var _log = function() {
+    var context = "[AMK2:BW]"
+    return Function.prototype.bind.call(console.log, console, context)
+}()
+
+var log = function() {
+  //do nothing
+}
+
+class BufferToWav {
+  constructor(config) {
+    var debug = (config.debug) ? config.debug : false
     this.audioBuffer = new Buffer.alloc(5000)
     var samplesLength = 10000
     var header = new Buffer.alloc(1024)
@@ -21,6 +29,7 @@ class BufferToWav extends statusTunnel {
     header.write('data', 36)
     header.writeUInt32LE(15728640, 40)
     this.audioBuffer = header.slice(0, 50)
+    if (debug == true) log = _log
   }
 
   add(buffer) {
@@ -30,13 +39,13 @@ class BufferToWav extends statusTunnel {
   writeFile(file, callback=(file)=>{}) {
     fs.writeFile(file, this.audioBuffer, (err)=>{
       if (err) {
-        this.status("WAV_FILE_CREATION_ERROR", err)
+        log("WAV_FILE_CREATION_ERROR", err)
       }
-      this.status("WAV_FILE_CREATED", [file, this.audioBuffer.length])
+      log("RESPONSE_WAV_FILE_CREATED")
       callback(file)
-      this.gc()
     })
   }
+
   getAudioLength() {
     return this.audioBuffer.length
   }
