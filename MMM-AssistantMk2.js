@@ -31,7 +31,7 @@ Module.register("MMM-AssistantMk2", {
       useScreenOutput: true,
       useAudioOutput: true,
       useChime: true,
-      timer: 5000,
+      timer: 500000,
       screenOutputCSS: "screen_output.css",
     },
     micConfig: {
@@ -412,7 +412,7 @@ Module.register("MMM-AssistantMk2", {
   findAction: function (response) {
     var found = []
     var action = response.action
-    console.log(action.inputs)
+    if (!action.inputs) return []
     for (var i = 0; i < action.inputs.length; i++) {
       var input = action.inputs[i]
       if (input.intent == "action.devices.EXECUTE") {
@@ -693,6 +693,11 @@ class AssistantResponse {
     var dom = document.createElement("div")
     dom.id = "AMK2_HELPER"
     dom.classList.add("hidden")
+
+    var transcription = document.createElement("div")
+    transcription.id = "AMK2_TRANSCRIPTION"
+    dom.appendChild(transcription)
+
     var scoutpan = document.createElement("div")
     scoutpan.id = "AMK2_RESULT_WINDOW"
     var scout = document.createElement("iframe")
@@ -720,10 +725,11 @@ class AssistantResponse {
     status.id = "AMK2_STATUS"
     dom.appendChild(status)
 
+    /*
     var transcription = document.createElement("div")
     transcription.id = "AMK2_TRANSCRIPTION"
     dom.appendChild(transcription)
-
+    */
     var chime = document.createElement("audio") // for chime
     chime.id = "AMK2_CHIME"
     chime.autoplay = true;
