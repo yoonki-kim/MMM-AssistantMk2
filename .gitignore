@@ -3,8 +3,9 @@ tokens.json
 token.json
 profiles/*
 node_modules/
-temp_screen.html
 .AppleDouble
 .AppleDouble/*
-resources/.AppleDouble
 tmp/*
+utility/*
+library/response.js
+screen_output.css

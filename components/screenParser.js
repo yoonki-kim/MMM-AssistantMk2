@@ -1,6 +1,8 @@
 const HTMLParser = require("node-html-parser")
 const path = require("path")
 const fs = require("fs")
+const Entities = require('html-entities').AllHtmlEntities
+const entities = new Entities()
 
 var _log = function() {
     var context = "[AMK2:SP]"
@@ -73,7 +75,7 @@ class SCREENPARSER {
     for (var i = 0; i < links.length; i++) {
       var link = links[i]
       while ((r = link.exec(html)) !== null) {
-        res.push(r[1])
+        res.push(entities.decode(r[1]))
       }
     }
     screen.links = res
