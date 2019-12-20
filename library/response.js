@@ -1,6 +1,20 @@
 class AssistantResponse extends AssistantResponseClass{
   constructor (responseConfig, callbacks) {
     super(responseConfig, callbacks)
+    this.hookChimed = false
+  }
+
+  start (response) {
+    super(response)
+    this.hookChimed = false
+  }
+
+  doCommand (commandName, param, from) {
+    if (!this.hookChimed) {
+      this.hookChimed = true
+      this.playChime("...")
+    }
+    super(commandName, param, from)
   }
 
 
@@ -8,6 +22,10 @@ class AssistantResponse extends AssistantResponseClass{
 /*
   tunnel (payload) {
     super(payload)
+  }
+
+  doCommand (commandName, param, from) {
+    super (commandName, param, from)
   }
 
   setSecret (secretMode) {

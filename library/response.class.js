@@ -7,6 +7,7 @@ class AssistantResponseClass {
     this.aliveTimer = null
     this.allStatus = [ "hook", "standby", "reply", "error", "think", "continue", "listen", "confirmation" ]
     this.secretMode = false
+    this.hookChimed = false
   }
 
   tunnel (payload) {
@@ -19,6 +20,10 @@ class AssistantResponseClass {
         startTranscription = true
       }
     }
+  }
+
+  doCommand (commandName, param, from) {
+    // do nothing currently.
   }
 
   setSecret (secretMode) {
@@ -138,6 +143,7 @@ class AssistantResponseClass {
   }
 
   start (response) {
+    this.hookChimed = false
     this.response = response
     if (this.showing) {
       this.end()

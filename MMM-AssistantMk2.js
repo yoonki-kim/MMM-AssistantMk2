@@ -456,6 +456,7 @@ Module.register("MMM-AssistantMk2", {
   },
 
   doCommand: function (commandId, originalParam, from) {
+    this.assistantResponse.doCommand(commandId, originalParam, from)
     if (this.commands.hasOwnProperty(commandId)) {
       var command = this.commands[commandId]
     } else {
@@ -520,119 +521,4 @@ Module.register("MMM-AssistantMk2", {
       }
     }
   },
-
-
-
-
-/*
-  restart: function() {
-    log("Need Restart: Main loop !")
-    // unset all var ! Remember
-    clearTimeout(this.aliveTimer) // clear timer ?
-    this.aliveTimer = null
-    this.lastQuery = null
-    this.showingResponse = false
-    this.session = {}
-    this.Tcount = 0
-    this.continue = false
-    this.notEnd = false
-    this.sayMode = false
-
-    // send RESUME notification to Hotword... I'm Ready !
-
-    this.sendNotification("HOTWORD_RESUME")
-  },
-*/
-
-
-
-
-
-
-
-
-
-  // *** Optional TelegramBot Commands ** //
-/*
-  getCommands: function () {
-    return [
-      {
-        command: "q",
-        callback: "telegramCommand",
-        description: this.translate("QUERY_HELP")
-      },
-      {
-        command: "s",
-        callback: "telegramCommand",
-        description: this.translate("SAY_HELP")
-      }
-    ]
-  },
-
-  telegramCommand: function(command, handler) {
-    if (command == "q" && handler.args) {
-      handler.reply("TEXT", this.translate("QUERY_REPLY"))
-      this.notificationReceived("ASSISTANT_QUERY", handler.args, "MMM-TelegramBot")
-    }
-    if (command == "s" && handler.args) {
-      handler.reply("TEXT", this.translate("SAY_REPLY") + handler.args)
-      this.notificationReceived("ASSISTANT_SAY", handler.args, "MMM-TelegramBot")
-    }
-  },
-*/
-  /** demo for check if icons are ok ... (or for video demo later?) **/
-  /*
-  demo: function() {
-	//this.notificationReceived("ASSISTANT_SAY", "this is a demo with animated icons" , this.name)
-    var allStatus = [ "hook", "standby", "reply", "error", "think", "continue", "listen", "confirmation" ]
-    var myStatus = document.getElementById("AMK2_STATUS")
-    for (let [item,value] of Object.entries(allStatus)) {
-      if(myStatus.classList.contains(value)) myStatus.classList.remove(value)
-    }
-    this.fullScreen(true)
-    myStatus.classList.add("standby")
-    this.displayTranscription("Stand-by icon")
-    setTimeout(() => {
-	  myStatus.classList.remove("standby")
-      myStatus.classList.add("reply")
-      this.displayTranscription("Reply icon")
-    } , 4000)
-    setTimeout(() => {
-      myStatus.classList.remove("reply")
-      myStatus.classList.add("think")
-      this.displayTranscription("Think icon")
-    } , 8000)
-    setTimeout(() => {
-      myStatus.classList.remove("think")
-      myStatus.classList.add("listen")
-      this.displayTranscription("Listen icon")
-    } , 12000)
-    setTimeout(() => {
-      myStatus.classList.remove("listen")
-      myStatus.classList.add("continue")
-      this.displayTranscription("Continue Conversation icon")
-    } , 16000)
-    setTimeout(() => {
-      myStatus.classList.remove("continue")
-      myStatus.classList.add("confirmation")
-      this.displayTranscription("Confirmation icon")
-    } , 20000)
-    setTimeout(() => {
-      myStatus.classList.remove("confirmation")
-      myStatus.classList.add("error")
-      this.displayTranscription("Error icon")
-    } , 24000)
-    setTimeout(() => {
-      myStatus.classList.remove("error")
-      myStatus.classList.add("hook")
-      this.displayTranscription("Hook icon")
-    } , 28000)
-    setTimeout(() => {
-      myStatus.classList.remove("hook")
-      myStatus.classList.add("standby")
-      this.displayTranscription(" ")
-      this.fullScreen(false)
-    } , 32000)
-  },
-  */
 })
