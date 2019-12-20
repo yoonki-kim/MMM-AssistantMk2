@@ -31,7 +31,7 @@ Module.register("MMM-AssistantMk2", {
       useScreenOutput: true,
       useAudioOutput: true,
       useChime: true,
-      timer: 500000,
+      timer: 5000,
       screenOutputCSS: "screen_output.css",
     },
     micConfig: {
@@ -78,6 +78,13 @@ Module.register("MMM-AssistantMk2", {
   transcriptionHooks: {},
   responseHooks: {},
 
+  getScripts: function() {
+    return [
+      "/modules/MMM-AssistantMk2/library/response.class.js",
+      "/modules/MMM-AssistantMk2/library/response.js",
+    ]
+  },
+
   getStyles: function () {
     return ["MMM-AssistantMk2.css"]
   },
@@ -94,7 +101,6 @@ Module.register("MMM-AssistantMk2", {
       "debug", "recipes", "customActionConfig", "assistantConfig", "micConfig",
       "responseConfig"
     ]
-    allStatus = [ "hook", "standby", "reply", "error", "think", "continue", "listen", "confirmation" ]
     this.helperConfig = {}
     if (this.config.debug) log = _log
 
@@ -180,14 +186,13 @@ Module.register("MMM-AssistantMk2", {
   },
 
   registerResponseHooksObject: function (obj) {
-    this.responseHooks = Object.assign({}, this.actions, obj)
+    this.responseHooks = Object.assign({}, this.responseHooks, obj)
   },
 
 
   t: function(a) {
     log("!!!!!", a)
   },
-
 
   configAssignment : function (result) {
     var stack = Array.prototype.slice.call(arguments, 1)
@@ -197,7 +202,10 @@ Module.register("MMM-AssistantMk2", {
       item = stack.shift()
       for (key in item) {
         if (item.hasOwnProperty(key)) {
-          if (typeof result[key] === "object" && result[key] && Object.prototype.toString.call(result[key]) !== "[object Array]" ) {
+          if (
+            typeof result[key] === "object" && result[key]
+            && Object.prototype.toString.call(result[key]) !== "[object Array]"
+          ) {
             if (typeof item[key] === "object" && item[key] !== null) {
               result[key] = this.configAssignment({}, result[key], item[key])
             } else {
@@ -212,8 +220,6 @@ Module.register("MMM-AssistantMk2", {
     return result
   },
 
-
-
   getDom: function() {
     return this.assistantResponse.getDom()
   },
@@ -223,8 +229,6 @@ Module.register("MMM-AssistantMk2", {
       this.profile = profileName
     }
   },
-
-
 
   notificationReceived: function(noti, payload=null, sender=null) {
     this.doPlugin("onBeforeNotificationReceived", {notification:noti, payload:payload})
@@ -251,33 +255,11 @@ Module.register("MMM-AssistantMk2", {
         this.activateAssistant(payload, session)
         this.doPlugin("onAfterActivated", payload)
         break
-
-        /*
-      case "ASSISTANT_SAY":
-        var text = payload
-        var magicQuery = "%REPEATWORD% %TEXT%" // initial expression
-        var myWord = this.config.responseConfig.myMagicWord ? this.config.responseConfig.myMagicWord : this.translate("REPEAT_WORD") // config word or default ?
-        this.sayMode = true
-        magicQuery = magicQuery.replace("%REPEATWORD%", myWord) // replace by myWord found
-        magicQuery = magicQuery.replace("%TEXT%", text) // finally place the text
-        this.fullScreen(true)
-        this.activateAssistant({ type: "TEXT", key: magicQuery }, null)
+      case "ASSISTANT_COMMAND":
+        this.doCommand(payload.command, payload.param, sender.name)
         break
-      case "ASSISTANT_QUERY":
-        this.fullScreen(true)
-        this.activateAssistant({
-          type: "TEXT",
-          key: payload
-        }, null)
-        break
-        */
-       /*
-       case "ASSISTANT_DEMO":
-         this.demo()
-         break
-       */
      }
-     this.doPlugin("onAfterNotificationReceived", {notification:noti, payload:payload})
+     this.doPlugin("onAfterNotificationReceived", {notification:noti, payload:payload, sender:sender})
   },
 
   socketNotificationReceived: function(noti, payload) {
@@ -310,7 +292,6 @@ Module.register("MMM-AssistantMk2", {
   },
 
   parseLoadedRecipe: function(payload) {
-    //const keywords = ["commands", "transcriptionHooks", "responseHooks", "actions", "plugins"]
     let reviver = (key, value) => {
       if (typeof value === 'string' && value.indexOf('__FUNC__') === 0) {
         value = value.slice(8)
@@ -364,28 +345,11 @@ Module.register("MMM-AssistantMk2", {
       options.profile = this.config.profiles[payload.profile]
     }
     this.sendSocketNotification("ACTIVATE_ASSISTANT", options)
-    //this.myActivateStatus(options.type)
-
-/*
-    this.sendSocketNotification("ACTIVATE_ASSISTANT", {
-      //type: "TEXT",
-      //type: "MIC",
-      //type: "WAVEFILE",
-      //profile: this.config.profiles[this.profile],
-      //key: "What time is it now",
-      //key: "/Users/eouia/Documents/nodeJS/MagicMirror/modules/MMM-AssistantMk2/test.wav",
-      //lang: "en-US",
-      useScreenOutput: true,
-      useAudioOutput: false,
-    })
-*/
   },
 
   endResponse: function() {
     this.doPlugin("onAfterInactivated")
   },
-
-
 
   postProcess: function (response, callback_done=()=>{}, callback_none=()=>{}) {
     var foundHook = []
@@ -401,18 +365,50 @@ Module.register("MMM-AssistantMk2", {
     }
   },
 
-  findAllHooks: function(response) {
+  findAllHooks: function (response) {
     var hooks = []
     hooks = hooks.concat(this.findTranscriptionHook(response))
     hooks = hooks.concat(this.findAction(response))
-    console.log(hooks)
+    hooks = hooks.concat(this.findResponseHook(response))
     return hooks
+  },
+
+  findResponseHook: function (response) {
+    var found = []
+    console.log(1, response, response.screen)
+    if (response.screen) {
+      var res = []
+      res.links = (response.screen.links) ? response.screen.links : []
+      res.text = (response.screen.text) ? [].push(response.screen.text) : []
+      res.photos = (response.screen.photos) ? response.screen.photos : []
+      console.log(123, this.responseHooks)
+      for (var k in this.responseHooks) {
+        console.log(2, k)
+        if (!this.responseHooks.hasOwnProperty(k)) continue
+        var hook = this.responseHooks[k]
+        console.log(3, hook)
+        if (!hook.where || !hook.pattern || !hook.command) continue
+        var pattern = new RegExp(hook.pattern, "ig")
+        var f = pattern.exec(res[hook.where])
+        console.log(hook.pattern, pattern, f)
+        if (f) {
+          found.push({
+            "from": k,
+            "params":f,
+            "command":hook.command
+          })
+          log("ResponseHook matched:", k)
+        }
+      }
+    }
+    console.log("re", found)
+    return found
   },
 
   findAction: function (response) {
     var found = []
-    var action = response.action
-    if (!action.inputs) return []
+    var action = (response.action) ? response.action : null
+    if (!action || !action.inputs) return []
     for (var i = 0; i < action.inputs.length; i++) {
       var input = action.inputs[i]
       if (input.intent == "action.devices.EXECUTE") {
@@ -421,13 +417,11 @@ Module.register("MMM-AssistantMk2", {
           var execution = commands[j].execution
           for (var k = 0; k < execution.length; k++) {
             var exec = execution[k]
-
             found.push({
               "from":"CUSTOM_DEVICE_ACTION",
               "params":exec.params,
               "command":exec.command
             })
-
           }
         }
       }
@@ -438,7 +432,7 @@ Module.register("MMM-AssistantMk2", {
 
   findTranscriptionHook: function (response) {
     var foundHook = []
-    var transcription = response.transcription.transcription
+    var transcription = (response.transcription) ? response.transcription.transcription : ""
     for (var k in this.transcriptionHooks) {
       if (!this.transcriptionHooks.hasOwnProperty(k)) continue
       var hook = this.transcriptionHooks[k]
@@ -462,7 +456,6 @@ Module.register("MMM-AssistantMk2", {
   },
 
   doCommand: function (commandId, originalParam, from) {
-    console.log("!!", commandId)
     if (this.commands.hasOwnProperty(commandId)) {
       var command = this.commands[commandId]
     } else {
@@ -643,234 +636,3 @@ Module.register("MMM-AssistantMk2", {
   },
   */
 })
-
-
-class AssistantResponse {
-  constructor (responseConfig, callbacks) {
-    this.config = responseConfig
-    this.callbacks = callbacks
-    this.showing = false
-    this.response = null
-    this.aliveTimer = null
-    this.allStatus = [ "hook", "standby", "reply", "error", "think", "continue", "listen", "confirmation" ]
-    this.secretMode = false
-  }
-
-  tunnel (payload) {
-    if (payload.type == "TRANSCRIPTION") {
-      if (this.secretMode) return
-      var startTranscription = false
-      if (payload.payload.done) this.status("confirmation")
-      if (payload.payload.transcription && !startTranscription) {
-        this.showTranscription(payload.payload.transcription)
-        startTranscription = true
-      }
-    }
-  }
-
-  setSecret (secretMode) {
-    this.secretMode = secretMode
-  }
-
-  playChime (sound) {
-    if (this.config.useChime) {
-      var chime = document.getElementById("AMK2_CHIME")
-      chime.src = "modules/MMM-AssistantMk2/resources/" + sound + ".mp3"
-    }
-  }
-
-  status (status) {
-    var myStatus = document.getElementById("AMK2_STATUS")
-    for (let [item,value] of Object.entries(this.allStatus)) {
-      if(myStatus.classList.contains(value)) myStatus.classList.remove(value)
-    }
-    if (status == "error" || status == "continue") this.playChime(status)
-    myStatus.classList.add(status)
-    this.callbacks.sendNotification("ASSISTANT_" + status.toUpperCase())
-  }
-
-  prepare () {
-    var dom = document.createElement("div")
-    dom.id = "AMK2_HELPER"
-    dom.classList.add("hidden")
-
-    var transcription = document.createElement("div")
-    transcription.id = "AMK2_TRANSCRIPTION"
-    dom.appendChild(transcription)
-
-    var scoutpan = document.createElement("div")
-    scoutpan.id = "AMK2_RESULT_WINDOW"
-    var scout = document.createElement("iframe")
-    scout.id = "AMK2_SCREENOUTPUT"
-    scoutpan.appendChild(scout)
-    dom.appendChild(scoutpan)
-    var auoutpan = document.createElement("div")
-    var auout = document.createElement("audio")
-    auout.id = "AMK2_AUDIO_RESPONSE"
-    auout.autoplay = true;
-    auout.addEventListener("ended", ()=>{
-      console.log("audio end")
-      this.end()
-    })
-    auoutpan.appendChild(auout)
-    dom.appendChild(auoutpan)
-    document.body.appendChild(dom)
-  }
-
-  getDom () {
-    var dom = document.createElement("div")
-    dom.id = "AMK2"
-
-    var status = document.createElement("div")
-    status.id = "AMK2_STATUS"
-    dom.appendChild(status)
-
-    /*
-    var transcription = document.createElement("div")
-    transcription.id = "AMK2_TRANSCRIPTION"
-    dom.appendChild(transcription)
-    */
-    var chime = document.createElement("audio") // for chime
-    chime.id = "AMK2_CHIME"
-    chime.autoplay = true;
-    dom.appendChild(chime)
-    return dom
-  }
-
-  showError (text) {
-    this.status("error")
-    this.showTranscription(text, "error")
-  }
-
-  showTranscription (text, className = "transcription") {
-    if (this.secretMode) return
-    var tr = document.getElementById("AMK2_TRANSCRIPTION")
-    tr.innerHTML = ""
-    var t = document.createElement("p")
-    t.className = className
-    t.innerHTML = text
-    tr.appendChild(t)
-  }
-
-  end () {
-    this.showing = false
-    if (this.response) {
-      var response = this.response
-      this.response = null
-      if (response && response.continue) {
-        log("Continuous Conversation")
-        this.callbacks.activateAssistant({
-          type: "MIC",
-          profile: response.lastQuery.profile,
-          key: null,
-          lang: response.lastQuery.lang,
-          useScreenOutput: response.lastQuery.useScreenOutput,
-        }, null)
-
-      } else {
-        clearTimeout(this.aliveTimer)
-        this.aliveTimer = null
-        this.aliveTimer = setTimeout(()=>{
-          log("Conversation ends.")
-          this.stopResponse(()=>{
-            this.status("standby")
-            this.callbacks.endResponse()
-          })
-        }, this.config.timer)
-      }
-    } else {
-      this.status("standby")
-      this.callbacks.endResponse()
-    }
-  }
-
-  start (response) {
-    this.response = response
-    if (this.showing) {
-      this.end()
-    }
-
-    if (response.error) {
-      if (response.error == "TRANSCRIPTION_FAILS") {
-        log("Transcription Failed. Re-try with text")
-        this.callbacks.activateAssistant({
-          type: "TEXT",
-          profile: response.lastQuery.profile,
-          key: response.transcription.transcription,
-          lang: response.lastQuery.lang,
-          useScreenOutput: response.lastQuery.useScreenOutput,
-          session: response.lastQuery.session
-        }, null)
-        return
-      }
-      this.showError(this.callbacks.translate(response.error))
-      this.end()
-      return
-    }
-
-    var normalResponse = (response) => {
-      this.showing = true
-      var so = this.showScreenOutput(response)
-      var ao = this.playAudioOutput(response)
-      if (ao) {
-        log("Wait audio to finish")
-      } else {
-        log("No response")
-        this.end()
-      }
-    }
-    this.postProcess(
-      response,
-      ()=>{ this.end() }, // postProcess done
-      ()=>{ normalResponse(response) } // postProcess none
-    )
-  }
-
-  stopResponse (callback = ()=>{}) {
-    this.showing = false
-    var winh = document.getElementById("AMK2_HELPER")
-    winh.classList.add("hidden")
-    var iframe = document.getElementById("AMK2_SCREENOUTPUT")
-    iframe.src = "about:blank"
-    var audioSrc = document.getElementById("AMK2_AUDIO_RESPONSE")
-    audioSrc.src = ""
-    var tr = document.getElementById("AMK2_TRANSCRIPTION")
-    tr.innerHTML = ""
-    callback()
-  }
-
-  postProcess (response, callback_done=()=>{}, callback_none=()=>{}) {
-    this.callbacks.postProcess(response, callback_done, callback_none)
-  }
-
-  playAudioOutput (response) {
-    if (this.secretMode) return false
-    if (response.audio && this.config.useAudioOutput) {
-      this.showing = true
-      var audioSrc = document.getElementById("AMK2_AUDIO_RESPONSE")
-      audioSrc.src = this.makeUrl(response.audio.uri)
-      return true
-    }
-    return false
-  }
-
-  showScreenOutput (response) {
-    if (this.secretMode) return false
-    if (response.screen && this.config.useScreenOutput) {
-      if (!response.audio) {
-        this.showTranscription(this.translate("NO_AUDIO_RESPONSE"))
-      }
-      this.showing = true
-      var iframe = document.getElementById("AMK2_SCREENOUTPUT")
-      iframe.src = this.makeUrl(response.screen.uri)
-      var winh = document.getElementById("AMK2_HELPER")
-      winh.classList.remove("hidden")
-      return true
-    }
-    return false
-  }
-
-  makeUrl (uri) {
-    return "/modules/MMM-AssistantMk2/" + uri + "?seed=" + Date.now()
-  }
-}

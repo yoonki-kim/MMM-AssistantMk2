@@ -1,6 +1,12 @@
 # Developer Notes
 ---
 # Change Logs
+## 2019/12/20 -- eouia
+- I used new node module(`html-entities`). need `npm install` again.
+- `assistantResponse` class moves to external file (read assistantResponse_class.md)
+- `responseHook`. read reasponseHook.md
+
+
 ## 2019/12/18 -- eouia
 - Refactoring logics about handling response.
   - Many codes are missing due to Refactoring, sorry.
