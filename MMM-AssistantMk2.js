@@ -31,7 +31,7 @@ Module.register("MMM-AssistantMk2", {
       useScreenOutput: true,
       useAudioOutput: true,
       useChime: true,
-      timer: 500000,
+      timer: 5000,
       screenOutputCSS: "screen_output.css",
     },
     micConfig: {
@@ -94,7 +94,7 @@ Module.register("MMM-AssistantMk2", {
       "debug", "recipes", "customActionConfig", "assistantConfig", "micConfig",
       "responseConfig"
     ]
-    allStatus = [ "hook", "standby", "reply", "error", "think", "continue", "listen", "confirmation" ]
+    this.allStatus = [ "hook", "standby", "reply", "error", "think", "continue", "listen", "confirmation" ]
     this.helperConfig = {}
     if (this.config.debug) log = _log
 
@@ -111,8 +111,8 @@ Module.register("MMM-AssistantMk2", {
     this.session = {}
 
     var callbacks = {
-      activateAssistant: (payload, session)=>{
-        this.activateAssistant(payload, session)
+      assistantActivate: (payload, session)=>{
+        this.assistantActivate(payload, session)
       },
       postProcess: (response, callback_done, callback_none)=>{
         this.postProcess(response, callback_done, callback_none)
@@ -248,7 +248,8 @@ Module.register("MMM-AssistantMk2", {
           }
           delete payload.callback
         }
-        this.activateAssistant(payload, session)
+        this.assistantResponse.playChime("beep")
+        this.assistantActivate(payload, session) // logical better to assistantActivate !? (assistantResponse / assistantActivate )
         this.doPlugin("onAfterActivated", payload)
         break
 
@@ -261,11 +262,11 @@ Module.register("MMM-AssistantMk2", {
         magicQuery = magicQuery.replace("%REPEATWORD%", myWord) // replace by myWord found
         magicQuery = magicQuery.replace("%TEXT%", text) // finally place the text
         this.fullScreen(true)
-        this.activateAssistant({ type: "TEXT", key: magicQuery }, null)
+        this.assistantActivate({ type: "TEXT", key: magicQuery }, null)
         break
       case "ASSISTANT_QUERY":
         this.fullScreen(true)
-        this.activateAssistant({
+        this.assistantActivate({
           type: "TEXT",
           key: payload
         }, null)
@@ -287,6 +288,7 @@ Module.register("MMM-AssistantMk2", {
         break
       case "INITIALIZED":
         log("Initialized.")
+        this.assistantResponse.status("standby")
         this.doPlugin("onReady")
         break
       case "ASSISTANT_RESULT":
@@ -346,7 +348,7 @@ Module.register("MMM-AssistantMk2", {
     log("This module cannot be resumed.")
   },
 
-  activateAssistant: function(payload, session) {
+  assistantActivate: function(payload, session) {
     if(!this.continue) this.lastQuery = null
     this.continue = false
     var options = {
@@ -358,13 +360,12 @@ Module.register("MMM-AssistantMk2", {
       useAudioOutput: this.config.responseConfig.useAudioOutput,
       session: session,
     }
-
     var options = Object.assign({}, options, payload)
     if (payload.hasOwnProperty("profile") && typeof this.config.profiles[payload.profile] !== "undefined") {
       options.profile = this.config.profiles[payload.profile]
     }
     this.sendSocketNotification("ACTIVATE_ASSISTANT", options)
-    //this.myActivateStatus(options.type)
+    this.assistantResponse.status(options.type)
 
 /*
     this.sendSocketNotification("ACTIVATE_ASSISTANT", {
@@ -394,6 +395,7 @@ Module.register("MMM-AssistantMk2", {
       for (var i = 0; i < foundHook.length; i++) {
         var hook = foundHook[i]
         this.doCommand(hook.command, hook.params, hook.from)
+        if (i == 0) this.assistantResponse.status("hook")
       }
       callback_done()
     } else {
@@ -405,7 +407,7 @@ Module.register("MMM-AssistantMk2", {
     var hooks = []
     hooks = hooks.concat(this.findTranscriptionHook(response))
     hooks = hooks.concat(this.findAction(response))
-    console.log(hooks)
+    console.log("Hooks: ", hooks)
     return hooks
   },
 
@@ -594,7 +596,7 @@ Module.register("MMM-AssistantMk2", {
     var allStatus = [ "hook", "standby", "reply", "error", "think", "continue", "listen", "confirmation" ]
     var myStatus = document.getElementById("AMK2_STATUS")
     for (let [item,value] of Object.entries(allStatus)) {
-      if(myStatus.classList.contains(value)) myStatus.classList.remove(value)
+      if(myStatus.classList.co      this.playChime("beep")ntains(value)) myStatus.classList.remove(value)
     }
     this.fullScreen(true)
     myStatus.classList.add("standby")
@@ -654,6 +656,7 @@ class AssistantResponse {
     this.aliveTimer = null
     this.allStatus = [ "hook", "standby", "reply", "error", "think", "continue", "listen", "confirmation" ]
     this.secretMode = false
+    this.myStatus = { "actual" : "standby" , "old" : "standby" }
   }
 
   tunnel (payload) {
@@ -680,13 +683,22 @@ class AssistantResponse {
   }
 
   status (status) {
-    var myStatus = document.getElementById("AMK2_STATUS")
+    var Status = document.getElementById("AMK2_STATUS")
     for (let [item,value] of Object.entries(this.allStatus)) {
-      if(myStatus.classList.contains(value)) myStatus.classList.remove(value)
-    }
-    if (status == "error" || status == "continue") this.playChime(status)
-    myStatus.classList.add(status)
-    this.callbacks.sendNotification("ASSISTANT_" + status.toUpperCase())
+      if(Status.classList.contains(value)) this.myStatus.old = value
+    } // check old status and store it
+    this.myStatus.actual = status
+
+    if (status == "WAVEFILE" || status == "TEXT") this.myStatus.actual = "think"
+    if (status == "MIC") this.myStatus.actual = (this.myStatus.old == "continue") ? "continue" : "listen"
+    if (status == "error" || status == "continue" ) this.playChime(status)
+
+    log("Status from: " + this.myStatus.old + " --> " + this.myStatus.actual)
+    Status.classList.remove(this.myStatus.old)
+    Status.classList.add(this.myStatus.actual)
+
+    this.callbacks.sendNotification("ASSISTANT_" + this.myStatus.actual.toUpperCase())
+    this.myStatus.old = this.myStatus.actual
   }
 
   prepare () {
@@ -753,13 +765,15 @@ class AssistantResponse {
   }
 
   end () {
+    console.log("timer : " + this.config.timer)
     this.showing = false
     if (this.response) {
       var response = this.response
       this.response = null
       if (response && response.continue) {
+        this.status("continue")
         log("Continuous Conversation")
-        this.callbacks.activateAssistant({
+        this.callbacks.assistantActivate({
           type: "MIC",
           profile: response.lastQuery.profile,
           key: null,
@@ -777,6 +791,7 @@ class AssistantResponse {
             this.callbacks.endResponse()
           })
         }, this.config.timer)
+        console.log("The End !? Need restart !")
       }
     } else {
       this.status("standby")
@@ -793,7 +808,7 @@ class AssistantResponse {
     if (response.error) {
       if (response.error == "TRANSCRIPTION_FAILS") {
         log("Transcription Failed. Re-try with text")
-        this.callbacks.activateAssistant({
+        this.callbacks.assistantActivate({
           type: "TEXT",
           profile: response.lastQuery.profile,
           key: response.transcription.transcription,
@@ -813,9 +828,10 @@ class AssistantResponse {
       var so = this.showScreenOutput(response)
       var ao = this.playAudioOutput(response)
       if (ao) {
+        this.status("reply")
         log("Wait audio to finish")
       } else {
-        log("No response")
+        log("No response") // Error ?
         this.end()
       }
     }
