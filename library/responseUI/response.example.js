@@ -4,67 +4,70 @@ class AssistantResponse extends AssistantResponseClass{
   }
 
 
-//You can implement these methods by your needs.
-/*
-  tunnel (payload) {
-    super(payload)
-  }
+  //You can implement these methods by your needs.
+  /*
+    tunnel (payload) {
+      super.tunnel(payload)
+    }
 
-  setSecret (secretMode) {
-    super(secretMode)
-  }
+    doCommand (commandName, param, from) {
+      super.doCommand(commandName, param, from)
+    }
 
-  playChime (sound) {
-    super(sound)
-  }
+    setSecret (secretMode) {
+      super.setSecret(secretMode)
+    }
 
-  status (status) {
-    super(status)
-  }
+    playChime (sound) {
+      super.playChime(sound)
+    }
 
-  prepare () {
-    super()
-  }
+    status (status) {
+      super.status(status)
+    }
 
-  getDom () {
-    return super()
-  }
+    prepare () {
+      super.prepare()
+    }
 
-  showError (text) {
-    super(text)
-  }
+    getDom () {
+      return super.getDom()
+    }
 
-  showTranscription (text, className = "transcription") {
-    super(text, className)
-  }
+    showError (text) {
+      super.showError(text)
+    }
 
-  end () {
-    super()
-  }
+    showTranscription (text, className = "transcription") {
+      super.showTranscription(text, className)
+    }
 
-  start (response) {
-    super(response)
-  }
+    end () {
+      super.end()
+    }
 
-  stopResponse (callback = ()=>{}) {
-    super(callback)
-  }
+    start (response) {
+      super.start(response)
+    }
 
-  postProcess (response, callback_done=()=>{}, callback_none=()=>{}) {
-    super(response, callback_done, callback_none)
-  }
+    stopResponse (callback = ()=>{}) {
+      super.stopResponse(callback)
+    }
 
-  playAudioOutput (response) {
-    return super(response)
-  }
+    postProcess (response, callback_done=()=>{}, callback_none=()=>{}) {
+      super.postProcess(response, callback_done, callback_none)
+    }
 
-  showScreenOutput (response) {
-    return super(response)
-  }
+    playAudioOutput (response) {
+      return super.playAudioOutput(response)
+    }
 
-  makeUrl (uri) {
-    return super(uri)
-  }
+    showScreenOutput (response) {
+      return super.showScreenOutput(response)
+    }
 
-*/
-}
+    makeUrl (uri) {
+      return super.makeUrl(uri)
+    }
+
+  */
