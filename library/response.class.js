@@ -275,7 +275,7 @@ class AssistantResponseClass {
       // fullscreen on
       log("Fullscreen: " + active)
       MM.getModules().exceptWithClass("MMM-AssistantMk2").enumerate(function(module) {
-        module.hide(15, {lockString: self.identifier})
+        module.hide(15, {lockString: "AMK2-Lock"})
       })
       AMK2.classList.remove("hidden")
       AMK2.classList = "in"
@@ -288,7 +288,7 @@ class AssistantResponseClass {
         this.displayTimer = setTimeout (() => {
           if (status.actual == "standby") { // check again for hidden
             MM.getModules().exceptWithClass("MMM-AssistantMk2").enumerate(function(module) {
-              module.show(1000, {lockString: self.identifier})
+              module.show(1000, {lockString: "AMK2-Lock"})
               AMK2.classList.add("hidden")
               console.log("hidden: " + status.actual)
             })
