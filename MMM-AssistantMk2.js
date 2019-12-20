@@ -117,8 +117,8 @@ Module.register("MMM-AssistantMk2", {
     this.session = {}
 
     var callbacks = {
-      activateAssistant: (payload, session)=>{
-        this.activateAssistant(payload, session)
+      assistantActivate: (payload, session)=>{
+        this.assistantActivate(payload, session)
       },
       postProcess: (response, callback_done, callback_none)=>{
         this.postProcess(response, callback_done, callback_none)
@@ -252,12 +252,39 @@ Module.register("MMM-AssistantMk2", {
           }
           delete payload.callback
         }
-        this.activateAssistant(payload, session)
+        this.assistantResponse.fullscreen(true)
+        this.assistantActivate(payload, session) // logical better to assistantActivate !? (assistantResponse / assistantActivate )
         this.doPlugin("onAfterActivated", payload)
         break
       case "ASSISTANT_COMMAND":
         this.doCommand(payload.command, payload.param, sender.name)
         break
+/*
+      case "ASSISTANT_SAY":
+        var text = payload
+        var magicQuery = "%REPEATWORD% %TEXT%" // initial expression
+        var myWord = this.config.responseConfig.myMagicWord ? this.config.responseConfig.myMagicWord : this.translate("REPEAT_WORD") // config word or default ?
+        this.sayMode = true
+        magicQuery = magicQuery.replace("%REPEATWORD%", myWord) // replace by myWord found
+        magicQuery = magicQuery.replace("%TEXT%", text) // finally place the text
+        this.fullScreen(true)
+        this.assistantActivate({ type: "TEXT", key: magicQuery }, null)
+        break
+
+      case "ASSISTANT_QUERY":
+        this.assistantResponse.fullscreen(true)
+        this.assistantResponse.playChime("beep")
+        this.assistantActivate({
+          type: "TEXT",
+          key: payload
+        }, null)
+        break
+
+       case "ASSISTANT_DEMO":
+         this.demo()
+         break
+*/
+
      }
      this.doPlugin("onAfterNotificationReceived", {notification:noti, payload:payload, sender:sender})
   },
@@ -269,6 +296,8 @@ Module.register("MMM-AssistantMk2", {
         break
       case "INITIALIZED":
         log("Initialized.")
+        //this.assistantResponse.fullscreen(true)
+        this.assistantResponse.status("standby")
         this.doPlugin("onReady")
         break
       case "ASSISTANT_RESULT":
@@ -327,9 +356,9 @@ Module.register("MMM-AssistantMk2", {
     log("This module cannot be resumed.")
   },
 
-  activateAssistant: function(payload, session) {
-    if(!this.continue) this.lastQuery = null
-    this.continue = false
+  assistantActivate: function(payload, session) {
+    if(!this.continue) this.lastQuery = null //needed -> always false?
+    this.continue = false // needed ?
     var options = {
       type: "TEXT",
       profile: this.config.profiles[this.profile],
@@ -339,12 +368,28 @@ Module.register("MMM-AssistantMk2", {
       useAudioOutput: this.config.responseConfig.useAudioOutput,
       session: session,
     }
-
     var options = Object.assign({}, options, payload)
     if (payload.hasOwnProperty("profile") && typeof this.config.profiles[payload.profile] !== "undefined") {
       options.profile = this.config.profiles[payload.profile]
     }
+    
     this.sendSocketNotification("ACTIVATE_ASSISTANT", options)
+    this.assistantResponse.status(options.type, true)
+
+/*
+    this.sendSocketNotification("ACTIVATE_ASSISTANT", {
+      //type: "TEXT",
+      //type: "MIC",
+      //type: "WAVEFILE",
+      //profile: this.config.profiles[this.profile],
+      //key: "What time is it now",
+      //key: "/Users/eouia/Documents/nodeJS/MagicMirror/modules/MMM-AssistantMk2/test.wav",
+      //lang: "en-US",
+      useScreenOutput: true,
+      useAudioOutput: false,
+    })
+*/
+
   },
 
   endResponse: function() {
@@ -358,6 +403,7 @@ Module.register("MMM-AssistantMk2", {
       for (var i = 0; i < foundHook.length; i++) {
         var hook = foundHook[i]
         this.doCommand(hook.command, hook.params, hook.from)
+        if (i == 0) this.assistantResponse.status("hook")
       }
       callback_done()
     } else {
@@ -370,6 +416,8 @@ Module.register("MMM-AssistantMk2", {
     hooks = hooks.concat(this.findTranscriptionHook(response))
     hooks = hooks.concat(this.findAction(response))
     hooks = hooks.concat(this.findResponseHook(response))
+    console.log("Hooks: ", hooks)
+
     return hooks
   },
 
@@ -521,4 +569,55 @@ Module.register("MMM-AssistantMk2", {
       }
     }
   },
+
+})
+
+
+  /** Optional TelegramBot Commands **/
+/*  
+  getCommands: function () {
+    return [
+      {
+        command: "q",
+        callback: "telegramCommand",
+        description: this.translate("QUERY_HELP")
+      },
+      {
+        command: "s",
+        callback: "telegramCommand",
+        description: this.translate("SAY_HELP")
+      }
+    ]
+  },
+
+  telegramCommand: function(command, handler) {
+    if (command == "q" && handler.args) {
+      handler.reply("TEXT", this.translate("QUERY_REPLY"))
+      this.notificationReceived("ASSISTANT_QUERY", handler.args, "MMM-TelegramBot")
+    }
+    if (command == "s" && handler.args) {
+      handler.reply("TEXT", this.translate("SAY_REPLY") + handler.args)
+      this.notificationReceived("ASSISTANT_SAY", handler.args, "MMM-TelegramBot")
+    }
+  },
+*/
+  /** demo for check if icons are ok ... (or for video demo later?) **/
+  
+  demo: function() {
+    var allStatus = [ "hook", "standby", "reply", "error", "think", "continue", "listen", "confirmation" ]
+    var myStatus = document.getElementById("AMK2_STATUS")
+    var i = 0
+    for (let [item,value] of Object.entries(allStatus)) {
+      setTimeout(() => {
+        this.assistantResponse.status(value)
+        if (value == "listen") this.assistantResponse.playChime("beep")
+        this.assistantResponse.showTranscription("icon: " + value)
+        if (item == 7) setTimeout(() => { 
+          this.assistantResponse.status("standby")
+          this.assistantResponse.showTranscription(" ")
+        } , 4000)
+      }, 1000 + i)
+      i += 4000
+    }
+  }
 })
