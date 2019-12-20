@@ -2,21 +2,32 @@
 ---
 # Change Logs
 
+# 2019/12/20 &2 -- Bugsounet
+- merge full eouia code
+
+## 2019/12/20 -- eouia
+- I used new node module(`html-entities`). need `npm install` again.
+- `assistantResponse` class moves to external file (read assistantResponse_class.md)
+- `responseHook`. read reasponseHook.md
+
 ## 2019/12/20 -- Bugsounet
+- Do main loop
+- Rewrite fullscreen mode and routine
 - Full status Setup this.myStatus{"actual" : "status", "old" : "old_status"} into assistantResponse
-- take place to Chime
+- take place to Chime depend of status
 - setup icons according to status
 - rename activateAssistant to assistantActivate according to assistantResponse
 - test postscript install with new installation (Fork) ! it's ok !
 
 ## 2019/12/18 -- eouia
 - Refactoring logics about handling response.
-  - Many codes are missing due to Refactoring, sorry.
+- Many codes are missing due to Refactoring, sorry.
 - plugins, transcriptionHooks, actions be implemented. (Some features still could be missing. I'll do later). Read added docs.
 - Basically, I want to keep this module as simple and universal as possible. If extended features be needed, it should be extendable with a recipe instead adding specific code for that feature to module source.
 By Example, I don't want to add `YouTube` related feature to module code itself. Instead, serve `youtube.recipe.js` for that. If needed, some kind of code which be required for making extended recipe, could be implemented, but not specific feature itself.
 
-## 2019/12/17 -- Bugsounet
+
+## 2019/12/17 Bugsounet
 - Create postinstall script
 - Remove MyMagicWord and take place to new
 

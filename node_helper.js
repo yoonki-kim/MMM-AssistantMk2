@@ -86,7 +86,7 @@ module.exports = NodeHelper.create({
           response.error = "TRANSCRIPTION_FAILS"
         }
       }
-      if (response.error == "TOO_SHORT" && response) response.error = "TOO_SHORT_CONTINUE"
+      if (response.error == "TOO_SHORT" && response) response.error = null
       if (response.screen) {
         parser.parse(response, (result)=>{
           delete result.screen.originalContent
