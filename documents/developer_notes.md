@@ -2,11 +2,6 @@
 ---
 # Change Logs
 
-## 2019/12/20 -- eouia
-- I used new node module(`html-entities`). need `npm install` again.
-- `assistantResponse` class moves to external file (read assistantResponse_class.md)
-- `responseHook`. read reasponseHook.md
-
 ## 2019/12/20 -- Bugsounet
 - Full status Setup this.myStatus{"actual" : "status", "old" : "old_status"} into assistantResponse
 - take place to Chime

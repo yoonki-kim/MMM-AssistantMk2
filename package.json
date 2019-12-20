@@ -27,7 +27,6 @@
   "dependencies": {
     "google-assistant": "^0.5.4",
     "grpc": "1.23.4",
-    "html-entities": "^1.2.1",
     "node-html-parser": "^1.1.16",
     "node-record-lpcm16": "^1.0.1"
   },
