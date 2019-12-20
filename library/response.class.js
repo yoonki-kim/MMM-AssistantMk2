@@ -204,7 +204,12 @@ class AssistantResponseClass {
     }
     this.postProcess(
       response,
-      ()=>{ this.end() }, // postProcess done
+      ()=>{
+        // console.log("callback done with continue -- status : " + response.continue)
+        // callback done with continue -- status : true
+        response.continue = false // Issue: force to be false
+        this.end()
+      }, // postProcess done
       ()=>{ normalResponse(response) } // postProcess none
     )
   }

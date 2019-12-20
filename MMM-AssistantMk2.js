@@ -356,10 +356,10 @@ Module.register("MMM-AssistantMk2", {
     var foundHook = []
     foundHook = this.findAllHooks(response)
     if (foundHook.length > 0) {
+      this.assistantResponse.status("hook")
       for (var i = 0; i < foundHook.length; i++) {
         var hook = foundHook[i]
         this.doCommand(hook.command, hook.params, hook.from)
-        if (i == 0) this.assistantResponse.status("hook")
       }
       callback_done()
     } else {
