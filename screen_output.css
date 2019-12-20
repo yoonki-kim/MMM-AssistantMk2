@@ -12,7 +12,6 @@ html,body{background:transparent;margin:0}
 #carousel-container{left:0;overflow-x:initial;transition:300ms ease-in-out;transform:translateZ(0)}
 /* Add here your overriding CSS */
 body {zoom:55%;}
-/* for later
 .assistant-bar-container {display:none;}
 #assistant-shadow {display:none;}
-*/
+
