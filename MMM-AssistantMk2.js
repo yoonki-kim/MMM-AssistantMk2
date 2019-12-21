@@ -1,7 +1,7 @@
 //
 // Module : MMM-AssistantMk2
 // ver 3
-//
+// by eouia & Bugsounet
 
 
 var _log = function() {
@@ -13,10 +13,10 @@ var log = function() {
   //do nothing
 }
 
-
 Module.register("MMM-AssistantMk2", {
   defaults: {
     debug:true,
+    ui: "Fullscreen",
     assistantConfig: {
       credentialPath: "credentials.json",
       projectId: "",
@@ -30,7 +30,7 @@ Module.register("MMM-AssistantMk2", {
       useAudioOutput: true,
       useChime: true,
       timer: 5000,
-      screenOutputCSS: "screen_output.css",
+      screenZoom: null, // screenZoom Override
     },
     micConfig: {
       recorder: "sox",
@@ -77,14 +77,21 @@ Module.register("MMM-AssistantMk2", {
   responseHooks: {},
 
   getScripts: function() {
-    return [
-      "/modules/MMM-AssistantMk2/library/response.class.js",
-      "/modules/MMM-AssistantMk2/library/response.js",
-    ]
+    if (this.config.ui) {
+      var ui = this.config.ui + '.js'
+      return [
+       "/modules/MMM-AssistantMk2/library/response.class.js",
+       "/modules/MMM-AssistantMk2/ui/" + ui
+      ]
+    } else {
+      return [
+       "/modules/MMM-AssistantMk2/library/response.class.js"
+      ]
+    }
   },
 
   getStyles: function () {
-    return ["MMM-AssistantMk2.css"]
+    return ["/modules/MMM-AssistantMk2/ui/" + this.config.ui+ ".css"]
   },
 
   getTranslations: function() {
@@ -101,7 +108,7 @@ Module.register("MMM-AssistantMk2", {
     ]
     this.helperConfig = {}
     if (this.config.debug) log = _log
-
+    this.config.responseConfig.screenOutputCSS = "ui/screen_output." + this.config.ui + ".css"
     this.config = this.configAssignment({}, this.defaults, this.config)
     for(var i = 0; i < helperConfig.length; i++) {
       this.helperConfig[helperConfig[i]] = this.config[helperConfig[i]]
@@ -113,7 +120,6 @@ Module.register("MMM-AssistantMk2", {
     this.registerActionsObject(this.config.actions)
     this.setProfile(this.config.defaultProfile)
     this.session = {}
-
     var callbacks = {
       assistantActivate: (payload, session)=>{
         this.assistantActivate(payload, session)
@@ -383,12 +389,9 @@ Module.register("MMM-AssistantMk2", {
       res.links = (response.screen.links) ? response.screen.links : []
       res.text = (response.screen.text) ? [].push(response.screen.text) : []
       res.photos = (response.screen.photos) ? response.screen.photos : []
-      console.log(123, this.responseHooks)
       for (var k in this.responseHooks) {
-        console.log(2, k)
         if (!this.responseHooks.hasOwnProperty(k)) continue
         var hook = this.responseHooks[k]
-        console.log(3, hook)
         if (!hook.where || !hook.pattern || !hook.command) continue
         var pattern = new RegExp(hook.pattern, "ig")
         var f = pattern.exec(res[hook.where])

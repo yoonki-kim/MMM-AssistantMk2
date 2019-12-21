@@ -2,6 +2,16 @@
 ---
 # Change Logs
 
+
+# 2019/12/21 -- Bugsounet
+- Move all ui files to ui directory
+- Create ui Fullscreen via Class files
+- Simplify user switch UI style ui = "template_ui" configure CSS/JS/ScreenOutputCSS
+- Create another templete AMk2 name: ui
+- Create Override zoom via config
+- correct Lock_identifier for fullscreen hide/show modules
+- Correct issue hook & continue conversation
+
 # 2019/12/20 &2 -- Bugsounet
 - merge full eouia code
 

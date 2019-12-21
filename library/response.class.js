@@ -1,3 +1,5 @@
+/* Common AMk2 Class */
+
 class AssistantResponseClass {
   constructor (responseConfig, callbacks) {
     this.config = responseConfig
@@ -54,7 +56,6 @@ class AssistantResponseClass {
     if (status == "WAVEFILE" || status == "TEXT") this.myStatus.actual = "think"
     if (status == "MIC") this.myStatus.actual = (this.myStatus.old == "continue") ? "continue" : "listen"
     
-
     log("Status from " + this.myStatus.old + " to " + this.myStatus.actual)
     Status.classList.remove(this.myStatus.old)
     Status.classList.add(this.myStatus.actual)
@@ -64,51 +65,11 @@ class AssistantResponseClass {
   }
 
   prepare () {
-    var dom = document.createElement("div")
-    dom.id = "AMK2_HELPER"
-    dom.classList.add("hidden")
-/*
-    var transcription = document.createElement("div")
-    transcription.id = "AMK2_TRANSCRIPTION"
-    dom.appendChild(transcription)
-*/
-    var scoutpan = document.createElement("div")
-    scoutpan.id = "AMK2_RESULT_WINDOW"
-    var scout = document.createElement("iframe")
-    scout.id = "AMK2_SCREENOUTPUT"
-    scoutpan.appendChild(scout)
-    dom.appendChild(scoutpan)
-    var auoutpan = document.createElement("div")
-    var auout = document.createElement("audio")
-    auout.id = "AMK2_AUDIO_RESPONSE"
-    auout.autoplay = true;
-    auout.addEventListener("ended", ()=>{
-      console.log("audio end")
-      this.end()
-    })
-    auoutpan.appendChild(auout)
-    dom.appendChild(auoutpan)
-    document.body.appendChild(dom)
+    // needed class plugin
   }
 
   getDom () {
-    var dom = document.createElement("div")
-    dom.id = "AMK2"
-    dom.className = "hidden"
-
-    var status = document.createElement("div")
-    status.id = "AMK2_STATUS"
-    dom.appendChild(status)
-
-    var transcription = document.createElement("div")
-    transcription.id = "AMK2_TRANSCRIPTION"
-    dom.appendChild(transcription)
-
-    var chime = document.createElement("audio") // for chime
-    chime.id = "AMK2_CHIME"
-    chime.autoplay = true;
-    dom.appendChild(chime)
-    return dom
+    // needed class plugin
   }
 
   showError (text) {
@@ -143,7 +104,6 @@ class AssistantResponseClass {
         }, null)
 
       } else {
-        // assistant available after audio end, don't wait :)
         log("Conversation ends.")
         this.callbacks.endResponse()
         this.status("standby")
@@ -152,7 +112,6 @@ class AssistantResponseClass {
         clearTimeout(this.aliveTimer)
         this.aliveTimer = null
         this.aliveTimer = setTimeout(()=>{
-          // just wait timer for display response delay
           this.stopResponse(()=>{
             this.fullscreen(false, this.myStatus)
           })
@@ -205,8 +164,6 @@ class AssistantResponseClass {
     this.postProcess(
       response,
       ()=>{
-        // console.log("callback done with continue -- status : " + response.continue)
-        // callback done with continue -- status : true
         response.continue = false // Issue: force to be false
         this.end()
       }, // postProcess done
@@ -246,7 +203,7 @@ class AssistantResponseClass {
     if (this.secretMode) return false
     if (response.screen && this.config.useScreenOutput) {
       if (!response.audio) {
-        this.showTranscription(this.translate("NO_AUDIO_RESPONSE"))
+        this.showTranscription(this.callbacks.translate("NO_AUDIO_RESPONSE"))
       }
       this.showing = true
       var iframe = document.getElementById("AMK2_SCREENOUTPUT")
@@ -267,35 +224,7 @@ class AssistantResponseClass {
   }
 
   fullscreen (active, status) {
-    var self = this
-    var AMK2 = document.getElementById("AMK2")
-    clearTimeout(this.displayTimer)
-    this.displayTimer = null
-    if (active) {
-      // fullscreen on
-      log("Fullscreen: " + active)
-      MM.getModules().exceptWithClass("MMM-AssistantMk2").enumerate(function(module) {
-        module.hide(15, {lockString: self.identifier})
-      })
-      AMK2.classList.remove("hidden")
-      AMK2.classList = "in"
-    } else {
-      log("Fullscreen: false and status: " + status.actual)
-      if (status.actual == "standby") { // only on standby mode
-        AMK2.classList.remove("in")
-        AMK2.classList = "out"
-        console.log ("remove: " + status.actual)
-        this.displayTimer = setTimeout (() => {
-          if (status.actual == "standby") { // check again for hidden
-            MM.getModules().exceptWithClass("MMM-AssistantMk2").enumerate(function(module) {
-              module.show(1000, {lockString: self.identifier})
-              AMK2.classList.add("hidden")
-              console.log("hidden: " + status.actual)
-            })
-          }
-        }, 1000) // timeout set to 1s for fadeout
-      }
-    }
+    // need class plugin
   }
 }
 
