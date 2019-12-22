@@ -34,7 +34,11 @@ class SCREENPARSER {
 
       if (this.config.screenOutputCSS) {
         var url = "/modules/MMM-AssistantMk2/" + this.config.screenOutputCSS + "?seed=" + Date.now()
-        str = str.replace(/<style>html,body[^<]+<\/style>/gmi, `<link rel="stylesheet" href="${url}">`)
+        if (this.config.screenZoom) {
+          str = str.replace(/<style>html,body[^<]+<\/style>/gmi, `<link rel="stylesheet" href="${url}"><style>photo` + this.config.screenZoom + `;}</style>`)
+        } else {
+          str = str.replace(/<style>html,body[^<]+<\/style>/gmi, `<link rel="stylesheet" href="${url}">`)
+        }
       }
 
       response.screen = this.parseScreenLink(response.screen)

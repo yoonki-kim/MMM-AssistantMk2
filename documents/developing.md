@@ -1,4 +1,5 @@
 # Version 3.0.0 Developing.
+Last update : 2019/12/22
 
 ![](https://raw.githubusercontent.com/eouia/MMM-AssistantMk2/3-dev/resources/AMk2_Small.png)
 
@@ -14,13 +15,13 @@
 - Better logging.
 
 ## TODO (Not completed)
-- User Interface (status, error, transcription, ...)
-- Screen Output hooking part.
-- Code refactoring.
+- User Interface (status, error, transcription, ...) (Rest: error translate -- Bugsounet)
+- Screen Output hooking part. (ok on fullscreen mode, 95% on ui mode)
+- Code refactoring. (95 % done -- Bugsounet & eouia)
 - Manual (I hate this!)
-- Bash installer script for npm install
-- Related modules(MMM-Telegram, MMM-YouTube, MMM-Spotify, MMM-News, ...) update for using together
-- Real RPI test.
+- Bash installer script for npm install (90% Done -- Bugsounet --- RPI: ok - todo osx installer and take place to audio checker)
+- Related modules(MMM-Telegram, MMM-YouTube, MMM-Spotify, MMM-News, ...) update for using together (MMM-Youtube: ok, MMM-telegram: ok -- eouia)
+- Real RPI test (Actually in prod with my RPI -- Bugsounet)
 - And more tests.
 
 
@@ -29,9 +30,7 @@
 1. `git pull` or `git clone` for updated version downloading
 2. `git checkout 3-dev`
 3. `npm install`
-4. make sure about `gcc` and `grpc`
-5. `electron-rebuild` step.
-6. restore your backup jsons.
+4. restore your backup jsons.
 
 ## Configuration (with MMM-Hotword) on OSX.
 ```js
@@ -53,7 +52,7 @@
   position: "top_left",
   config: {
     debug:true,
-    showModule:true,
+    ui : "ui", // ui-> ClassicUI // Fullscreen: FullScreenUI
     assistantConfig: {
       credentialPath: "credentials.json",
       projectId: "",
@@ -65,11 +64,8 @@
     responseConfig: {
       useScreenOutput: true,
       useAudioOutput: true,
-      useFullScreenAnswer: true,
       useChime: true,
-      myMagicWord: false,
       reactiveTimer: 5000,
-      screenOutputCSS: "screen_output.css",
     },
     micConfig: {
       recorder: "sox",

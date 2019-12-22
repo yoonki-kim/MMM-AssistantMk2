@@ -1,9 +1,15 @@
 {
-	"TOO_SHORT_CONTINUE" : "Pardons, je n'ai pas compris. Pouvez-vous répéter ?",
+	"NO_RESPONSE" : "Pardons, je n'ai pas compris. Pouvez-vous répéter ?",
+  "NO_AUDIO_RESPONSE" : "Pas de réponse sonore",
 	"TOO_SHORT" : "Désolé, je n'ai pas compris.",
+  "CONVERSATION_ERROR" : "Erreur de conversation (micro mal configuré)",
+
+/* developer mode utils (Bugsounet) */
 	"REPEAT_WORD" : "Répète après moi",
 	"SAY_REPLY" : "AssistantMk2 va répèter le texte suivant: ",
+  "QUERY_REPLY" : "AssistantMk2 va être activé.",
+  "DEMO_REPLY" : " ",
 	"SAY_HELP" : "Vous pouvez demander à `AssistantMk2` de dire du texte avec cette commande.",
-	"QUERY_REPLY" : "AssistantMk2 va être activé.",
-	"QUERY_HELP" : "Vous pouvez commander `AssistantMk2` par texte avec cette commande."
+  "QUERY_HELP" : "Vous pouvez commander `AssistantMk2` par texte avec cette commande.",
+  "DEMO_HELP" : " "
 }

@@ -2,6 +2,7 @@
 # +--------------------------------+
 # | npm postinstall                |
 # | AMK2 v3 Installer by Bugsounet |
+# | Rev 1.0.0                      |
 # +--------------------------------+
 
 # get the installer directory
@@ -31,17 +32,19 @@ Installer_log
 Installer_version="$(cat ../package.json | grep version | cut -c15-19 2>/dev/null)"
 
 # Let's start !
-Installer_info "Welcome to AssistantMk2 v $Installer_version postinstall"
+Installer_info "Welcome to AssistantMk2 v$Installer_version"
+Installer_info "postinstall script v$Installer_vinstaller"
+
 echo
 
-# Check not ran as root
+# Check not run as root
 if [ "$EUID" -eq 0 ]; then
     Installer_error "npm install must not be used as root" 
     exit 1
 fi
 
 # Check platform compatibility
-dependencies=(git sox wget libasound2-dev sox libsox-fmt-all gcc-7 nano)
+dependencies=(git sox wget libasound2-dev sox libsox-fmt-all gcc-7)
 case "$OSTYPE" in
     linux*)     platform="linux"
                 arch="$(uname -m)"
@@ -64,7 +67,7 @@ if  [ "$platform" == "osx" ]; then
   echo
   exit 1
 fi
-
+Installer_info "Check OS..."
 Installer_success "OS Detected: $OSTYPE ($os_name $os_version $arch)"
 source utils_$platform.sh
 echo

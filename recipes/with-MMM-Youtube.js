@@ -27,7 +27,7 @@ var recipe = {
     }
   },
   plugins: {
-    onBeforeNotificationReceived: "YOUTUBE_STOPPED"
+    //onBeforeNotificationReceived: "YOUTUBE_STOPPED"
   }
 }
 

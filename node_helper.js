@@ -1,6 +1,7 @@
 //
 // Module : MMM-AssistantMk2
 //
+
 const path = require("path")
 const exec = require("child_process").exec
 const fs = require("fs")
@@ -75,6 +76,7 @@ module.exports = NodeHelper.create({
     var parserConfig = {
       screenOutputCSS: this.config.responseConfig.screenOutputCSS,
       screenOutputURI: "tmp/lastScreenOutput.html",
+      screenZoom: this.config.responseConfig.screenZoom
     }
     var parser = new ScreenParser(parserConfig, this.config.debug)
     var result = null

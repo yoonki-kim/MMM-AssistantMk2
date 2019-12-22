@@ -1,6 +1,8 @@
 #!/bin/bash
-# linux specific commands
-#
+# -----------------------
+# Linux specific commands
+# v1.0.0
+# -----------------------
  
 #   Installer_update
 Installer_update () {
