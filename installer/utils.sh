@@ -1,5 +1,14 @@
 #!/bin/bash
 
+#--------------
+# Common utils  
+#  Bugsounet
+# v1.0.0
+#--------------
+
+# postinstaller version
+Installer_vinstaller="1.0.0 by Bugsounet"
+
 # debug mode
 Installer_debug=false
 
@@ -55,11 +64,11 @@ Installer_check_gcc7 () {
 		Installer_warning "You have to downgrade to GCC 7."
 		Installer_yesno "Do you want to make changes ?" || exit 1
 		Installer_info "Installing GCC 7..."
-		sudo apt-get install gcc-7 >/dev/null || exit 1
+		sudo apt-get install gcc-7 || exit 1
 		Installer_success "GCC 7 installed"
 		Installer_info "Making GCC 7 by default..."
-		sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-7 10 >/dev/null || exit 1
-		sudo update-alternatives --config gcc >/dev/null | exit 1
+		sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-7 10 || exit 1
+		sudo update-alternatives --config gcc || exit 1
 	fi
 }
 
@@ -71,12 +80,12 @@ Installer_electronrebuild () {
 	Installer_debug "Current diectory: $Installer_pwd"
 	Installer_info "Installing electron-rebuild..."
 	Installer_debug "npm install --save-dev electron-rebuild"
-	npm install --save-dev electron-rebuild >/dev/null || exit 1
+	npm install --save-dev electron-rebuild || exit 1
 	Installer_success "Electron-rebuild installed"
 	Installer_info "Execute electron-rebuild..."
 	Installer_warning "It could takes 10~30 minutes."
 	Installer_debug "./node_modules/.bin/electron-rebuild"
-	./node_modules/.bin/electron-rebuild 2>/dev/null || exit 1
+	./node_modules/.bin/electron-rebuild || exit 1
 }
 	
 # add timestamps and delete colors code for log file

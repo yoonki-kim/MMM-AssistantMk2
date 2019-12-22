@@ -12,7 +12,7 @@ class AssistantResponse extends AssistantResponseClass{
   doCommand (commandName, param, from) {
     if (!this.hookChimed) {
       this.hookChimed = true
-      this.playChime("Beep")
+      this.playChime("close")
     }
     super.doCommand(commandName, param, from)
   }
@@ -82,6 +82,10 @@ class AssistantResponse extends AssistantResponseClass{
 
   makeUrl (uri) {
     return super.makeUrl(uri)
+  }
+
+  fullscreen(active,status) {
+    super.fullscreen(active,status)
   }
 
 */

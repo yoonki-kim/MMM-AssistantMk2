@@ -1,3 +1,5 @@
+/* Common AMk2 Class */
+
 class AssistantResponseClass {
   constructor (responseConfig, callbacks) {
     this.config = responseConfig
@@ -5,14 +7,17 @@ class AssistantResponseClass {
     this.showing = false
     this.response = null
     this.aliveTimer = null
+    this.displayTimer = null
     this.allStatus = [ "hook", "standby", "reply", "error", "think", "continue", "listen", "confirmation" ]
     this.secretMode = false
     this.hookChimed = false
+    this.myStatus = { "actual" : "standby" , "old" : "standby" }
+    this.sayMode = false
   }
 
   tunnel (payload) {
     if (payload.type == "TRANSCRIPTION") {
-      if (this.secretMode) return
+      if (this.secretMode || this.sayMode) return
       var startTranscription = false
       if (payload.payload.done) this.status("confirmation")
       if (payload.payload.transcription && !startTranscription) {
@@ -30,69 +35,48 @@ class AssistantResponseClass {
     this.secretMode = secretMode
   }
 
+  setSayMode (sayMode) {
+    this.sayMode = sayMode
+  }
+
   playChime (sound) {
-    if (this.config.useChime) {
+    if (this.config.useChime && !(this.secretMode || this.sayMode)) {
+      if (sound == "open") sound = "Google_beep_open"
+      if (sound == "close") sound = "Google_beep_close"
       var chime = document.getElementById("AMK2_CHIME")
       chime.src = "modules/MMM-AssistantMk2/resources/" + sound + ".mp3"
     }
   }
 
-  status (status) {
-    var myStatus = document.getElementById("AMK2_STATUS")
+  status (status, beep) {
+    var Status = document.getElementById("AMK2_STATUS")
     for (let [item,value] of Object.entries(this.allStatus)) {
-      if(myStatus.classList.contains(value)) myStatus.classList.remove(value)
+      if(Status.classList.contains(value)) this.myStatus.old = value
+    } // check old status and store it
+    this.myStatus.actual = status
+
+    if (beep && this.myStatus.old != "continue") this.playChime("beep")
+    if (status == "error" || status == "continue" ) this.playChime(status)
+    
+    if (status == "WAVEFILE" || status == "TEXT") this.myStatus.actual = "think"
+    if (status == "MIC") this.myStatus.actual = (this.myStatus.old == "continue") ? "continue" : "listen"
+    
+    log("Status from " + this.myStatus.old + " to " + this.myStatus.actual)
+    if (!(this.secretMode || this.sayMode)) {
+      Status.classList.remove(this.myStatus.old)
+      Status.classList.add(this.myStatus.actual)
     }
-    if (status == "error" || status == "continue") this.playChime(status)
-    myStatus.classList.add(status)
-    this.callbacks.sendNotification("ASSISTANT_" + status.toUpperCase())
+    this.callbacks.myStatus(this.myStatus) // send status external
+    this.callbacks.sendNotification("ASSISTANT_" + this.myStatus.actual.toUpperCase())
+    this.myStatus.old = this.myStatus.actual
   }
 
   prepare () {
-    var dom = document.createElement("div")
-    dom.id = "AMK2_HELPER"
-    dom.classList.add("hidden")
-
-    var transcription = document.createElement("div")
-    transcription.id = "AMK2_TRANSCRIPTION"
-    dom.appendChild(transcription)
-
-    var scoutpan = document.createElement("div")
-    scoutpan.id = "AMK2_RESULT_WINDOW"
-    var scout = document.createElement("iframe")
-    scout.id = "AMK2_SCREENOUTPUT"
-    scoutpan.appendChild(scout)
-    dom.appendChild(scoutpan)
-    var auoutpan = document.createElement("div")
-    var auout = document.createElement("audio")
-    auout.id = "AMK2_AUDIO_RESPONSE"
-    auout.autoplay = true;
-    auout.addEventListener("ended", ()=>{
-      console.log("audio end")
-      this.end()
-    })
-    auoutpan.appendChild(auout)
-    dom.appendChild(auoutpan)
-    document.body.appendChild(dom)
+    // needed class plugin
   }
 
   getDom () {
-    var dom = document.createElement("div")
-    dom.id = "AMK2"
-
-    var status = document.createElement("div")
-    status.id = "AMK2_STATUS"
-    dom.appendChild(status)
-
-    /*
-    var transcription = document.createElement("div")
-    transcription.id = "AMK2_TRANSCRIPTION"
-    dom.appendChild(transcription)
-    */
-    var chime = document.createElement("audio") // for chime
-    chime.id = "AMK2_CHIME"
-    chime.autoplay = true;
-    dom.appendChild(chime)
-    return dom
+    // needed class plugin
   }
 
   showError (text) {
@@ -101,7 +85,7 @@ class AssistantResponseClass {
   }
 
   showTranscription (text, className = "transcription") {
-    if (this.secretMode) return
+    if (this.secretMode || this.sayMode) return
     var tr = document.getElementById("AMK2_TRANSCRIPTION")
     tr.innerHTML = ""
     var t = document.createElement("p")
@@ -116,8 +100,9 @@ class AssistantResponseClass {
       var response = this.response
       this.response = null
       if (response && response.continue) {
+        this.status("continue")
         log("Continuous Conversation")
-        this.callbacks.activateAssistant({
+        this.callbacks.assistantActivate({
           type: "MIC",
           profile: response.lastQuery.profile,
           key: null,
@@ -126,18 +111,22 @@ class AssistantResponseClass {
         }, null)
 
       } else {
+        log("Conversation ends.")
+        this.callbacks.endResponse()
+        this.status("standby")
+        this.restart()
+        
         clearTimeout(this.aliveTimer)
         this.aliveTimer = null
         this.aliveTimer = setTimeout(()=>{
-          log("Conversation ends.")
           this.stopResponse(()=>{
-            this.status("standby")
-            this.callbacks.endResponse()
+            this.fullscreen(false, this.myStatus)
           })
         }, this.config.timer)
       }
     } else {
       this.status("standby")
+      this.restart()
       this.callbacks.endResponse()
     }
   }
@@ -152,7 +141,7 @@ class AssistantResponseClass {
     if (response.error) {
       if (response.error == "TRANSCRIPTION_FAILS") {
         log("Transcription Failed. Re-try with text")
-        this.callbacks.activateAssistant({
+        this.callbacks.assistantActivate({
           type: "TEXT",
           profile: response.lastQuery.profile,
           key: response.transcription.transcription,
@@ -172,15 +161,19 @@ class AssistantResponseClass {
       var so = this.showScreenOutput(response)
       var ao = this.playAudioOutput(response)
       if (ao) {
+        this.status("reply")
         log("Wait audio to finish")
       } else {
-        log("No response")
+        log("No response") // Error ?
         this.end()
       }
     }
     this.postProcess(
       response,
-      ()=>{ this.end() }, // postProcess done
+      ()=>{
+        response.continue = false // Issue: force to be false
+        this.end()
+      }, // postProcess done
       ()=>{ normalResponse(response) } // postProcess none
     )
   }
@@ -214,10 +207,10 @@ class AssistantResponseClass {
   }
 
   showScreenOutput (response) {
-    if (this.secretMode) return false
+    if (this.secretMode || this.sayMode) return false
     if (response.screen && this.config.useScreenOutput) {
       if (!response.audio) {
-        this.showTranscription(this.translate("NO_AUDIO_RESPONSE"))
+        this.showTranscription(this.callbacks.translate("NO_AUDIO_RESPONSE"))
       }
       this.showing = true
       var iframe = document.getElementById("AMK2_SCREENOUTPUT")
@@ -231,5 +224,13 @@ class AssistantResponseClass {
 
   makeUrl (uri) {
     return "/modules/MMM-AssistantMk2/" + uri + "?seed=" + Date.now()
+  }
+  restart () {
+    log("Need Restart: Main loop !")
+    this.callbacks.sendNotification("HOTWORD_RESUME")
+  }
+
+  fullscreen (active, status) {
+    // need class plugin
   }
 }

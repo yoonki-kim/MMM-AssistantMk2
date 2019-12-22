@@ -10,7 +10,7 @@ var recipe = {
             module.notificationReceived("ASSISTANT_ACTIVATE", {
               type: "TEXT",
               key: query,
-              //secretMode: false,
+              secretMode: true,
               callback: (response)=>{
                 console.log(response)
                 handler.reply("TEXT", response.screen.text)
