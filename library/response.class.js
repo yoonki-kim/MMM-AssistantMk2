@@ -100,6 +100,7 @@ class AssistantResponseClass {
       var response = this.response
       this.response = null
       if (response && response.continue) {
+        this.status("continue")
         log("Continuous Conversation")
         this.callbacks.assistantActivate({
           type: "MIC",
