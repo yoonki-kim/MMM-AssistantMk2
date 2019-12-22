@@ -84,5 +84,9 @@ class AssistantResponse extends AssistantResponseClass{
     return super.makeUrl(uri)
   }
 
+  fullscreen(active,status) {
+    super.fullscreen(active,status)
+  }
+
 */
 }

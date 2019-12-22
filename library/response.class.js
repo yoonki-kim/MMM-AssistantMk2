@@ -12,11 +12,12 @@ class AssistantResponseClass {
     this.secretMode = false
     this.hookChimed = false
     this.myStatus = { "actual" : "standby" , "old" : "standby" }
+    this.sayMode = false
   }
 
   tunnel (payload) {
     if (payload.type == "TRANSCRIPTION") {
-      if (this.secretMode) return
+      if (this.secretMode || this.sayMode) return
       var startTranscription = false
       if (payload.payload.done) this.status("confirmation")
       if (payload.payload.transcription && !startTranscription) {
@@ -34,8 +35,12 @@ class AssistantResponseClass {
     this.secretMode = secretMode
   }
 
+  setSayMode (sayMode) {
+    this.sayMode = sayMode
+  }
+
   playChime (sound) {
-    if (this.config.useChime) {
+    if (this.config.useChime && !(this.secretMode || this.sayMode)) {
       if (sound == "open") sound = "Google_beep_open"
       if (sound == "close") sound = "Google_beep_close"
       var chime = document.getElementById("AMK2_CHIME")
@@ -57,9 +62,11 @@ class AssistantResponseClass {
     if (status == "MIC") this.myStatus.actual = (this.myStatus.old == "continue") ? "continue" : "listen"
     
     log("Status from " + this.myStatus.old + " to " + this.myStatus.actual)
-    Status.classList.remove(this.myStatus.old)
-    Status.classList.add(this.myStatus.actual)
-
+    if (!(this.secretMode || this.sayMode)) {
+      Status.classList.remove(this.myStatus.old)
+      Status.classList.add(this.myStatus.actual)
+    }
+    this.callbacks.myStatus(this.myStatus) // send status external
     this.callbacks.sendNotification("ASSISTANT_" + this.myStatus.actual.toUpperCase())
     this.myStatus.old = this.myStatus.actual
   }
@@ -78,7 +85,7 @@ class AssistantResponseClass {
   }
 
   showTranscription (text, className = "transcription") {
-    if (this.secretMode) return
+    if (this.secretMode || this.sayMode) return
     var tr = document.getElementById("AMK2_TRANSCRIPTION")
     tr.innerHTML = ""
     var t = document.createElement("p")
@@ -93,7 +100,6 @@ class AssistantResponseClass {
       var response = this.response
       this.response = null
       if (response && response.continue) {
-        this.status("continue")
         log("Continuous Conversation")
         this.callbacks.assistantActivate({
           type: "MIC",
@@ -200,7 +206,7 @@ class AssistantResponseClass {
   }
 
   showScreenOutput (response) {
-    if (this.secretMode) return false
+    if (this.secretMode || this.sayMode) return false
     if (response.screen && this.config.useScreenOutput) {
       if (!response.audio) {
         this.showTranscription(this.callbacks.translate("NO_AUDIO_RESPONSE"))
@@ -227,4 +233,3 @@ class AssistantResponseClass {
     // need class plugin
   }
 }
-

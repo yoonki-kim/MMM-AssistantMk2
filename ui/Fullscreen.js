@@ -68,14 +68,14 @@ class AssistantResponse extends AssistantResponseClass{
     var AMK2 = document.getElementById("AMK2")
     clearTimeout(this.displayTimer)
     this.displayTimer = null
-    if (active) {
+    if (active && !(this.secretMode || this.sayMode)) {
       MM.getModules().exceptWithClass("MMM-AssistantMk2").enumerate(function(module) {
         module.hide(15, {lockString: "AMK2_LOCKED"})
       })
       AMK2.classList.remove("hidden")
       AMK2.classList = "in"
-    } else {
-      if (status.actual == "standby") { // only on standby mode
+    } else  if(!(this.secretMode || this.sayMode)) {
+      if (status && status.actual == "standby") { // only on standby mode
         AMK2.classList.remove("in")
         AMK2.classList = "out"
         this.displayTimer = setTimeout (() => {

@@ -2,6 +2,13 @@
 ---
 # Change Logs
 
+# 2019/12/22 -- Bugsounet
+- update developing.md
+- create sayMode : only audio response
+- Appli correct eouia secretMode
+- Remake my developing tool (demo / say / query -- only for me)
+- Correct Issue Continue and hooking
+- MMM-Asssitant.js known now real time status of assistant for lastQuery script
 
 # 2019/12/21 -- Bugsounet
 - Move all ui files to ui directory

@@ -120,6 +120,7 @@ Module.register("MMM-AssistantMk2", {
     this.registerActionsObject(this.config.actions)
     this.setProfile(this.config.defaultProfile)
     this.session = {}
+    this.myStatus = { "actual" : "standby" , "old" : "standby" }
     var callbacks = {
       assistantActivate: (payload, session)=>{
         this.assistantActivate(payload, session)
@@ -135,6 +136,9 @@ Module.register("MMM-AssistantMk2", {
       },
       translate: (text) => {
         return this.translate(text)
+      },
+      myStatus: (status) => {
+        return this.Status(status)
       }
     }
     this.assistantResponse = new AssistantResponse(this.helperConfig["responseConfig"], callbacks)
@@ -248,7 +252,9 @@ Module.register("MMM-AssistantMk2", {
         this.doPlugin("onBeforeActivated", payload)
         var session = Date.now()
         payload.secretMode = (payload.secretMode) ? payload.secretMode : false
+        payload.sayMode = (payload.sayMode) ? payload.sayMode : false
         this.assistantResponse.setSecret(payload.secretMode)
+        this.assistantResponse.setSayMode(payload.sayMode)
         if (typeof payload.callback == "function") {
           this.session[session] = {
             callback: payload.callback,
@@ -261,10 +267,35 @@ Module.register("MMM-AssistantMk2", {
         this.doPlugin("onAfterActivated", payload)
         break
       case "ASSISTANT_COMMAND":
+        this.assistantResponse.setSecret(false)
+        this.assistantResponse.setSayMode(false)
         this.doCommand(payload.command, payload.param, sender.name)
         break
-     }
-     this.doPlugin("onAfterNotificationReceived", {notification:noti, payload:payload})
+      case "ASSISTANT_QUERY":
+        if (this.config.developer) {
+          this.assistantResponse.setSayMode(false)
+          this.assistantResponse.fullscreen(true)
+          this.assistantActivate({ type: "TEXT", key: payload }, null)
+        }
+        break
+      case "ASSISTANT_SAY":
+        if (this.config.developer) {
+          this.assistantResponse.setSayMode(true)
+          var text = payload
+          var magicQuery = "%REPEATWORD% %TEXT%" // initial expression
+          var myWord = (this.config.responseConfig.myMagicWord) ?  "AMk2.repeat:" : this.translate("REPEAT_WORD") // config word or default ?
+          magicQuery = magicQuery.replace("%REPEATWORD%", myWord)
+          magicQuery = magicQuery.replace("%TEXT%", text)
+          this.assistantResponse.fullscreen(true)
+          this.assistantActivate({ type: "TEXT", key: magicQuery}, null)
+        }
+        break
+      case "ASSISTANT_DEMO": {
+        if (this.config.developer) this.demo()
+        break
+      }
+    }
+    this.doPlugin("onAfterNotificationReceived", {notification:noti, payload:payload})
   },
 
   socketNotificationReceived: function(noti, payload) {
@@ -334,8 +365,7 @@ Module.register("MMM-AssistantMk2", {
   },
 
   assistantActivate: function(payload, session) {
-    if(!this.continue) this.lastQuery = null //needed -> always false?
-    this.continue = false // needed ?
+    this.lastQuery = null
     var options = {
       type: "TEXT",
       profile: this.config.profiles[this.profile],
@@ -344,8 +374,8 @@ Module.register("MMM-AssistantMk2", {
       useScreenOutput: this.config.responseConfig.useScreenOutput,
       useAudioOutput: this.config.responseConfig.useAudioOutput,
       session: session,
+      status: this.myStatus.old,
     }
-    
     var options = Object.assign({}, options, payload)
     if (payload.hasOwnProperty("profile") && typeof this.config.profiles[payload.profile] !== "undefined") {
       options.profile = this.config.profiles[payload.profile]
@@ -359,6 +389,7 @@ Module.register("MMM-AssistantMk2", {
   },
 
   postProcess: function (response, callback_done=()=>{}, callback_none=()=>{}) {
+    if (response.continue || response.lastQuery.status == "continue") return callback_none()
     var foundHook = []
     foundHook = this.findAllHooks(response)
     if (foundHook.length > 0) {
@@ -518,48 +549,65 @@ Module.register("MMM-AssistantMk2", {
     if (command.hasOwnProperty("soundExec")) {
       var se = command.sound
       if (se.chime && typeof se.chime == 'string') {
-        if (se.chime == "open") this.playChime("Google_beep_open")
-        if (se.chime == "close") this.playChime("Google_beep_close")
+        if (se.chime == "open") this.playChime("open")
+        if (se.chime == "close") this.playChime("close")
       }
-      if (se.say && typeof se.say == 'string' && this.config.responseConfig.myMagicWord) {
-        this.notificationReceived("ASSISTANT_SAY", se.say , this.name)
+      if (se.say && typeof se.say == 'boolean' && this.config.responseConfig.myMagicWord
+        && this.config.developer) {
+          this.notificationReceived("ASSISTANT_SAY", se.say , this.name)
       }
     }
   },
 
-  /** Optional TelegramBot Commands **/
-/*  
+  Status: function(status) { /** sync status for lastQuery **/
+    this.myStatus=status
+    // log("DEBUG: Set Status on Master: " , this.myStatus)
+  },
+
+  /** TelegramBot Commands for developer mode ONLY (Bugsounet) **/
+
   getCommands: function () {
     return [
       {
-        command: "q",
+        command: "query",
         callback: "telegramCommand",
         description: this.translate("QUERY_HELP")
       },
       {
-        command: "s",
+        command: "say",
         callback: "telegramCommand",
         description: this.translate("SAY_HELP")
+      },
+      {
+        command: "demo",
+        callback: "telegramCommand",
+        description: this.translate("DEMO_HELP")
       }
     ]
   },
 
   telegramCommand: function(command, handler) {
-    if (command == "q" && handler.args) {
+    if (command == "query" && handler.args && this.config.developer) {
       handler.reply("TEXT", this.translate("QUERY_REPLY"))
       this.notificationReceived("ASSISTANT_QUERY", handler.args, "MMM-TelegramBot")
     }
-    if (command == "s" && handler.args) {
+    if (command == "say" && handler.args && this.config.developer) {
       handler.reply("TEXT", this.translate("SAY_REPLY") + handler.args)
       this.notificationReceived("ASSISTANT_SAY", handler.args, "MMM-TelegramBot")
     }
+    if (command == "demo" && handler.args && this.config.developer) {
+      handler.reply("TEXT", this.translate("DEMO_REPLY") + handler.args)
+      this.notificationReceived("ASSISTANT_DEMO", handler.args, "MMM-TelegramBot")
+    }
   },
-*/
+
   /** demo for check if icons are ok ... (or for video demo later?) **/
-  
+  /** developer mode ONLY (Bugsounet) **/
+
   demo: function() {
     var allStatus = [ "hook", "standby", "reply", "error", "think", "continue", "listen", "confirmation" ]
     var myStatus = document.getElementById("AMK2_STATUS")
+    this.assistantResponse.fullscreen(true)
     var i = 0
     for (let [item,value] of Object.entries(allStatus)) {
       setTimeout(() => {
@@ -569,6 +617,7 @@ Module.register("MMM-AssistantMk2", {
         if (item == 7) setTimeout(() => { 
           this.assistantResponse.status("standby")
           this.assistantResponse.showTranscription(" ")
+          this.assistantResponse.fullscreen(false, this.myStatus)
         } , 4000)
       }, 1000 + i)
       i += 4000
