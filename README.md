@@ -1,4 +1,4 @@
-## MMM-AssistantMk2
+## MMM-AssistantMk2 v3
 `MMM-AssistantMk2` is an embedded google assistant on MagicMirror.
 
 
