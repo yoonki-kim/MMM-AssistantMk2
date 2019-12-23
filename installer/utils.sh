@@ -10,7 +10,7 @@
 Installer_vinstaller="1.0.1 by Bugsounet"
 
 # debug mode
-Installer_debug=true
+Installer_debug=false
 
 # directory where the script is installed
 Installer_dir=
