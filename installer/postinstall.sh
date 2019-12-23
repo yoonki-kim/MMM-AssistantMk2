@@ -2,18 +2,18 @@
 # +--------------------------------+
 # | npm postinstall                |
 # | AMK2 v3 Installer by Bugsounet |
-# | Rev 1.0.0                      |
+# | Rev 1.0.1                      |
 # +--------------------------------+
 
 # get the installer directory
 Installer_get_current_dir () {
-    SOURCE="${BASH_SOURCE[0]}"
-    while [ -h "$SOURCE" ]; do
-      DIR="$( cd -P "$( dirname "$SOURCE" )" && pwd )"
-      SOURCE="$(readlink "$SOURCE")"
-      [[ $SOURCE != /* ]] && SOURCE="$DIR/$SOURCE"
-    done
-    echo "$( cd -P "$( dirname "$SOURCE" )" && pwd )"
+  SOURCE="${BASH_SOURCE[0]}"
+  while [ -h "$SOURCE" ]; do
+    DIR="$( cd -P "$( dirname "$SOURCE" )" && pwd )"
+    SOURCE="$(readlink "$SOURCE")"
+    [[ $SOURCE != /* ]] && SOURCE="$DIR/$SOURCE"
+  done
+  echo "$( cd -P "$( dirname "$SOURCE" )" && pwd )"
 }
 
 Installer_dir="$(Installer_get_current_dir)"
@@ -39,47 +39,50 @@ echo
 
 # Check not run as root
 if [ "$EUID" -eq 0 ]; then
-    Installer_error "npm install must not be used as root" 
-    exit 1
+  Installer_error "npm install must not be used as root" 
+  exit 1
 fi
 
 # Check platform compatibility
-dependencies=(git sox wget libasound2-dev sox libsox-fmt-all gcc-7)
+dependencies=(git wget libasound2-dev sox libsox-fmt-all gcc-7)
+Installer_info "Checking OS..."
 case "$OSTYPE" in
-    linux*)     platform="linux"
-                arch="$(uname -m)"
-                os_name="$(cat /etc/*release | grep ^ID= | cut -f2 -d=)"
-                os_version="$(cat /etc/*release | grep ^VERSION_ID= | cut -f2 -d= | tr -d '"')"
-                dependencies+=(alsamixer aplay arecord libsox-fmt-mp3)
-                ;;
-    darwin*)    platform="osx"
-                arch="$(uname -m)"
-                os_name="$(sw_vers -productName)"
-                os_version="$(sw_vers -productVersion)"
-                dependencies+=(osxdep)
-                ;;
-    *)          Installer_error "$OSTYPE is not a supported platform"
-                exit 1;;
+  linux*)   platform="linux"
+            arch="$(uname -m)"
+            os_name="$(cat /etc/*release | grep ^ID= | cut -f2 -d=)"
+            os_version="$(cat /etc/*release | grep ^VERSION_ID= | cut -f2 -d= | tr -d '"')"
+            dependencies+=(alsamixer aplay arecord libsox-fmt-mp3)
+            ;;
+  darwin*)  platform="osx"
+            arch="$(uname -m)"
+            os_name="$(sw_vers -productName)"
+            os_version="$(sw_vers -productVersion)"
+            dependencies+=(ruby curl)
+            ;;
+  *)        Installer_error "$OSTYPE is not a supported platform"
+            exit 1;;
 esac
 
 if  [ "$platform" == "osx" ]; then
+  Installer_error "OS Detected: $OSTYPE ($os_name $os_version $arch)"
   Installer_error "Actualy not completed for $OSTYPE"
+  Installer_error "!!! Experimental and not tested (need eouia confirmation) !!!"
+  Installer_yesno "Do you to continue ?" || exit 1
   echo
-  exit 1
+else Installer_success "OS Detected: $OSTYPE ($os_name $os_version $arch)"
 fi
-Installer_info "Check OS..."
-Installer_success "OS Detected: $OSTYPE ($os_name $os_version $arch)"
+
 source utils_$platform.sh
 echo
 
 # check dependencies
-Installer_info "Check all dependencies..."
+Installer_info "Checking all dependencies..."
 Installer_check_dependencies
 Installer_success "All Dependencies needed are installed !"
 echo
 
 # force gcc v7
-Installer_info "Check GCC Version..."
+Installer_info "Checking GCC Version..."
 Installer_check_gcc7
 Installer_success "GCC 7 is set by default"
 echo
@@ -88,6 +91,18 @@ echo
 Installer_info "Electron Rebuild" 
 Installer_electronrebuild
 Installer_success "Electron Rebuild Complete!"
+echo
+
+# Check audio
+source audio.sh
+Installer_checkaudio
+echo
+Installer_checkmic
+echo
+Installer_warning "This is your working configuration :"
+Installer_warning "Speaker: $play_hw"
+Installer_warning "Microphone : $rec_hw"
+echo
 
 # the end...
 Installer_exit "AssistantMK2 is now installed !"

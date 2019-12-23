@@ -3,14 +3,14 @@
 #--------------
 # Common utils  
 #  Bugsounet
-# v1.0.0
+# v1.0.1
 #--------------
 
 # postinstaller version
-Installer_vinstaller="1.0.0 by Bugsounet"
+Installer_vinstaller="1.0.1 by Bugsounet"
 
 # debug mode
-Installer_debug=false
+Installer_debug=true
 
 # directory where the script is installed
 Installer_dir=
@@ -26,31 +26,31 @@ os_name=
 
 # check if all dependencies are installed
 Installer_check_dependencies () {
-	Installer_debug "Test Wanted dependencies: ${dependencies[*]}"
-    local missings=()
-    for package in "${dependencies[@]}"; do
-        Installer_is_installed "$package" || missings+=($package)
+  Installer_debug "Test Wanted dependencies: ${dependencies[*]}"
+  local missings=()
+  for package in "${dependencies[@]}"; do
+      Installer_is_installed "$package" || missings+=($package)
+  done
+  if [ ${#missings[@]} -gt 0 ]; then
+    Installer_warning "You must install missing dependencies before going further"
+    for missing in "${missings[@]}"; do
+      Installer_error "Missing package: $missing"
     done
-    if [ ${#missings[@]} -gt 0 ]; then
-        Installer_warning "You must install missing dependencies before going further"
-        for missing in "${missings[@]}"; do
-            Installer_error "Missing package: $missing"
-        done
-        Installer_yesno "Attempt to automatically install the above packages?" || exit 1
-        Installer_info "Installing missing package..."
-        Installer_update || exit 1
-        Installer_install ${missings[@]} || exit 1
+    Installer_yesno "Attempt to automatically install the above packages?" || exit 1
+    Installer_info "Installing missing package..."
+    Installer_update || exit 1
+    Installer_install ${missings[@]} || exit 1
+  fi
+
+  if [[ "$platform" == "linux" ]]; then
+    if ! groups "$(whoami)" | grep -qw audio; then
+      Installer_warning "Your user should be part of audio group to list audio devices"
+      Installer_yesno "Would you like to add audio group to user $USER?" || exit 1
+      sudo usermod -a -G audio $USER # add audio group to user
+      Installer_warning "Please logout and login for new group permissions to take effect, then restart npm install"
+      exit
     fi
-    
-    if [[ "$platform" == "linux" ]]; then
-        if ! groups "$(whoami)" | grep -qw audio; then
-            Installer_warning "Your user should be part of audio group to list audio devices"
-            Installer_yesno "Would you like to add audio group to user $USER?" || exit 1
-            sudo usermod -a -G audio $USER # add audio group to user
-            Installer_warning "Please logout and login for new group permissions to take effect, then restart npm install"
-            exit
-        fi
-    fi
+  fi
 }
 
 # check the version of GCC and downgrade it if it's not 7
@@ -90,9 +90,9 @@ Installer_electronrebuild () {
 	
 # add timestamps and delete colors code for log file
 Installer_add_timestamps () {
-    while IFS= read -r line; do
-        echo "$(date "+%D %H:%M") $line" | sed -r "s/\x1B\[([0-9]{1,2}(;[0-9]{1,2})?)?[mGK]//g"
-    done
+  while IFS= read -r line; do
+    echo "$(date "+%D %H:%M") $line" | sed -r "s/\x1B\[([0-9]{1,2}(;[0-9]{1,2})?)?[mGK]//g"
+  done
 }
 
 # color codes
@@ -110,11 +110,11 @@ _pink="\033[95m"
 # $2 - message type (error/warning/success/debug/question)
 # $3 - color to use
 Installer_message() {
-	if $Installer_debug; then
-        echo -e "$3[$2] $1$_reset"
-    else
-        echo -e "$3$1$_reset"
-    fi
+  if $Installer_debug; then
+    echo -e "$3[$2] $1$_reset"
+  else
+    echo -e "$3$1$_reset"
+  fi
 }
 
 # Displays question in cyan
@@ -141,39 +141,40 @@ Installer_debug() {
 
 # Asks user to press enter to continue
 Installer_press_enter_to_continue () {
-    Installer_question "Press [Enter] to continue"
-    read
+  Installer_question "Press [Enter] to continue"
+  read
 }
 
 # Exit 
 Installer_exit () {
-	echo
-	Installer_success "$1"
-	Installer_press_enter_to_continue
-       
-    # reset font color
-    echo -e "$_reset\n"
-    
-    exit
+  echo
+  Installer_success "$1"
+  Installer_press_enter_to_continue
+
+  # reset font color
+  echo -e "$_reset\n"
+
+  exit
 }
     
 # YesNo prompt from the command line
 Installer_yesno () {
-    while true; do
-		Installer_question "$1 [Y/n] "
-        read -n 1 -p "$(echo -e $_cyan"Your choice: "$_reset)"
-        echo # new line
-        [[ $REPLY =~ [Yy] ]] && return 0
-        [[ $REPLY =~ [Nn] ]] && return 1
-    done
+  while true; do
+    Installer_question "$1 [Y/n] "
+    read -n 1 -p "$(echo -e $_cyan"Your choice: "$_reset)"
+    echo # new line
+    [[ $REPLY =~ [Yy] ]] && return 0
+    [[ $REPLY =~ [Nn] ]] && return 1
+  done
 }
 
 # Log to installer.log
 Installer_log () {
-	exec > >(tee >(Installer_add_timestamps >> installer.log)) 2>&1
+  exec > >(tee >(Installer_add_timestamps >> installer.log)) 2>&1
 }
 
 # display gcc version
 Installer_gcc="$(gcc --version | grep gcc)"
 Installer_gcc_rev="$(echo "${Installer_gcc#g*) }")" 
 Installer_gcc_version="$(echo $Installer_gcc_rev | cut -c1)"
+Installer_debug "[LOADED] utils.sh"
