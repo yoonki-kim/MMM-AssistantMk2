@@ -52,7 +52,7 @@ Last update : 2019/12/22
   position: "top_left",
   config: {
     debug:true,
-    ui : "ui", // ui-> ClassicUI // Fullscreen: FullScreenUI
+    ui : "Classic2", // ui-> Classic // Classic2 (with try to say) // Fullscreen
     assistantConfig: {
       credentialPath: "credentials.json",
       projectId: "",
