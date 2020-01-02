@@ -2,7 +2,7 @@
 # +--------------------------------+
 # | npm postinstall                |
 # | AMK2 v3 Installer by Bugsounet |
-# | Rev 1.0.1                      |
+# | Rev 1.0.2                      |
 # +--------------------------------+
 
 # get the installer directory
@@ -73,6 +73,7 @@ else Installer_success "OS Detected: $OSTYPE ($os_name $os_version $arch)"
 fi
 
 source utils_$platform.sh
+source audio.sh
 echo
 
 # check dependencies
@@ -88,13 +89,13 @@ Installer_success "GCC 7 is set by default"
 echo
 
 # all is ok than electron-rebuild
-Installer_info "Electron Rebuild" 
+Installer_info "Electron Rebuild"
 Installer_electronrebuild
 Installer_success "Electron Rebuild Complete!"
 echo
 
-# Check audio
-source audio.sh
+if  [ "$platform" == "linux" ]; then
+# Check audio ONLY LINUX
 Installer_checkaudio
 echo
 Installer_checkmic
@@ -103,6 +104,7 @@ Installer_warning "This is your working configuration :"
 Installer_warning "Speaker: $play_hw"
 Installer_warning "Microphone : $rec_hw"
 echo
+fi
 
 # the end...
 Installer_exit "AssistantMK2 is now installed !"

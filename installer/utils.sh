@@ -7,7 +7,7 @@
 #--------------
 
 # postinstaller version
-Installer_vinstaller="1.0.1 by Bugsounet"
+Installer_vinstaller="1.0.2 by Bugsounet"
 
 # debug mode
 Installer_debug=false
