@@ -34,7 +34,7 @@ class AssistantResponse extends AssistantResponseClass{
     chime.id = "AMK2_CHIME"
     chime.autoplay = true;
     dom.appendChild(chime)
-
+    
     super.getDom()
     return dom
   } 

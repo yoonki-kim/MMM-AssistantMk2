@@ -30,7 +30,6 @@ Module.register("MMM-AssistantMk2", {
       useAudioOutput: true,
       useChime: true,
       timer: 5000,
-      screenZoom: null, // screenZoom Override
     },
     micConfig: {
       recorder: "sox",
@@ -78,7 +77,7 @@ Module.register("MMM-AssistantMk2", {
 
   getScripts: function() {
     if (this.config.ui) {
-      var ui = this.config.ui + '.js'
+      var ui = this.config.ui + "/" + this.config.ui + '.js'
       return [
        "/modules/MMM-AssistantMk2/library/response.class.js",
        "/modules/MMM-AssistantMk2/ui/" + ui
@@ -91,7 +90,7 @@ Module.register("MMM-AssistantMk2", {
   },
 
   getStyles: function () {
-    return ["/modules/MMM-AssistantMk2/ui/" + this.config.ui+ ".css"]
+    return ["/modules/MMM-AssistantMk2/ui/" + this.config.ui + "/" + this.config.ui + ".css"]
   },
 
   getTranslations: function() {
@@ -108,7 +107,7 @@ Module.register("MMM-AssistantMk2", {
     ]
     this.helperConfig = {}
     if (this.config.debug) log = _log
-    this.config.responseConfig.screenOutputCSS = "ui/screen_output." + this.config.ui + ".css"
+    this.config.responseConfig.screenOutputCSS = "ui/" + this.config.ui + "/screen_output." + this.config.ui + ".css"
     this.config = this.configAssignment({}, this.defaults, this.config)
     for(var i = 0; i < helperConfig.length; i++) {
       this.helperConfig[helperConfig[i]] = this.config[helperConfig[i]]
@@ -120,7 +119,7 @@ Module.register("MMM-AssistantMk2", {
     this.registerActionsObject(this.config.actions)
     this.setProfile(this.config.defaultProfile)
     this.session = {}
-    this.myStatus = { "actual" : "standby" , "old" : "standby" }
+    this.myStatus = { "actual" : "standby" , "old" : "standby" } // initial status
     var callbacks = {
       assistantActivate: (payload, session)=>{
         this.assistantActivate(payload, session)

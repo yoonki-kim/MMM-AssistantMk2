@@ -2,6 +2,10 @@
 ---
 # Change Logs
 
+# 2020/01/02 -- Bugsounet
+- Create another UI with "try to say..." section
+- make directory files by UI
+
 # 2019/12/22 -- Bugsounet
 - update developing.md
 - create sayMode : only audio response

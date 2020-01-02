@@ -188,6 +188,12 @@ class AssistantResponseClass {
     audioSrc.src = ""
     var tr = document.getElementById("AMK2_TRANSCRIPTION")
     tr.innerHTML = ""
+    var ts = document.getElementById("AMK2_TRYSAY")
+    if (ts) {
+      ts.innerHTML = ""
+      var word = document.getElementById("AMK2_WORDBOX")
+      word.innerHTML = ""
+    }
     callback()
   }
 
@@ -217,6 +223,25 @@ class AssistantResponseClass {
       iframe.src = this.makeUrl(response.screen.uri)
       var winh = document.getElementById("AMK2_HELPER")
       winh.classList.remove("hidden")
+
+      /* --- HelpWord Box ---*/
+      var wordbox = document.getElementById("AMK2_WORDBOX")
+      var trysay = document.getElementById("AMK2_TRYSAY")
+      if (trysay) { // only if AMK2_TRYSAY is used
+        trysay.textContent = ""
+        wordbox.innerHTML = ""
+        if(response.screen.trysay) {
+          trysay.textContent = response.screen.trysay
+          var word = []
+          for (let [item, value] of Object.entries(response.screen.help)) {
+            word[item] = document.createElement("div")
+            word[item].id = "AMK2_WORD"
+            word[item].textContent = value
+            wordbox.appendChild(word[item])
+          }
+        }
+      }
+      /* --- HelpWord Box --- */
       return true
     }
     return false
