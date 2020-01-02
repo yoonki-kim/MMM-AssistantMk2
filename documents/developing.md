@@ -1,5 +1,5 @@
 # Version 3.0.0 Developing.
-Last update : 2019/12/22
+Last update : 2020/01/02
 
 ![](https://raw.githubusercontent.com/eouia/MMM-AssistantMk2/3-dev/resources/AMk2_Small.png)
 
@@ -16,10 +16,10 @@ Last update : 2019/12/22
 
 ## TODO (Not completed)
 - User Interface (status, error, transcription, ...) (Rest: error translate -- Bugsounet)
-- Screen Output hooking part. (ok on fullscreen mode, 95% on ui mode)
+- Screen Output hooking part. (ok !)
 - Code refactoring. (95 % done -- Bugsounet & eouia)
 - Manual (I hate this!)
-- Bash installer script for npm install (90% Done -- Bugsounet --- RPI: ok - todo osx installer and take place to audio checker)
+- Bash installer script for npm install (95% Done -- Bugsounet --- RPI: ok - need test for OSX)
 - Related modules(MMM-Telegram, MMM-YouTube, MMM-Spotify, MMM-News, ...) update for using together (MMM-Youtube: ok, MMM-telegram: ok -- eouia)
 - Real RPI test (Actually in prod with my RPI -- Bugsounet)
 - And more tests.
