@@ -59,7 +59,7 @@ echo
 
 # check dependencies
 Installer_info "Checking all dependencies..."
-Installer_yesno "Do you want to check all dependencies [Yes/No]" && (
+Installer_yesno "Do you want to check all dependencies" && (
   Installer_check_dependencies
   Installer_success "All Dependencies needed are installed !"
   echo
@@ -67,7 +67,7 @@ Installer_yesno "Do you want to check all dependencies [Yes/No]" && (
 
 # force gcc v7
 Installer_info "Checking GCC Version..."
-Installer_yesno "Do you want to check compatible GCC version [Yes/No]" && (
+Installer_yesno "Do you want to check compatible GCC version" && (
   Installer_check_gcc7
   Installer_success "GCC 7 is set by default"
   echo
@@ -75,13 +75,13 @@ Installer_yesno "Do you want to check compatible GCC version [Yes/No]" && (
 
 # all is ok than electron-rebuild
 Installer_info "Electron Rebuild"
-Installer_yesno "Do you want to execute electron rebuild [Yes/No]" && (
+Installer_yesno "Do you want to execute electron rebuild" && (
   Installer_electronrebuild
   Installer_success "Electron Rebuild Complete!"
   echo
 )
 
-Installer_yesno "Do you want check your audio configuration [Yes/No]" && (
+Installer_yesno "Do you want check your audio configuration" && (
   # Check audio
   Installer_checkaudio
   echo
