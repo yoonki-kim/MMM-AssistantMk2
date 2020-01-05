@@ -50,4 +50,5 @@ cd <YOUR_MAGIC_MIRROR_DIRECTORY>
 npm install -g nan
 ```
 Then try again installation
+
 [TODO - bugsounet] Add nan to package.json -- need version to use
