@@ -62,36 +62,50 @@ Installer_info "Checking all dependencies..."
 Installer_yesno "Do you want to check all dependencies" && (
   Installer_check_dependencies
   Installer_success "All Dependencies needed are installed !"
-  echo
 )
+
+echo
 
 # force gcc v7
 Installer_info "Checking GCC Version..."
 Installer_yesno "Do you want to check compatible GCC version" && (
   Installer_check_gcc7
   Installer_success "GCC 7 is set by default"
-  echo
 )
+
+echo
 
 # all is ok than electron-rebuild
 Installer_info "Electron Rebuild"
 Installer_yesno "Do you want to execute electron rebuild" && (
   Installer_electronrebuild
   Installer_success "Electron Rebuild Complete!"
-  echo
+
 )
 
+echo
+# Audio out/in checking
+Installer_info "Checking Speaker and Microphone..."
 Installer_yesno "Do you want check your audio configuration" && (
-  # Check audio
   Installer_checkaudio
   echo
   Installer_checkmic
   echo
-  Installer_warning "This is your working configuration :"
-  Installer_warning "Speaker: plug$play_hw"
-  Installer_warning "Microphone : plug$rec_hw"
-  echo
+
+  if [ ! -z "$play_hw" ] || [ ! -z "$rec_hw" ]; then
+    Installer_warning "This is your working configuration :"
+  fi
+
+  if [ ! -z "$play_hw" ]; then
+    Installer_warning "Speaker: plug$play_hw"
+  fi
+
+  if [ ! -z "$rec_hw" ]; then
+    Installer_warning "Microphone : plug$rec_hw"
+  fi
 )
+
+echo
 
 # the end...
 Installer_exit "AssistantMK2 is now installed !"
