@@ -32,7 +32,7 @@ Module.register("MMM-AssistantMk2", {
       timer: 5000,
     },
     micConfig: {
-      recorder: "sox",
+      recorder: "arecord",
       device: null,
     },
     customActionConfig: {
@@ -45,6 +45,7 @@ Module.register("MMM-AssistantMk2", {
     actions: {},
     commands: {},
     plugins: {},
+    responseHooks: {},
     defaultProfile: "default",
     profiles: {
       "default": {
@@ -302,6 +303,9 @@ Module.register("MMM-AssistantMk2", {
       case "LOAD_RECIPE":
         this.parseLoadedRecipe(payload)
         break
+      case "NOT_INIIALIZED":
+        log(payload)
+        break
       case "INITIALIZED":
         log("Initialized.")
         this.assistantResponse.status("standby")
@@ -439,7 +443,7 @@ Module.register("MMM-AssistantMk2", {
     console.log("re", found)
     return found
   },
-  
+
   findAction: function (response) {
     var found = []
     var action = (response.action) ? response.action : null
@@ -613,7 +617,7 @@ Module.register("MMM-AssistantMk2", {
         this.assistantResponse.status(value)
         if (value == "listen") this.assistantResponse.playChime("beep")
         this.assistantResponse.showTranscription("icon: " + value)
-        if (item == 7) setTimeout(() => { 
+        if (item == 7) setTimeout(() => {
           this.assistantResponse.status("standby")
           this.assistantResponse.showTranscription(" ")
           this.assistantResponse.fullscreen(false, this.myStatus)

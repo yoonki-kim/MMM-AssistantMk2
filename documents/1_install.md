@@ -19,6 +19,9 @@ npm install
 sudo apt-get install libasound2-dev sox libsox-fmt-all
 ```
 If you are using OSX, use `brew` instead `apt`
+```sh
+brew install sox
+```
 - GCC 7 Required (GCC 8 could make fails on Raspbian)
 ```sh
 sudo apt-get install gcc-7
