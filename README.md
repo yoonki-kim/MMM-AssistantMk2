@@ -16,12 +16,13 @@ Entirely rebuild from 2.X.
 ![](https://raw.githubusercontent.com/bugsounet/MMM-AssistantMk2/3-dev/resources/previewFS.jpg)
 
 ## What is updated
-- Fully rebuild from scratch
-- More stable
-- Installer is served
-- Annoying audio output dependencies are deprecated. Just using standard HTML5 audio output
+- Fully rebuild from scratch.
+- More stable.
+- Installer is served. (For Raspbian or any Debian-based Linux)
+- Annoying audio output dependencies are deprecated. Simply using standard HTML5 audio output.
 - `plugin` and `responseHook` are added.
 - screen output is more controllable.
+- customizable UI.
 - pre-built recipes are served.
 - Easier `custom action` managing.
 
@@ -44,4 +45,4 @@ Not easy. Remove existence then reinstall fresh.
   - @eouia
   - @bugsounet
 - License : MIT
-  - **By terms of Google Assistant SDK, You are not allowed to use or provide this module as any commercial purpose.**
+  - **By terms of Google Assistant SDK, You are not allowed to use or provide this module for commercial purpose.**

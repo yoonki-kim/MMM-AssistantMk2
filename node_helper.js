@@ -107,6 +107,9 @@ module.exports = NodeHelper.create({
     this.config.assistantConfig["modulePath"] = __dirname
     if (this.config.debug) log = _log
     log("MMM-AssistantMk2 Version:", require('./package.json').version)
+    /**
+     * TODO: check whether credentialPath exists.
+     */
     this.loadRecipes(()=>{
       this.sendSocketNotification("INITIALIZED")
     })
