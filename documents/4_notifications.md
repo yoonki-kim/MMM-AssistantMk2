@@ -48,6 +48,12 @@ this.sendNotification("ASSISTANT_ACTIVATE", {
 })
 ```
 
+Another example :
+```js
+this.sendNotification("ASSISTANT_ACTIVATE", {type: "MIC"})
+```
+Whichever module can execute this, it could activate `MMM-AssistantMk2` as mic mode. Instead `MMM-Hotword`, you can make your own trigger module or can use any module existence (e.g. MMM-Button, MMM-Claps, ...)
+
 ### **`ASSISTANT_PROFILE`**
 ```js
 this.sendNotification("ASSISTANT_PROFILE", "default")
@@ -61,9 +67,25 @@ this.sendNotification("ASSISTANT_COMMAND", {
   param: ...
 })
 ```
-When you want to execute some registered `command` without activation, you can use this.
+When you want to execute some registered `command` without activation of assistant, you can use this.
 
 
 ## Outgoing Notifications
 Unlike ver 2.X, this version doesn't emit any special notifications (Of course, except the result of `notificationExec`)
-Instead, you can use `plugin` to emit any notification when you need. Read the docs more.
+
+Instead, you can use `plugin` to emit any notification that you need when it is needed. Read the docs about `plugin` more.
+
+Example:
+```js
+commands: {
+  "COMMAND_READY": {
+    notificationExec: {
+      notification: "AMK2_READY"
+    }
+  }
+},
+plugins: {
+  onReady: "COMMAND_READY",
+},
+```
+You can make to emit `AMK2_READY` notification when `MMM-AssistantMk2` is initialized and ready to work.
