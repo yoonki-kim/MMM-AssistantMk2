@@ -177,3 +177,26 @@ You can make your own recipe for your purpose. Read more docs about that and loo
 - `autoMakeAction` : This option would make to convert your `actions` to `action.json` as source of custom action for Google Assistant SDK automatically.
 - `autoUpdateAction` : This option would update your converted action into Google Assistant Server. Custom Action would be registered as `test mode`, so periodical update is needed. This option will do that job automatically.
 - `actionLocale` : Set locale of your action. At this moment, I haven't provided multi-language action. (It will be added in some days.)
+
+
+## Use with `MMM-Hotword`
+```js
+{
+  module: "MMM-Hotword",
+  position: "top_left",
+  config: {
+    recipes: ["MMM-AssistantMk2.recipe.js"],
+    ... // your other configuration
+  }
+},
+{
+  module: "MMM-AssistantMk2",
+  position: "top_left",
+  config: {
+    recipes: ["with-MMM-Hotword.js"],
+    ... // your other configuration
+  }  
+},
+```
+This will make `smart mirror` of `MMM-Hotword` as a trigger of `MMM-AssistantMk2`.
+Additionally, this new version would make `seamless query` possible. It means, you can query without waiting AMK2 activation. `Smart mirror! (waiting a beep) What time is it?` and `Smart mirror, what time is it?` both could be available like real Google Home devices. So cool.

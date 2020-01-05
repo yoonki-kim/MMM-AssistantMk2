@@ -18,7 +18,8 @@ npm install
 ```sh
 sudo apt-get install libasound2-dev sox libsox-fmt-all
 ```
-If you are using OSX, use `brew` instead `apt`
+> If you are using OSX, use `brew` instead `apt`
+
 ```sh
 brew install sox
 ```
@@ -28,6 +29,8 @@ sudo apt-get install gcc-7
 sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-7 10
 sudo update-alternatives --config gcc
 ```
+> You might not need this step on OSX
+
 - Module installation
 ```sh
 cd <YOUR_MAGIC_MIRROR_DIRECTORY>
@@ -46,12 +49,5 @@ npm install --save-dev electron-rebuild
 ./node_modules/.bin/electron-rebuild
 ```
 
-## 3. Troubleshooting (
-- `nan` module doesn't exist;
-```sh
-cd <YOUR_MAGIC_MIRROR_DIRECTORY>
-npm install -g nan
-```
-Then try again installation
-
-[TODO - bugsounet] Add nan to package.json -- need version to use
+## 3. Troubleshooting
+> I hope this would not be long. :)
