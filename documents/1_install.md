@@ -46,10 +46,12 @@ npm install --save-dev electron-rebuild
 ./node_modules/.bin/electron-rebuild
 ```
 
-## 3. Troubleshooting
+## 3. Troubleshooting (
 - `nan` module doesn't exist;
 ```sh
 cd <YOUR_MAGIC_MIRROR_DIRECTORY>
 npm install -g nan
 ```
 Then try again installation
+
+[TODO - bugsounet] Add nan to package.json -- need version to use

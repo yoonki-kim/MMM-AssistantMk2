@@ -91,7 +91,7 @@ Installer_electronrebuild () {
 # add timestamps and delete colors code for log file
 Installer_add_timestamps () {
   while IFS= read -r line; do
-    echo "$(date "+%D %H:%M") $line" | sed -r "s/\x1B\[([0-9]{1,2}(;[0-9]{1,2})?)?[mGK]//g"
+    echo "$(date "+%D %H:%M") $line" | sed -E "s/\x1B\[([0-9]{1,2}(;[0-9]{1,2})?)?[mGK]//g"
   done
 }
 
