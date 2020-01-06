@@ -2,7 +2,7 @@
 # +--------------------------------+
 # | npm postinstall                |
 # | AMK2 v3 Installer by Bugsounet |
-# | Rev 1.0.5                      |
+# | Rev 1.0.6                      |
 # +--------------------------------+
 
 # get the installer directory
@@ -39,12 +39,11 @@ echo
 
 # Check not run as root
 if [ "$EUID" -eq 0 ]; then
-  Installer_error "npm install must not be used as root" 
+  Installer_error "npm install must not be used as root"
   exit 1
 fi
 
 # Check platform compatibility
-dependencies=(git wget libasound2-dev sox libsox-fmt-all gcc-7 alsamixer aplay arecord libsox-fmt-mp3)
 Installer_info "Checking OS..."
 Installer_checkOS
 if  [ "$platform" == "osx" ]; then
@@ -57,12 +56,13 @@ fi
 
 echo
 
+Installer_yesno "Do you want to execute automatic intallation ?" || exit 0
+
 # check dependencies
+dependencies=(git wget libasound2-dev sox libsox-fmt-all gcc-7 alsamixer aplay arecord libsox-fmt-mp3)
 Installer_info "Checking all dependencies..."
-Installer_yesno "Do you want to check all dependencies" && (
-  Installer_check_dependencies
-  Installer_success "All Dependencies needed are installed !"
-)
+Installer_check_dependencies
+Installer_success "All Dependencies needed are installed !"
 
 echo
 
@@ -92,16 +92,17 @@ Installer_yesno "Do you want check your audio configuration" && (
   Installer_checkmic
   echo
 
-  if [ ! -z "$play_hw" ] || [ ! -z "$rec_hw" ]; then
-    Installer_warning "This is your working configuration :"
-  fi
+  if [ ! -z "$plug_rec" ]; then
+    Installer_warning "This is your AMk2 micConfig working configuration :"
+    if [ "$os_name" == "raspbian" ]; then
+      Installer_warning "Remember: if you are using RPI, it's better to use arecord program"
+    fi
+    echo
+    Installer_warning "micConfig: {"
+    Installer_warning "  recorder: \"arecord\""
 
-  if [ ! -z "$play_hw" ]; then
-    Installer_warning "Speaker: plug$play_hw"
-  fi
-
-  if [ ! -z "$rec_hw" ]; then
-    Installer_warning "Microphone : plug$rec_hw"
+    Installer_warning "  device: \"$plug_rec\""
+    Installer_warning "}"
   fi
 )
 

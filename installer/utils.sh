@@ -1,13 +1,13 @@
 #!/bin/bash
 
 #--------------
-# Common utils  
+# Common utils
 #  Bugsounet
-# v1.0.5
+# v1.0.6
 #--------------
 
 # postinstaller version
-Installer_vinstaller="1.0.5 by Bugsounet"
+Installer_vinstaller="1.0.6 by Bugsounet"
 
 # debug mode
 Installer_debug=false
@@ -54,20 +54,18 @@ Installer_check_dependencies () {
     for missing in "${missings[@]}"; do
       Installer_error "Missing package: $missing"
     done
-    Installer_yesno "Attempt to automatically install the above packages?" || exit 1
+    Installer_yesno "Attempt to automatically install the above packages?" || exit 0
     Installer_info "Installing missing package..."
     Installer_update || exit 1
     Installer_install ${missings[@]} || exit 1
   fi
 
-  if [[ "$platform" == "linux" ]]; then
-    if ! groups "$(whoami)" | grep -qw audio; then
-      Installer_warning "Your user should be part of audio group to list audio devices"
-      Installer_yesno "Would you like to add audio group to user $USER?" || exit 1
-      sudo usermod -a -G audio $USER # add audio group to user
-      Installer_warning "Please logout and login for new group permissions to take effect, then restart npm install"
-      exit
-    fi
+  if ! groups "$(whoami)" | grep -qw audio; then
+    Installer_warning "Your user should be part of audio group to list audio devices"
+    Installer_yesno "Would you like to add audio group to user $USER?" || exit 1
+    sudo usermod -a -G audio $USER # add audio group to user
+    Installer_warning "Please logout and login for new group permissions to take effect, then restart npm install"
+    exit
   fi
 }
 
@@ -104,7 +102,7 @@ Installer_electronrebuild () {
 	Installer_debug "./node_modules/.bin/electron-rebuild"
 	./node_modules/.bin/electron-rebuild || exit 1
 }
-	
+
 # add timestamps and delete colors code for log file
 Installer_add_timestamps () {
   while IFS= read -r line; do
@@ -150,7 +148,7 @@ Installer_success() { Installer_message "$1" "Success" "$_green" ;}
 Installer_info() { Installer_message "$1" "Info" "$_blue" ;}
 
 # Displays debug log in gray (if debug actived)
-Installer_debug() { 
+Installer_debug() {
   if $Installer_debug; then
     Installer_message "$1" "Debug" "$_gray" ;
   fi
@@ -162,7 +160,7 @@ Installer_press_enter_to_continue () {
   read
 }
 
-# Exit 
+# Exit
 Installer_exit () {
   echo
   Installer_success "$1"
@@ -173,7 +171,7 @@ Installer_exit () {
 
   exit
 }
-    
+
 # YesNo prompt from the command line
 Installer_yesno () {
   while true; do
@@ -192,7 +190,7 @@ Installer_log () {
 
 # display gcc version
 Installer_gcc="$(gcc --version | grep gcc)"
-Installer_gcc_rev="$(echo "${Installer_gcc#g*) }")" 
+Installer_gcc_rev="$(echo "${Installer_gcc#g*) }")"
 Installer_gcc_version="$(echo $Installer_gcc_rev | cut -c1)"
 
 #  Installer_update
@@ -201,7 +199,7 @@ Installer_update () {
 }
 
 # indicates if a package is installed
-# 
+#
 # $1 - package to verify
 Installer_is_installed () {
   hash "$1" 2>/dev/null || (dpkg -s "$1" 2>/dev/null | grep -q "installed")
@@ -212,7 +210,7 @@ Installer_is_installed () {
 # $@ - list of packages to install
 Installer_install () {
   sudo apt-get install -y $@
-  sudo apt-get clean 
+  sudo apt-get clean
 }
 
 # remove packages, used for uninstalls
@@ -225,6 +223,7 @@ Installer_remove () {
 ## Check Audio outpout
 Installer_checkaudio () {
   play_hw="${play_hw:-hw:0,0}"
+  plug_play="${plug_play:-plughw:0}"
   while true; do
     if Installer_info "Checking audio output..."
       Installer_yesno "Make sure your speakers are on press [Yes].\nPress [No] if you don't want to check." true >/dev/null; then
@@ -240,11 +239,13 @@ Installer_checkaudio () {
       read -p "Indicate the card # to use [0-9]: " card
       read -p "Indicate the device # to use [0-9]: " device
       play_hw="hw:$card,$device"
+      plug_play="plughw:$card"
       Installer_info "you have selected: $play_hw"
       Installer_debug "Set Alsa conf"
       #update_alsa $play_hw $rec_hw
     else
       play_hw=""
+      plug_play=""
       break
     fi
   done
@@ -254,6 +255,7 @@ Installer_checkaudio () {
 Installer_checkmic () {
   audiofile="../tmp/testmic.wav"
   rec_hw="${rec_hw:-hw:0,0}"
+  plug_rec="${plug_rec:-plughw:0}"
   rm -f $audiofile
   while true; do
     if Installer_info "Checking audio input..."
@@ -273,16 +275,18 @@ Installer_checkmic () {
       read -p "Indicate the card # to use [0-9]: " card
       read -p "Indicate the device # to use [0-9]: " device
       rec_hw="hw:$card,$device"
+      plug_rec="plughw:$card"
       Installer_info "you have selected: $play_hw"
       #update_alsa $play_hw $rec_hw
     else
       rec_hw=""
+      plug_rec=""
       break
     fi
       rm -f $audiofile
   done
  }
- 
+
 # Updates alsa user config at ~/.asoundrc
 # $1 - play_hw
 # $2 - rec_hw
