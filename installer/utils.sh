@@ -276,7 +276,7 @@ Installer_checkmic () {
       read -p "Indicate the device # to use [0-9]: " device
       rec_hw="hw:$card,$device"
       plug_rec="plughw:$card"
-      Installer_info "you have selected: $play_hw"
+      Installer_info "you have selected: $rec_hw"
       #update_alsa $play_hw $rec_hw
     else
       rec_hw=""
