@@ -39,7 +39,6 @@ cd modules
 git clone https://github.com/eouia/MMM-AssistantMk2
 
 cd MMM-AssistantMk2
-cp package.json.forManualInstallation package.json
 npm install
 ```
 
