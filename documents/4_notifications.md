@@ -35,6 +35,7 @@ this.sendNotification("ASSISTANT_ACTIVATE", {
 - `profile` : **(optional)** profile Id to use. When omitted, current profile will be used.
 - `lang` : **(optional)** language code to recognize, When omitted, current lang of profile account will be used.
 - `secretMode` : **(optional)** If set as `true`, screen & audio response will not be played. It might be needed when you use `callback` on background.
+- `sayMode` : **(optional)** If set as `true`, only audio response will be played. It might be needed when you use `callback` on background.
 - `callback` : **(optional)** If set, response will be delivered to this callback function so your module could use the response.
 ```js
 this.sendNotification("ASSISTANT_ACTIVATE", {
