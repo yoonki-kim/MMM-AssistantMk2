@@ -1,6 +1,16 @@
 # Installation
 
-## 1. Auto install (for RaspberryPi or Debian Linux machines)
+In AMK2 v3, we have created automatic installer for RaspberryPi and Linux machines.
+
+Auto install script will propose to install needed dependencies, compatible gcc version and rebuild `grpc` module for electron of MagicMirror.
+
+It can also check your audio configuration and allows the generation of your micConfig section.
+
+Of course you can also, if you wish, do a manual installation. (npm install will ask you)
+
+For OSX machines, auto install script is not yet implented, manuel installation is nedeed.
+
+## 1. Auto install (for RaspberryPi or Debian Linux machines only)
 ```sh
 cd <YOUR_MAGIC_MIRROR_DIRECTORY>
 
@@ -12,8 +22,9 @@ npm install
 
 ```
 
+## 2. Manual Install
 
-## 2. Manual Install (for OSX)
+> For OSX Auto install script is not yet implented
 - Required dependencies
 ```sh
 sudo apt-get install libasound2-dev sox libsox-fmt-all
@@ -49,4 +60,5 @@ npm install --save-dev electron-rebuild
 ```
 
 ## 3. Troubleshooting
-> I hope this would not be long. :)
+> I hope this would not be long, and we will be reactive :)
+
