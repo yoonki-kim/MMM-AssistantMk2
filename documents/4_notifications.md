@@ -22,6 +22,7 @@ this.sendNotification("ASSISTANT_ACTIVATE", {
 |profile |TEXT | "default"
 |lang |TEXT | "en-US"
 |secretMode |BOOLEAN | false
+|sayMode |BOOLEAN | false
 |callback |FUNCTION | (res)=>{console.log(res)}
 
 - `type` : **(required)** `"MIC"`, `"WAVEFILE"`, `"TEXT"` are available.
