@@ -7,7 +7,7 @@
 #--------------
 
 # postinstaller version
-Installer_vinstaller="1.0.6 by Bugsounet"
+Installer_vinstaller="1.0.8 by Bugsounet"
 
 # debug mode
 Installer_debug=false
@@ -228,8 +228,8 @@ Installer_checkaudio () {
     if Installer_info "Checking audio output..."
       Installer_yesno "Make sure your speakers are on press [Yes].\nPress [No] if you don't want to check." true >/dev/null; then
       echo
-      Installer_debug "Actual test input config: $play_hw"
-      aplay -D plug$play_hw "../resources/beep_check.wav" 2>/dev/null || Installer_error "Current configuration not working !"
+      Installer_debug "Actual test input config: $play_hw ($plug_play)"
+      aplay -D $plug_play "beep_check.wav" 2>/dev/null || Installer_error "Current configuration not working !"
       Installer_yesno "Did you hear Google beep?" true >/dev/null && break
       echo
       Installer_warning "Selection of the speaker device"
@@ -240,8 +240,8 @@ Installer_checkaudio () {
       read -p "Indicate the device # to use [0-9]: " device
       play_hw="hw:$card,$device"
       plug_play="plughw:$card"
-      Installer_info "you have selected: $play_hw"
-      Installer_debug "Set Alsa conf"
+      Installer_info "you have selected: $play_hw ($plug_play)"
+      #Installer_debug "Set Alsa conf"
       #update_alsa $play_hw $rec_hw
     else
       play_hw=""
@@ -253,20 +253,20 @@ Installer_checkaudio () {
 
 # Check Microphone
 Installer_checkmic () {
-  audiofile="../tmp/testmic.wav"
+  audiofile="testmic.wav"
   rec_hw="${rec_hw:-hw:0,0}"
   plug_rec="${plug_rec:-plughw:0}"
-  rm -f $audiofile
   while true; do
     if Installer_info "Checking audio input..."
       Installer_yesno "Make sure your microphone is on, press [Yes] and say something.\nPress [No] if you don't want to check." true >/dev/null; then
       echo
-      Installer_debug "Actual test input config: $rec_hw"
-      arecord -D plug$rec_hw -r 16000 -c 1 -d 3 -t wav -f S16_LE $audiofile 2>/dev/null || Installer_error "Current configuration not Working !"
+      Installer_debug "Actual test input config: $rec_hw ($plug_rec)"
+      rm -f $audiofile
+      arecord -D $plug_rec -r 16000 -c 1 -d 3 -t wav -f S16_LE $audiofile 2>/dev/null || Installer_error "Current configuration not Working !"
       if [ -f $audiofile ]; then
-      play $audiofile # trying with play ...
-      Installer_yesno "Did you hear yourself?" true >/dev/null && break
-    fi
+        play $audiofile
+        Installer_yesno "Did you hear yourself?" true >/dev/null && break
+      fi
       echo
       Installer_warning "Selection of the microphone device"
       #arecord -l
@@ -276,15 +276,15 @@ Installer_checkmic () {
       read -p "Indicate the device # to use [0-9]: " device
       rec_hw="hw:$card,$device"
       plug_rec="plughw:$card"
-      Installer_info "you have selected: $rec_hw"
+      Installer_info "you have selected: $rec_hw ($plug_rec)"
       #update_alsa $play_hw $rec_hw
     else
       rec_hw=""
       plug_rec=""
       break
     fi
-      rm -f $audiofile
   done
+  rm -f $audiofile
  }
 
 # Updates alsa user config at ~/.asoundrc
