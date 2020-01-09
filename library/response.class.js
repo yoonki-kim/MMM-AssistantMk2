@@ -82,6 +82,7 @@ class AssistantResponseClass {
   showError (text) {
     this.status("error")
     this.showTranscription(text, "error")
+    this.callbacks.doPlugin("onError", text)
   }
 
   showTranscription (text, className = "transcription") {
@@ -111,10 +112,10 @@ class AssistantResponseClass {
         }, null)
 
       } else {
+        this.callbacks.doPlugin("onBeforeInactivated")
         log("Conversation ends.")
         this.callbacks.endResponse()
         this.status("standby")
-        this.restart()
         
         clearTimeout(this.aliveTimer)
         this.aliveTimer = null
@@ -125,8 +126,8 @@ class AssistantResponseClass {
         }, this.config.timer)
       }
     } else {
+      this.callbacks.doPlugin("onBeforeInactivated")
       this.status("standby")
-      this.restart()
       this.callbacks.endResponse()
     }
   }
@@ -204,6 +205,7 @@ class AssistantResponseClass {
   playAudioOutput (response) {
     if (this.secretMode) return false
     if (response.audio && this.config.useAudioOutput) {
+      this.callbacks.doPlugin("onBeforeAudioResponse")
       this.showing = true
       var audioSrc = document.getElementById("AMK2_AUDIO_RESPONSE")
       audioSrc.src = this.makeUrl(response.audio.uri)
@@ -215,6 +217,7 @@ class AssistantResponseClass {
   showScreenOutput (response) {
     if (this.secretMode || this.sayMode) return false
     if (response.screen && this.config.useScreenOutput) {
+      this.callbacks.doPlugin("onBeforeScreenResponse")
       if (!response.audio) {
         this.showTranscription(this.callbacks.translate("NO_AUDIO_RESPONSE"))
       }
@@ -242,6 +245,7 @@ class AssistantResponseClass {
         }
       }
       /* --- HelpWord Box --- */
+      this.callbacks.doPlugin("onAfterScreenResponse")
       return true
     }
     return false
@@ -249,10 +253,6 @@ class AssistantResponseClass {
 
   makeUrl (uri) {
     return "/modules/MMM-AssistantMk2/" + uri + "?seed=" + Date.now()
-  }
-  restart () {
-    log("Need Restart: Main loop !")
-    this.callbacks.sendNotification("HOTWORD_RESUME")
   }
 
   fullscreen (active, status) {

@@ -49,6 +49,7 @@ class AssistantResponse extends AssistantResponseClass{
     auout.id = "AMK2_AUDIO_RESPONSE"
     auout.autoplay = true;
     auout.addEventListener("ended", ()=>{
+      this.callbacks.doPlugin("onAfterAudioResponse")
       console.log("audio end")
       this.end()
     })

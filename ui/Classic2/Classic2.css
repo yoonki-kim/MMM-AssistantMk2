@@ -157,7 +157,6 @@
 #AMK2_HELP {
     height: 100%;
     font-size: small;
-    width: 140px;
 }
 
 #AMK2_HELP.hidden {
@@ -191,6 +190,7 @@
     display: flex;
     height: 20px;
     align-items: center;
-    justify-content: center;
+    min-width: 140px;
+    margin-right: 10px;
 }
 

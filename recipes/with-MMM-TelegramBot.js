@@ -20,7 +20,7 @@ var recipe = {
           module.sendNotification("TELBOT_REGISTER_COMMAND", {
             command: "q",
             callback: "command_q",
-            description: module.translate("blah blah")
+            description: module.translate("QUERY_HELP")
           })
         }
       }
