@@ -23,7 +23,7 @@
 
 |field | type | default value
 |---|---|---
-|debug | BOOLEAN | true
+|debug | BOOLEAN | false
 
 When you set `debug` to `true`, detailed log will be recorded. When you don't want log, set it to `false`
 
@@ -63,10 +63,12 @@ assistantConfig: {
 |- useAudioOutput |BOOLEAN |true
 |- useChime |BOOLEAN |true
 |- timer |NUMBER (ms) |5000
+|- myMagicWord|BOOLEAN|false
 
 - `useScreenOutput` & `useAudioOutput` : Controlling response type, but leaving both two as `true` is better.
 - `useChime` : If you don't want the beeping on status changed, set this to `false`.
 - `timer` : Duration of response (since it's finishing). After this milliseconds, the response window will be hidden and the module will return to standby status.
+- `myMagicWord` : Natural TTS response for recipes commands (see myMagicWord parts -- Under developement)
 ```js
 responseConfig: {
     timer : 3000
@@ -81,6 +83,8 @@ responseConfig: {
 
 - `recorder` : `"sox"`, `"rec"`, `"arecord"` will be available. Commonly `"arecord"` will work for Raspbian.
 - `device` : recording device(microphone) name of your environment. (e.g. `"plughw:1"`) Find proper device name by yourself. (`arecord -l` will be help on Raspberry Pi)
+
+Note: If you enable auto-installer with npm install. It can generate `micConfig {}` configuration. 
 
 Usually, only above 2 fields be required for normal usage. If you need more detailed configuration, you can use these values also. (Use these carefully. Don't do what you don't understand.)
 
@@ -185,7 +189,7 @@ You can make your own recipe for your purpose. Read more docs about that and loo
   module: "MMM-Hotword",
   position: "top_left",
   config: {
-    recipes: ["MMM-AssistantMk2.recipe.js"],
+    recipes: ["with-AMk2v3_smart-mirror.js"],
     ... // your other configuration
   }
 },
