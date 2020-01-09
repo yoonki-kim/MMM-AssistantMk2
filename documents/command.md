@@ -29,6 +29,9 @@ commands: {
   - exec : (module, param, from)=>{}
 - functionExec
   - exec : (param, from)=>{}
+- soundExec
+  - chime : string (open or close) 
+  - say : text
 
 ## static and dynamic execution.
 ### Static example
