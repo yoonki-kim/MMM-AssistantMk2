@@ -1,7 +1,7 @@
 # plugin
 `plugin` is some kind of `monkey patch` for external recipe or module to control MMM-AssistantMk2's program logic.
 
-## Example;
+## example
 You can do something on `ready` phase of MMM-AssistantMk2 module.
 ```js
 plugins: {
@@ -31,18 +31,18 @@ commands: {
 ## available plugins
 ```
 onReady: ()=>{}
-onBeforeAudioResponse: //NOT YET PREPARED
-onAfterAudioResponse: //NOT YET PREPARED
-onBeforeScreenResponse: //NOT YET PREPARED
-onAfterScreenResponse: //NOT YET PREPARED
-onBeforeInactivated: //NOT YET PREPARED ... I think this point meaningless....
+onBeforeAudioResponse: ()=>{}
+onAfterAudioResponse: ()=>{}
+onBeforeScreenResponse: ()=>{}
+onAfterScreenResponse: ()=>{}
+onBeforeInactivated: ()=>{}
 onAfterInactivated: ()=>{}
 onBeforeActivated: (payload)=>{} //payload of ASSISTANT_ACTIVATE
 onAfterActivated: (payload)=>{} //payload of ASSISTANT_ACTIVATE
-onError: //NOT YET PREPARED
+onError: (text)=>{} // text of error
 onBeforeNotificationReceived: (noti, payload)=>{}
 onAfterNotificationReceived: (noti, payload)=>{}
-onBeforeSocketNotificationReceived: //NOT YET PREPARED
-onAfterSocketNotificationReceived: //NOT YET PREPARED
+onBeforeSocketNotificationReceived: (noti, payload)=>{}
+onAfterSocketNotificationReceived: (noti, payload)=>{}
 ```
 More points would be added before release.
