@@ -6,6 +6,8 @@
 Current `MMM-AssistantMk2` is now **ver 3 (3.x.x)**.
 Entirely rebuild from 2.X.
 
+## [**Preview Video**](https://youtu.be/e7Xg95mL8JE)
+
 ## Screenshot
 - Classic UI
 
@@ -35,10 +37,10 @@ Not easy. Remove existence then reinstall fresh.
 
 ## Last Tested
 - MagicMirror : 2.10.0
-- RPI
+- RPI 3B+ / raspbian 10 /nodeJS v10.17.0 / npm 6.13.2
 - OSX
   - macOS Catalina 10.15.2 / MacBookPro 2017 15" / nodeJS v11.12.0 / npm v6.9.0
-...
+- debian 10 / nodeJS v10.18.0 / npm v6.13.4
 
 ## Credits
 - Author :
