@@ -546,10 +546,11 @@ Module.register("MMM-AssistantMk2", {
     }
 
     if (command.hasOwnProperty("soundExec")) {
-      var se = command.sound
+      var se = command.soundExec
       if (se.chime && typeof se.chime == 'string') {
-        if (se.chime == "open") this.playChime("open")
-        if (se.chime == "close") this.playChime("close")
+        console.log(se.chime)
+        if (se.chime == "open") this.assistantResponse.playChime("open")
+        if (se.chime == "close") this.assistantResponse.playChime("close")
       }
       if (se.say && typeof se.say == 'string' && this.config.responseConfig.myMagicWord) {
           this.notificationReceived("ASSISTANT_SAY", se.say , this.name)
