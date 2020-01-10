@@ -152,6 +152,17 @@ class AssistantResponseClass {
         }, null)
         return
       }
+      if (response.error == "NO_RESPONSE" && response.lastQuery.status == "continue") {
+        this.status("continue")
+        this.callbacks.assistantActivate({
+          type: "MIC",
+          profile: response.lastQuery.profile,
+          key: null,
+          lang: response.lastQuery.lang,
+          useScreenOutput: response.lastQuery.useScreenOutput,
+        }, null)
+        return
+      }
       this.showError(this.callbacks.translate(response.error))
       this.end()
       return
