@@ -22,7 +22,7 @@ var recipe = {
         }
       },
       soundExec: {
-        chime: "open"
+        chime: "open",
         say: "it's really works !" // message should be set to your language !
     }
   }
