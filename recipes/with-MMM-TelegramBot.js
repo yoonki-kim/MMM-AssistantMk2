@@ -1,7 +1,6 @@
 var recipe = {
   commands: {
-    // Describe your command here.
-    "TELBOT_REGISTER_COMMAND": {
+    "TELBOT_READY": {
       moduleExec: {
         module: ["MMM-AssistantMk2"],
         exec: (module) => {
@@ -22,13 +21,31 @@ var recipe = {
             callback: "command_q",
             description: module.translate("QUERY_HELP")
           })
+          if (module.config.developer) {
+            module.sendNotification("TELBOT_REGISTER_COMMAND", {
+              command: "demo",
+              callback: "telegramCommand",
+              description: module.translate("DEMO_HELP")
+            })
+          }
+          module.sendNotification("TELBOT_REGISTER_COMMAND", {
+            command: "query",
+            callback: "telegramCommand",
+            description: module.translate("QUERY_HELP")
+          })
+          if (module.config.responseConfig.myMagicWord) {
+            module.sendNotification("TELBOT_REGISTER_COMMAND", {
+              command: "say",
+              callback: "telegramCommand",
+              description: module.translate("SAY_HELP")
+            })
+          }
         }
-      }
+      },
     },
   },
   plugins: {
-    onReady: "TELBOT_REGISTER_COMMAND",
-    // Describe your plugin here.
+    onReady: "TELBOT_READY"
   },
 }
 

@@ -1,12 +1,18 @@
+/**   Test recipes for myMagicWord      **/
+/**   It display alert message          **/
+/**   and natural google TTS message    **/
+/**   set say message in your language  **/
+/**   @bugsounet                        **/
+
 var recipe = {
   transcriptionHooks: {
     "HOOKING_TEST": {
       pattern: "test",
-      command: "INTRODUCTION"
+      command: "MYMAGICWORD"
     },
   },
   commands: {
-    "INTRODUCTION": {
+    "MYMAGICWORD": {
       moduleExec: {
         module: ["MMM-AssistantMk2"],
         exec: (module, params, key) => {
@@ -17,7 +23,7 @@ var recipe = {
       },
       soundExec: {
         chime: "open"
-        say: "it's really works !"
+        say: "it's really works !" // message should be set to your language !
     }
   }
 }
