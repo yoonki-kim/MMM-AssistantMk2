@@ -22,9 +22,7 @@ var recipe = {
     },
     "SHOWMODULES": {
       moduleExec: {
-        module:()=>{
-          return []
-        },
+        module:[],
         exec: (module, params, key) => {
           module.show(1000, null, {lockString:"AMK2"})
         }
