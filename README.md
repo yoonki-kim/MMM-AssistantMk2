@@ -29,7 +29,7 @@ Entirely rebuild from 2.X.
 - Easier `custom action` managing.
 
 ## Installation & Guides
-Read the docs in `documents` folder
+Read the docs in [wiki](https://github.com/eouia/MMM-AssistantMk2/wiki)
 
 ## Update from 2.x
 Not easy. Remove existence then reinstall fresh.
@@ -38,8 +38,7 @@ Not easy. Remove existence then reinstall fresh.
 ## Last Tested
 - MagicMirror : 2.10.0
 - RPI 3B+ / raspbian 10 /nodeJS v10.17.0 / npm 6.13.2
-- OSX
-  - macOS Catalina 10.15.2 / MacBookPro 2017 15" / nodeJS v11.12.0 / npm v6.9.0
+- MacOS Catalina 10.15.2 / MacBookPro 2017 15" / nodeJS v11.12.0 / npm v6.9.0
 - debian 10 / nodeJS v10.18.0 / npm v6.13.4
 
 ## Credits
