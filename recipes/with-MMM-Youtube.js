@@ -1,11 +1,28 @@
+/**  MMM-Youtube commands addon       **/
+/**  modify pattern to your language  **/
+/**  for STOP_YOUTUBE **/
+/**  @bugsounet  **/
+
 var recipe = {
+  transcriptionHooks: {
+    "STOP_YOUTUBE": {
+      pattern: "stop video",
+      command: "STOP_YOUTUBE"
+    }
+  },
   responseHooks: {
-    "FOUND_YOUTUBE": {
+    "PLAY_YOUTUBE": {
       where: "links",
       pattern: "https:\/\/m\.youtube\.com\/watch\\?v=(.+)$",
       command: "PLAY_YOUTUBE"
+    },
+    "PLAYLIST_YOUTUBE": {
+      where: "links",
+      pattern: "https:\/\/m\.youtube\.com\/playlist\\?list=(.+)$",
+      command: "PLAYLIST_YOUTUBE"
     }
   },
+
   commands: {
     "PLAY_YOUTUBE": {
       moduleExec:{
@@ -13,21 +30,61 @@ var recipe = {
         exec: (module, param, from)=>{
           module.sendNotification("YOUTUBE_LOAD", {type:"id", id:param[1]})
         }
-      }
+      },
+      soundExec: {
+		chime : "open"
+	  }
     },
-    "YOUTUBE_STOPPED": {
+    "PLAYLIST_YOUTUBE": {
+      moduleExec:{
+        module: "MMM-AssistantMk2",
+        exec: (module, param, from)=>{
+          module.sendNotification("YOUTUBE_LOAD", {type:"playlist", listType: "playlist", id:param[1]})
+        }
+      },
+      soundExec: {
+		chime : "open"
+	  }
+    },
+    "STOP_YOUTUBE": {
       moduleExec: {
         module: "MMM-AssistantMk2",
         exec: (module, param, from)=>{
-          if (param.notification == "ENDED" && param.sender.name == "MMM-YouTube")
-          console.log(param)
-          // What to do? when video is ended???
+          module.sendNotification("YOUTUBE_CONTROL", { command: "pauseVideo" })
         }
+      },
+      soundExec: {
+		  chime: "close"
+	  }
+    },
+    "MUTE_YOUTUBE": {
+      notificationExec: {
+        notification: "YOUTUBE_CONTROL",
+        payload: () => {
+			return {
+				command: "setVolume",
+				param: "20"
+			}
+		}
       }
-    }
+    },
+    "UNMUTE_YOUTUBE": {
+      notificationExec: {
+        notification: "YOUTUBE_CONTROL",
+        payload: () => {
+			return {
+				command: "setVolume",
+				param: "100"
+			}
+		}
+      }
+    },
   },
   plugins: {
-    //onBeforeNotificationReceived: "YOUTUBE_STOPPED"
+	onBeforeActivated: "MUTE_YOUTUBE",
+    onBeforeAudioResponse: "MUTE_YOUTUBE",
+    onAfterAudioResponse: "UNMUTE_YOUTUBE",
+    onAfterInactivated: "UNMUTE_YOUTUBE"
   }
 }
 
