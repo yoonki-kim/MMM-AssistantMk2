@@ -11,11 +11,11 @@ Entirely rebuild from 2.X.
 ## Screenshot
 - Classic UI
 
-![](https://raw.githubusercontent.com/bugsounet/MMM-AssistantMk2/3-dev/resources/previewUI.jpg)
+![](https://raw.githubusercontent.com/eouia/MMM-AssistantMk2/master/resources/previewUI.jpg)
 
 - FullScreen UI
 
-![](https://raw.githubusercontent.com/bugsounet/MMM-AssistantMk2/3-dev/resources/previewFS.jpg)
+![](https://raw.githubusercontent.com/eouia/MMM-AssistantMk2/master/resources/previewFS.jpg)
 
 ## What is updated
 - Fully rebuild from scratch.
