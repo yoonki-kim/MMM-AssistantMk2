@@ -1,5 +1,5 @@
 # MMM-AssistantMk2
-![](https://raw.githubusercontent.com/bugsounet/MMM-AssistantMk2/3-dev/resources/AMk2_Big.png)
+![](https://raw.githubusercontent.com/eouia/MMM-AssistantMk2/master/resources/AMk2_Big.png)
 `MMM-AssistantMk2` is an embedded Google assistant on MagicMirror.
 
 ## **FULLY UPDATED**
