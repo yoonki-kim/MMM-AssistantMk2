@@ -91,7 +91,7 @@ class ASSISTANT {
     })
   }
 
-  initConversation (originalPayload, conversation, endCallback=(resoponse)=>{}) {
+  initConversation (originalPayload, conversation, endCallback=(response)=>{}) {
     this.response = {
       session: this.session,
       error: null,

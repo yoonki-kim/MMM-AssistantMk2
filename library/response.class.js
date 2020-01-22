@@ -109,7 +109,7 @@ class AssistantResponseClass {
           key: null,
           lang: response.lastQuery.lang,
           useScreenOutput: response.lastQuery.useScreenOutput,
-        }, null)
+        }, Date.now())
 
       } else {
         this.callbacks.doPlugin("onBeforeInactivated")
