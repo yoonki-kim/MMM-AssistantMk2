@@ -1,6 +1,5 @@
 const GoogleAssistant = require("google-assistant")
 const B2W = require("./bufferToWav.js")
-//const Record = require("node-record-lpcm16")
 const Record = require("./lpcm16.js")
 
 const path = require("path")
