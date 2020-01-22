@@ -2,9 +2,9 @@
 ![](https://raw.githubusercontent.com/eouia/MMM-AssistantMk2/master/resources/AMk2_Big.png)
 `MMM-AssistantMk2` is an embedded Google assistant on MagicMirror.
 
-## **FULLY UPDATED**
-Current `MMM-AssistantMk2` is now **ver 3 (3.x.x)**.
-Entirely rebuild from 2.X.
+## NEW UPDATES
+**[3.0.1]**
+- fixed: `node-record-lpcm16` issue. (Mic not working issue.)
 
 ## [**Preview Video**](https://youtu.be/e7Xg95mL8JE)
 
@@ -17,7 +17,7 @@ Entirely rebuild from 2.X.
 
 ![](https://raw.githubusercontent.com/eouia/MMM-AssistantMk2/master/resources/previewFS.jpg)
 
-## What is updated
+## What is updated on V3
 - Fully rebuild from scratch.
 - More stable.
 - Installer is served. (For Raspbian or any Debian-based Linux)
@@ -40,6 +40,9 @@ Not easy. Remove existence then reinstall fresh.
 - RPI 3B+ / raspbian 10 /nodeJS v10.17.0 / npm 6.13.2
 - MacOS Catalina 10.15.2 / MacBookPro 2017 15" / nodeJS v11.12.0 / npm v6.9.0
 - debian 10 / nodeJS v10.18.0 / npm v6.13.4
+
+
+
 
 ## Credits
 - Author :
