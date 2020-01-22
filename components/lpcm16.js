@@ -25,7 +25,7 @@ class LPCM16 {
       thresholdEnd: null,
       silence: '1.0',
       verbose: false,
-      recordProgram: 'rec'
+      recorder: 'rec'
     }
     this.options = Object.assign(defaults, options)
     this.stream = null
@@ -42,7 +42,7 @@ class LPCM16 {
     var options = this.options
     // Capture audio stream
     var cmd, cmdArgs, cmdOptions
-    switch (options.recordProgram) {
+    switch (options.recorder) {
       // On some Windows machines, sox is installed using the "sox" binary
       // instead of "rec"
       case 'sox':
@@ -63,7 +63,7 @@ class LPCM16 {
         break
       case 'rec':
       default:
-        cmd = options.recordProgram
+        cmd = options.recorder
         cmdArgs = [
           '-q',                     // show no progress
           '-r', options.sampleRate, // sample rate
@@ -129,19 +129,18 @@ class LPCM16 {
     this.stream = this.cp.stdout
     if (options.verbose) {
       log(
-        'Start listening',
+        'START LISTENING',
         options.channels,
         'channels with sample rate',
         options.sampleRate
       )
-      console.time('[AMK2:16] End listening')
     }
     this.stream.on('data', (data) => {
-      if (options.verbose) log('Listening %d bytes', data.length)
+      if (options.verbose) log("Listening " + data.length + " bytes")
     })
 
     this.stream.on('end', () => {
-      if (options.verbose) console.timeEnd('[AMK2:16] End listening')
+      if (options.verbose) log('END LISTENING')
     })
 
     this.stream.pipe(this.streamOut)
@@ -149,11 +148,12 @@ class LPCM16 {
 
   stop () {
     if (!this.cp) {
-      console.log('[AMK2:16] STOP is called without STARTING')
+      log('STOP is called without STARTING')
       return false
     }
     this.stream.unpipe(this.streamOut)
     this.cp.kill("SIGTERM") // Exit the spawned process, exit gracefully
+    log("STOP LISTENING")
     this.options = null
     this.streamOut = null
     this.terminated = true

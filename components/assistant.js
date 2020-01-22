@@ -56,6 +56,7 @@ class ASSISTANT {
     this.timeout = false
     this.micMode = false
     this.tunnel = tunnel
+    this.mic = null
   }
 
 
@@ -102,27 +103,19 @@ class ASSISTANT {
       continue: false
     }
     var b2w = new B2W ({channel:1, sampleRate: 24000, debug:this.debug})
-    var mic = null
+    this.mic = null
     if (this.micMode) {
       var defaultOption = {
         device: null,
         recorder: "sox",
-        audioType: "wav",
         threshold: 0,
         sampleRate: 16000,
-        endOnSilence: true,
         verbose:this.debug
       }
       //console.log(this.micConfig)
-      mic = Record.record(Object.assign({}, defaultOption, this.micConfig))
+      this.mic = new Record(Object.assign({}, defaultOption, this.micConfig),conversation, (err)=>{ this.afterListening(err) })
       log("MIC:RECORDING START.")
-      mic.stream()
-    	.on("data", (data) => {
-        conversation.write(data)
-      })
-    	.on("error", (err) => {
-        log("Recorder Error: " + err)
-      }) // for RPI arecord error
+      this.mic.start()
     }
 
     conversation
@@ -131,9 +124,8 @@ class ASSISTANT {
     })
     .on('end-of-utterance', () => {
       log("CONVERSATION:END_OF_UTTERANCE")
-      if (this.micMode && mic) {
-        mic.stop()
-        log("MIC:RECORDING_END")
+      if (this.micMode && this.mic) {
+        this.stopListening()
       }
     })
     .on('transcription', (data) => {
@@ -216,6 +208,21 @@ class ASSISTANT {
     if (originalPayload.type == "TEXT") {
       this.tunnel({type: "TRANSCRIPTION", payload:{transcription:originalPayload.key, done:true}})
     }
+  }
+  stopListening () {
+    if (!this.mic) return
+    log("MIC:RECORDING_END")
+    this.mic.stop()
+    this.mic = null
+  }
+
+  afterListening (err) {
+	  if (err) {
+     log("[ERROR] " + err)
+     this.stopListening()
+     return
+    }
+    this.stopListening()
   }
 }
 
