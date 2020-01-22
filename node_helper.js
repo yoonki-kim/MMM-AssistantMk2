@@ -114,6 +114,7 @@ module.exports = NodeHelper.create({
       this.sendSocketNotification("INITIALIZED")
     })
     this.cleanUptmp()
+    log("Response delay is set to " + this.config.responseConfig.delay + ((this.config.responseConfig.delay > 1) ? " seconds" : " second"))
     log("AssistantMk2 v3 is initialized.")
   },
 

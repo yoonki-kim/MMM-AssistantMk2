@@ -30,7 +30,8 @@ Module.register("MMM-AssistantMk2", {
       useAudioOutput: true,
       useChime: true,
       timer: 5000,
-      myMagicWord: false
+      myMagicWord: false,
+      delay: 0.5
     },
     micConfig: {
       recorder: "arecord",
@@ -274,7 +275,7 @@ Module.register("MMM-AssistantMk2", {
         this.assistantResponse.setSayMode(false)
         this.assistantResponse.setSecret(false)
         this.assistantResponse.fullscreen(true)
-        this.assistantActivate({ type: "TEXT", key: payload }, null)
+        this.assistantActivate({ type: "TEXT", key: payload }, Date.now())
         break
       case "ASSISTANT_SAY":
         this.assistantResponse.setSayMode(true)
@@ -285,7 +286,7 @@ Module.register("MMM-AssistantMk2", {
         magicQuery = magicQuery.replace("%REPEATWORD%", myWord)
         magicQuery = magicQuery.replace("%TEXT%", text)
         this.assistantResponse.fullscreen(true)
-        this.assistantActivate({ type: "TEXT", key: magicQuery}, null)
+        this.assistantActivate({ type: "TEXT", key: magicQuery}, Date.now())
         break
       case "ASSISTANT_DEMO": {
         if (this.config.developer) this.demo()
@@ -382,8 +383,10 @@ Module.register("MMM-AssistantMk2", {
     if (payload.hasOwnProperty("profile") && typeof this.config.profiles[payload.profile] !== "undefined") {
       options.profile = this.config.profiles[payload.profile]
     }
-    this.sendSocketNotification("ACTIVATE_ASSISTANT", options)
-    this.assistantResponse.status(options.type, true)
+    setTimeout(() => {
+      this.assistantResponse.status(options.type, true)
+      this.sendSocketNotification("ACTIVATE_ASSISTANT", options)
+    }, this.config.responseConfig.delay * 1000)
   },
 
   endResponse: function() {

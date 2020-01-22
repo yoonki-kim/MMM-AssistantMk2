@@ -109,7 +109,7 @@ class AssistantResponseClass {
           key: null,
           lang: response.lastQuery.lang,
           useScreenOutput: response.lastQuery.useScreenOutput,
-        }, null)
+        }, Date.now())
 
       } else {
         this.callbacks.doPlugin("onBeforeInactivated")
@@ -160,7 +160,7 @@ class AssistantResponseClass {
           key: null,
           lang: response.lastQuery.lang,
           useScreenOutput: response.lastQuery.useScreenOutput,
-        }, null)
+        }, Date.now())
         return
       }
       this.showError(this.callbacks.translate(response.error))
