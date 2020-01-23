@@ -12,6 +12,8 @@ var log = function() {
 class BufferToWav {
   constructor(config) {
     var debug = (config.debug) ? config.debug : false
+    if (debug == true) log = _log
+    /*
     this.audioBuffer = new Buffer.alloc(5000)
     var samplesLength = 10000
     var header = new Buffer.alloc(1024)
@@ -29,14 +31,22 @@ class BufferToWav {
     header.write('data', 36)
     header.writeUInt32LE(15728640, 40)
     this.audioBuffer = header.slice(0, 50)
-    if (debug == true) log = _log
+    */
+    console.log(config.file)
+    this.audioBuffer = fs.createWriteStream(config.file);
   }
 
   add(buffer) {
+    /*
     this.audioBuffer = Buffer.concat([this.audioBuffer, buffer])
+    */
+    this.audioBuffer.write(buffer);
+    console.log("buffer ADD")
   }
 
   writeFile(file, callback=(file)=>{}) {
+    this.audioBuffer.end()
+    /*
     fs.writeFile(file, this.audioBuffer, (err)=>{
       if (err) {
         log("WAV_FILE_CREATION_ERROR", err)
@@ -44,6 +54,9 @@ class BufferToWav {
       log("RESPONSE_WAV_FILE_CREATED")
       callback(file)
     })
+    */
+    log("RESPONSE_WAV_FILE_CREATED")
+    callback(file)
   }
 
   getAudioLength() {

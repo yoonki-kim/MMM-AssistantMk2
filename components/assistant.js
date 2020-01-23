@@ -33,7 +33,7 @@ class ASSISTANT {
         audio : {
           encodingIn: "LINEAR16",
           sampleRateIn: 16000,
-          encodingOut: "LINEAR16",
+          encodingOut: "MP3",
           sampleRateOut: 24000,
         },
         deviceModelId : config.modelId,
@@ -102,7 +102,11 @@ class ASSISTANT {
       transcription: null, // {transcription:String, done:Boolean} or null
       continue: false
     }
-    var b2w = new B2W ({channel:1, sampleRate: 24000, debug:this.debug})
+    
+    var responseFile = "tmp/lastResponse.wav"
+    var filePath = path.resolve(this.modulePath, responseFile)
+    
+    var b2w = new B2W ({channel:1, sampleRate: 24000, debug:this.debug, file:filePath})
     this.mic = null
     if (this.micMode) {
       var defaultOption = {
@@ -153,7 +157,8 @@ class ASSISTANT {
     })
     .on('audio-data', (data) => {
       log("CONVERSATION:AUDIO", data.length)
-      b2w.add(data)
+      if(data.length) b2w.add(data)
+      //console.log(data)
     })
     .on('ended', (error, continueConversation) => {
       log("CONVERSATION_ALL_RESPONSES_RECEIVED")
