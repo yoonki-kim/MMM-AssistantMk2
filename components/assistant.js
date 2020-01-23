@@ -105,7 +105,7 @@ class ASSISTANT {
     var responseFile = "tmp/lastResponse.mp3"
     var filePath = path.resolve(this.modulePath, responseFile)
 
-    var b2m = new B2M ({channel:1, sampleRate: 24000, debug:this.debug, file:filePath}, endCallback)
+    var b2m = new B2M ({debug:this.debug, file:filePath})
     this.mic = null
     if (this.micMode) {
       var defaultOption = {
@@ -135,8 +135,6 @@ class ASSISTANT {
       log("CONVERSATION:TRANSCRIPTION", data)
       this.tunnel({type: "TRANSCRIPTION", payload:data})
       this.response.transcription = data
-      // {transcription:String, done:Boolean} or null
-      //this.tunnel("TRANSCRIPTION", data)
     })
     .on('device-action', (action) => {
       log("CONVERSATION:ACTION", action)
@@ -157,7 +155,6 @@ class ASSISTANT {
     .on('audio-data', (data) => {
       log("CONVERSATION:AUDIO", data.length)
       if(data.length) b2m.add(data)
-      //console.log(data)
     })
     .on('ended', (error, continueConversation) => {
       log("CONVERSATION_ALL_RESPONSES_RECEIVED")

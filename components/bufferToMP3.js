@@ -15,7 +15,7 @@ class BufferToMP3 {
     if (debug == true) log = _log
     //log("MEMORY_USAGE:", process.memoryUsage())
     this.file = config.file
-    log ("RESPONSE_MP3_FILE_CREATING:", this.file)
+    log ("MP3 FILE CREATING:", this.file)
     this.audioBuffer = fs.createWriteStream(this.file)
     this.length = 0
   }
@@ -23,6 +23,7 @@ class BufferToMP3 {
   add(buffer) {
     this.audioBuffer.write(buffer)
     this.length += buffer.length
+    //log ("MP3 BUFFER ADD:" + buffer.length + " bytes")
   }
 
   close(cb=()=>{}) {
@@ -30,6 +31,7 @@ class BufferToMP3 {
     this.audioBuffer.end()
     this.audioBuffer = null
     cb(this.file)
+    log ("MP3 FILE CREATED")
   }
 
   getAudioLength() {
