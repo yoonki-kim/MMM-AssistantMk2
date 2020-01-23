@@ -3,8 +3,8 @@
 `MMM-AssistantMk2` is an embedded Google assistant on MagicMirror.
 
 ## NEW UPDATES
-**[3.0.1]**
-- fixed: `node-record-lpcm16` issue. (Mic not working issue.)
+**3.0.2 (2020-01-23)**
+- CHANGED : To use smaller memory, `bufferToWav` is changed to `bufferToMP3` and some logic improved.
 
 ## [**Preview Video**](https://youtu.be/e7Xg95mL8JE)
 
@@ -34,6 +34,11 @@ Read the docs in [wiki](https://github.com/eouia/MMM-AssistantMk2/wiki)
 ## Update from 2.x
 Not easy. Remove existence then reinstall fresh.
 - You'd better backup your `credentials.json` and profiles.
+
+## UPDATE HISTORY
+**3.0.1 (2020-01-22)**
+- fixed: `node-record-lpcm16` issue. (Mic not working issue.)
+
 
 ## Last Tested
 - MagicMirror : 2.10.0

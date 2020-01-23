@@ -57,10 +57,8 @@ class AssistantResponseClass {
 
     if (beep && this.myStatus.old != "continue") this.playChime("beep")
     if (status == "error" || status == "continue" ) this.playChime(status)
-    
     if (status == "WAVEFILE" || status == "TEXT") this.myStatus.actual = "think"
     if (status == "MIC") this.myStatus.actual = (this.myStatus.old == "continue") ? "continue" : "listen"
-    
     log("Status from " + this.myStatus.old + " to " + this.myStatus.actual)
     if (!(this.secretMode || this.sayMode)) {
       Status.classList.remove(this.myStatus.old)
@@ -116,7 +114,6 @@ class AssistantResponseClass {
         log("Conversation ends.")
         this.callbacks.endResponse()
         this.status("standby")
-        
         clearTimeout(this.aliveTimer)
         this.aliveTimer = null
         this.aliveTimer = setTimeout(()=>{
