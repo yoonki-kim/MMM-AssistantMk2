@@ -8,6 +8,7 @@ const fs = require("fs")
 const Assistant = require("./components/assistant.js")
 const ScreenParser = require("./components/screenParser.js")
 const ActionManager = require("./components/actionManager.js")
+const HelperPlugins = require("./components/helperplugin.js")
 
 var _log = function() {
   var context = "[AMK2]"
