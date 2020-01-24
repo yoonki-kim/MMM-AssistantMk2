@@ -8,7 +8,7 @@ const fs = require("fs")
 const Assistant = require("./components/assistant.js")
 const ScreenParser = require("./components/screenParser.js")
 const ActionManager = require("./components/actionManager.js")
-const HelperPlugins = require("./components/helperplugin.js")
+const HelperPlugins = require("./components/helperplugins.js")
 
 var _log = function() {
   var context = "[AMK2]"
@@ -50,6 +50,14 @@ module.exports = NodeHelper.create({
           })
         })
         break
+    }
+    this.HelperPlugins.doHelperPlugins(noti,payload,(send,params)=>{ this.HelperCallback(send,params) })
+  },
+  
+  HelperCallback: function(send,params) {
+    if (send) {
+      //console.log(send,params)
+      this.sendSocketNotification(send,params)
     }
   },
 
@@ -115,6 +123,7 @@ module.exports = NodeHelper.create({
       this.sendSocketNotification("INITIALIZED")
     })
     this.cleanUptmp()
+    this.HelperPlugins = new HelperPlugins(this.config)
     log("Response delay is set to " + this.config.responseConfig.delay + ((this.config.responseConfig.delay > 1) ? " seconds" : " second"))
     log("AssistantMk2 v3 is initialized.")
   },
