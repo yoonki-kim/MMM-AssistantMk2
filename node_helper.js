@@ -9,7 +9,7 @@ const Assistant = require("./components/assistant.js")
 const ScreenParser = require("./components/screenParser.js")
 const ActionManager = require("./components/actionManager.js")
 const HelperPlugins = require("./plugins/helperPlugins.js")
-//const playSound = require('play-sound')
+const playSound = require('play-sound')
 
 var _log = function() {
   var context = "[AMK2]"
@@ -118,7 +118,7 @@ module.exports = NodeHelper.create({
 
   playAudioRespone: function(file,chimed) {
     if (file && this.config.responseConfig.useAudioOutput) {
-      console.log("Sound: Audio starts with " + this.config.responseConfig.playProgram, file)
+      log("Sound: Audio starts with " + this.config.responseConfig.playProgram, file)
       this.player.play(file, (err) => {
         if (err) {
           log("Sound: Error", err)
@@ -145,7 +145,6 @@ module.exports = NodeHelper.create({
     log("Response delay is set to " + this.config.responseConfig.delay + ((this.config.responseConfig.delay > 1) ? " seconds" : " second"))
     this.HelperPlugins = new HelperPlugins(this.config)
     if (!this.config.responseConfig.UseHTML5) {
-      var playSound = require('play-sound')
       this.player = playSound(opts = {"player": this.config.responseConfig.playProgram})
       log( "Use " +  this.config.responseConfig.playProgram + " for audio response")
     }
