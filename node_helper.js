@@ -135,9 +135,9 @@ module.exports = NodeHelper.create({
     this.config.assistantConfig["modulePath"] = __dirname
     if (this.config.debug) log = _log
     console.log("[AMK2] MMM-AssistantMk2 Version:", require('./package.json').version)
-    /**
-     * TODO: check whether credentialPath exists.
-     */
+    if (!fs.existsSync(this.config.assistantConfig["modulePath"] + "/credentials.json")) {
+      console.log("[AMK2][ERROR] credentials.json file not found !")
+    }
     this.loadRecipes(()=>{
       this.sendSocketNotification("INITIALIZED")
     })
