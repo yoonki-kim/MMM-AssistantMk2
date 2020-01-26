@@ -26,7 +26,7 @@ Module.register("MMM-AssistantMk2", {
       longitude: -0.076132,
     },
     responseConfig: {
-      useHTML5: false,
+      useHTML5: true,
       useScreenOutput: true,
       useAudioOutput: true,
       useChime: true,
