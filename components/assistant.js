@@ -23,6 +23,7 @@ class ASSISTANT {
     this.modulePath = config.modulePath
     this.screenZoom = config.screenZoom
     this.micConfig = config.micConfig
+    this.useAudioOutput = config.useAudioOutput
 
     this.assistantConfig = {
       auth:{
@@ -68,7 +69,6 @@ class ASSISTANT {
       this.assistantConfig.conversationConfig.textQuery = payload.key
     }
     if (type == "MIC") this.micMode = true
-    //if (type == "WAVFILE") filePath = payload.key
     this.assistantConfig.conversationConfig.lang = (payload.lang) ? payload.lang : profile.lang
     this.assistantConfig.conversationConfig.screen.isOn = payload.useScreenOutput
     converse = (conversation) => {
@@ -105,7 +105,7 @@ class ASSISTANT {
     var responseFile = "tmp/lastResponse.mp3"
     var filePath = path.resolve(this.modulePath, responseFile)
 
-    var b2m = new B2M ({debug:this.debug, file:filePath})
+    if (this.useAudioOutput) var b2m = new B2M ({debug:this.debug, file:filePath})
     this.mic = null
     if (this.micMode) {
       var defaultOption = {
@@ -153,8 +153,10 @@ class ASSISTANT {
       }
     })
     .on('audio-data', (data) => {
-      log("CONVERSATION:AUDIO", data.length)
-      if(data.length) b2m.add(data)
+      if (this.useAudioOutput) {
+        log("CONVERSATION:AUDIO", data.length)
+        if(data.length) b2m.add(data)
+      }
     })
     .on('ended', (error, continueConversation) => {
       log("CONVERSATION_ALL_RESPONSES_RECEIVED")
@@ -177,21 +179,23 @@ class ASSISTANT {
         this.response.transcription = {transcription: originalPayload.key, done: true}
       }
 
-      if (b2m.getAudioLength() > 50) {
-        log("CONVERSATION_PP:RESPONSE_AUDIO_PROCESSED")
-        this.response.audio = {
-          path: filePath,
-          uri : responseFile,
+      if (this.useAudioOutput) {
+        if (b2m.getAudioLength() > 50) {
+          log("CONVERSATION_PP:RESPONSE_AUDIO_PROCESSED")
+          this.response.audio = {
+            path: filePath,
+            uri : responseFile,
+          }
+        } else {
+          log("CONVERSATION_PP:RESPONSE_AUDIO_TOO_SHORT_OR_EMPTY - ", b2m.getAudioLength())
+          this.response.error = "TOO_SHORT"
         }
-      } else {
-        log("CONVERSATION_PP:RESPONSE_AUDIO_TOO_SHORT_OR_EMPTY - ", b2m.getAudioLength())
-        this.response.error = "TOO_SHORT"
+        b2m.close()
       }
-      b2m.close()
       endCallback(this.response)
     })
     .on('error', (error) => {
-      b2m.close()
+      if (this.useAudioOutput) b2m.close()
       log("CONVERSATION_ERROR :", error)
       this.response.error = "CONVERSATION_ERROR"
       if (error.code == "14") {

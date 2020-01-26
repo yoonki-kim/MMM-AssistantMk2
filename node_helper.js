@@ -9,6 +9,7 @@ const Assistant = require("./components/assistant.js")
 const ScreenParser = require("./components/screenParser.js")
 const ActionManager = require("./components/actionManager.js")
 const HelperPlugins = require("./plugins/helperPlugins.js")
+//const playSound = require('play-sound')
 
 var _log = function() {
   var context = "[AMK2]"
@@ -50,6 +51,10 @@ module.exports = NodeHelper.create({
           })
         })
         break
+      case "PLAY_SOUND":
+        var filepath = path.resolve(__dirname, payload)
+        this.playAudioRespone(filepath,true)
+        break
     }
     if ((Object.entries(this.config.pluginsConfig).length > 0))
       this.HelperPlugins.doHelperPlugins(noti,payload,(send,params)=>{ this.HelperCallback(send,params) })
@@ -77,13 +82,14 @@ module.exports = NodeHelper.create({
     assistantConfig.session = payload.session
     assistantConfig.lang = (payload.lang) ? payload.lang : ((payload.profile.lang) ? payload.profile.lang : null)
     assistantConfig.useScreenOutput = payload.useScreenOutput
+    assistantConfig.useAudioOutput = payload.useAudioOutput // ?
+    assistantConfig.useHTML5 = payload.useHTML5 // ?
     assistantConfig.micConfig = this.config.micConfig
     this.assistant = new Assistant(assistantConfig, (obj)=>{this.tunnel(obj)})
 
     var parserConfig = {
       screenOutputCSS: this.config.responseConfig.screenOutputCSS,
-      screenOutputURI: "tmp/lastScreenOutput.html",
-      screenZoom: this.config.responseConfig.screenZoom
+      screenOutputURI: "tmp/lastScreenOutput.html"
     }
     var parser = new ScreenParser(parserConfig, this.config.debug)
     var result = null
@@ -96,6 +102,7 @@ module.exports = NodeHelper.create({
         }
       }
       if (response.error == "TOO_SHORT" && response) response.error = null
+      if (response.audio.path && !assistantConfig.useHTML5) this.playAudioRespone(response.audio.path);
       if (response.screen) {
         parser.parse(response, (result)=>{
           delete result.screen.originalContent
@@ -109,11 +116,25 @@ module.exports = NodeHelper.create({
     })
   },
 
+  playAudioRespone: function(file,chimed) {
+    if (file && this.config.responseConfig.useAudioOutput) {
+      console.log("Sound: Audio starts with " + this.config.responseConfig.playProgram, file)
+      this.player.play(file, (err) => {
+        if (err) {
+          log("Sound: Error", err)
+        } else {
+          log("Sound: Audio ends")
+        }
+        if (!chimed) this.sendSocketNotification("ASSISTANT_AUDIO_RESULT_ENDED")
+      })
+    }
+  },
+
   initialize: function (config) {
     this.config = config
     this.config.assistantConfig["modulePath"] = __dirname
     if (this.config.debug) log = _log
-    log("MMM-AssistantMk2 Version:", require('./package.json').version)
+    console.log("[AMK2] MMM-AssistantMk2 Version:", require('./package.json').version)
     /**
      * TODO: check whether credentialPath exists.
      */
@@ -123,7 +144,13 @@ module.exports = NodeHelper.create({
     this.cleanUptmp()
     log("Response delay is set to " + this.config.responseConfig.delay + ((this.config.responseConfig.delay > 1) ? " seconds" : " second"))
     this.HelperPlugins = new HelperPlugins(this.config)
-    log("AssistantMk2 v3 is initialized.")
+    if (!this.config.responseConfig.UseHTML5) {
+      var playSound = require('play-sound')
+      this.player = playSound(opts = {"player": this.config.responseConfig.playProgram})
+      log( "Use " +  this.config.responseConfig.playProgram + " for audio response")
+    }
+    else log("Use HTML5 for audio response")
+    console.log("[AMK2] AssistantMk2 v3 is initialized.")
   },
 
   cleanUptmp: function() {

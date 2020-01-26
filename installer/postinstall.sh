@@ -2,7 +2,7 @@
 # +--------------------------------+
 # | npm postinstall                |
 # | AMK2 v3 Installer by Bugsounet |
-# | Rev 1.0.6                      |
+# | Rev 1.0.7                      |
 # +--------------------------------+
 
 # get the installer directory
@@ -59,7 +59,7 @@ echo
 Installer_yesno "Do you want to execute automatic intallation ?" || exit 0
 
 # check dependencies
-dependencies=(git wget libasound2-dev sox libsox-fmt-all gcc-7 alsamixer aplay arecord libsox-fmt-mp3)
+dependencies=(git wget libasound2-dev sox libsox-fmt-all gcc-7 alsamixer aplay arecord libsox-fmt-mp3 mpg321)
 Installer_info "Checking all dependencies..."
 Installer_check_dependencies
 Installer_success "All Dependencies needed are installed !"

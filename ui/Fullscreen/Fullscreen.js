@@ -30,10 +30,12 @@ class AssistantResponse extends AssistantResponseClass{
     
     dom.appendChild(contener)
 
-    var chime = document.createElement("audio")
-    chime.id = "AMK2_CHIME"
-    chime.autoplay = true;
-    dom.appendChild(chime)
+    if(this.config.useHTML5) {
+      var chime = document.createElement("audio")
+      chime.id = "AMK2_CHIME"
+      chime.autoplay = true;
+      dom.appendChild(chime)
+    }
     
     super.getDom()
     return dom
@@ -50,17 +52,19 @@ class AssistantResponse extends AssistantResponseClass{
     scout.id = "AMK2_SCREENOUTPUT"
     scoutpan.appendChild(scout)
     dom.appendChild(scoutpan)
-    var auoutpan = document.createElement("div")
-    var auout = document.createElement("audio")
-    auout.id = "AMK2_AUDIO_RESPONSE"
-    auout.autoplay = true;
-    auout.addEventListener("ended", ()=>{
-      this.callbacks.doPlugin("onAfterAudioResponse")
-      console.log("audio end")
-      this.end()
-    })
-    auoutpan.appendChild(auout)
-    dom.appendChild(auoutpan)
+    if (this.config.useHTML5) {
+      var auoutpan = document.createElement("div")
+      var auout = document.createElement("audio")
+      auout.id = "AMK2_AUDIO_RESPONSE"
+      auout.autoplay = true;
+      auout.addEventListener("ended", ()=>{
+        this.callbacks.doPlugin("onAfterAudioResponse")
+        log("audio end")
+        this.end()
+      })
+      auoutpan.appendChild(auout)
+      dom.appendChild(auoutpan)
+    }
     document.body.appendChild(dom)
     super.prepare()
   }

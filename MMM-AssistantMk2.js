@@ -26,12 +26,16 @@ Module.register("MMM-AssistantMk2", {
       longitude: -0.076132,
     },
     responseConfig: {
+      useHTML5: false,
       useScreenOutput: true,
       useAudioOutput: true,
       useChime: true,
       timer: 5000,
       myMagicWord: false,
-      delay: 0.5
+      delay: 0.5,
+      playProgram: "mpg321", //Your prefer sound play program. By example, if you are running this on OSX, `afplay` could be available.
+      playOption: [], // If you need additional options to use playProgram, describe here. (except filename)
+      // e.g: ["-d", "", "-t", "100"]
     },
     micConfig: {
       recorder: "arecord",
@@ -57,7 +61,6 @@ Module.register("MMM-AssistantMk2", {
       }
     },
   },
-
   plugins: {
     onReady: [],
     onBeforeAudioResponse: [],
@@ -107,7 +110,7 @@ Module.register("MMM-AssistantMk2", {
   start: function () {
     const helperConfig = [
       "debug", "recipes", "customActionConfig", "assistantConfig", "micConfig",
-      "responseConfig", "pluginsConfig"
+      "playConfig", "responseConfig", "pluginsConfig"
     ]
     this.helperConfig = {}
     if (this.config.debug) log = _log
@@ -145,9 +148,16 @@ Module.register("MMM-AssistantMk2", {
       },
       doPlugin: (pluginName, args) => {
         return this.doPlugin(pluginName, args)
+      },
+      playSound: (sound) => {
+        return this.playSound(sound)
       }
     }
     this.assistantResponse = new AssistantResponse(this.helperConfig["responseConfig"], callbacks)
+  },
+
+  playSound: function(sound) {
+    this.sendSocketNotification("PLAY_SOUND", sound)
   },
 
   doPlugin: function(pluginName, args) {
@@ -289,10 +299,9 @@ Module.register("MMM-AssistantMk2", {
         this.assistantResponse.fullscreen(true)
         this.assistantActivate({ type: "TEXT", key: magicQuery}, Date.now())
         break
-      case "ASSISTANT_DEMO": {
+      case "ASSISTANT_DEMO":
         if (this.config.developer) this.demo()
         break
-      }
     }
     this.doPlugin("onAfterNotificationReceived", {notification:noti, payload:payload})
   },
@@ -327,6 +336,10 @@ Module.register("MMM-AssistantMk2", {
         break
       case "TUNNEL":
         this.assistantResponse.tunnel(payload)
+        break
+      case "ASSISTANT_AUDIO_RESULT_ENDED":
+        this.doPlugin("onAfterAudioResponse")
+        this.assistantResponse.end()
         break
     }
     this.doPlugin("onAfterSocketNotificationReceived", {notification:noti, payload:payload})
@@ -377,6 +390,7 @@ Module.register("MMM-AssistantMk2", {
       lang: null,
       useScreenOutput: this.config.responseConfig.useScreenOutput,
       useAudioOutput: this.config.responseConfig.useAudioOutput,
+      useHTML5: this.config.responseConfig.useHTML5,
       session: session,
       status: this.myStatus.old,
     }
