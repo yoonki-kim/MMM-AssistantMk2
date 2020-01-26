@@ -102,7 +102,7 @@ module.exports = NodeHelper.create({
         }
       }
       if (response.error == "TOO_SHORT" && response) response.error = null
-      if (response.audio.path && !assistantConfig.useHTML5) this.playAudioRespone(response.audio.path);
+      if (response.audio && response.audio.path && !assistantConfig.useHTML5) this.playAudioRespone(response.audio.path);
       if (response.screen) {
         parser.parse(response, (result)=>{
           delete result.screen.originalContent
