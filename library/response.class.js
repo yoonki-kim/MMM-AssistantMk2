@@ -13,6 +13,19 @@ class AssistantResponseClass {
     this.hookChimed = false
     this.myStatus = { "actual" : "standby" , "old" : "standby" }
     this.sayMode = false
+
+    if (this.config.useHTML5) {
+      this.audioResponse = new Audio()
+      this.audioResponse.autoplay = true
+      this.audioResponse.addEventListener("ended", ()=>{
+        this.callbacks.doPlugin("onAfterAudioResponse")
+        log("audio end")
+        this.end()
+      })
+
+      this.audioChime = new Audio()
+      this.audioChime.autoplay = true
+    }
   }
 
   tunnel (payload) {
@@ -42,8 +55,7 @@ class AssistantResponseClass {
   playChime (sound) {
     if (this.config.useChime && !(this.secretMode || this.sayMode)) {
       if (this.config.useHTML5) {
-        var chime = document.getElementById("AMK2_CHIME")
-        chime.src = "modules/MMM-AssistantMk2/resources/" + this.config.chime[sound]
+        this.audioChime.src = "modules/MMM-AssistantMk2/resources/" + this.config.chime[sound]
       } else {
         this.callbacks.playSound("resources/" + this.config.chime[sound])
       }
@@ -201,8 +213,7 @@ class AssistantResponseClass {
     var iframe = document.getElementById("AMK2_SCREENOUTPUT")
     iframe.src = "about:blank"
     if (this.config.useHTML5) {
-      var audioSrc = document.getElementById("AMK2_AUDIO_RESPONSE")
-      audioSrc.src = ""
+      this.audioResponse.src = ""
     }
     var tr = document.getElementById("AMK2_TRANSCRIPTION")
     tr.innerHTML = ""
@@ -225,8 +236,7 @@ class AssistantResponseClass {
       this.callbacks.doPlugin("onBeforeAudioResponse")
       this.showing = true
       if (this.config.useHTML5) {
-        var audioSrc = document.getElementById("AMK2_AUDIO_RESPONSE")
-        audioSrc.src = this.makeUrl(response.audio.uri)
+        this.audioResponse.src = this.makeUrl(response.audio.uri)
       }
       return true
     }
