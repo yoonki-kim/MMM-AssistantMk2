@@ -184,13 +184,18 @@ class AssistantResponseClass {
     var normalResponse = (response) => {
       this.showing = true
       var so = this.showScreenOutput(response)
-      var ao = this.playAudioOutput(response)
-      if (ao) {
-        this.status("reply")
-        log("Wait audio to finish")
+      if (this.config.useHTML5) {
+        var ao = this.playAudioOutput(response)
+        if (ao) {
+          this.status("reply")
+          log("Wait audio to finish")
+        } else {
+          log("No response")
+          this.end()
+        }
       } else {
-        log("No response") // Error ?
-        this.end()
+        this.callbacks.doPlugin("onBeforeAudioResponse")
+        this.showing = true
       }
     }
     this.postProcess(

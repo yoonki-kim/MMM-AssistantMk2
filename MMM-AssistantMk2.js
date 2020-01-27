@@ -33,9 +33,9 @@ Module.register("MMM-AssistantMk2", {
       timer: 5000,
       myMagicWord: false,
       delay: 0.5,
-      playProgram: "mpg321", //Your prefer sound play program. By example, if you are running this on OSX, `afplay` could be available.
-      playOption: [], // If you need additional options to use playProgram, describe here. (except filename)
-      // e.g: ["-d", "", "-t", "100"]
+      //Your prefer sound play program. By example, if you are running this on OSX, `afplay` could be available.
+      //needed if you don't use HTML5
+      playProgram: "mpg321"
     },
     micConfig: {
       recorder: "arecord",
