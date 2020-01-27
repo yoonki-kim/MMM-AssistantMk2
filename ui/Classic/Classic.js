@@ -44,9 +44,9 @@ class AssistantResponse extends AssistantResponseClass{
     contener.appendChild(transcription)
 
     scoutpan.appendChild(contener)
+    dom.appendChild(scoutpan)
 
     if (this.config.useHTML5) {
-      dom.appendChild(scoutpan)
       var auoutpan = document.createElement("div")
       var auout = document.createElement("audio")
       auout.id = "AMK2_AUDIO_RESPONSE"
