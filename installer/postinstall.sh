@@ -2,7 +2,7 @@
 # +--------------------------------+
 # | npm postinstall                |
 # | AMK2 v3 Installer by Bugsounet |
-# | Rev 1.0.7                      |
+# | Rev 1.0.8                      |
 # +--------------------------------+
 
 # get the installer directory
@@ -29,10 +29,10 @@ rm installer.log 2>/dev/null
 Installer_log
 
 # check version
-Installer_version="$(cat ../package.json | grep version | cut -c15-19 2>/dev/null)"
+Installer_version="$(cat ../package.json | grep version | cut -c14-30 2>/dev/null)"
 
 # Let's start !
-Installer_info "Welcome to AssistantMk2 v$Installer_version"
+Installer_info "Welcome to AssistantMk2 $Installer_version"
 Installer_info "postinstall script v$Installer_vinstaller"
 
 echo
