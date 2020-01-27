@@ -54,12 +54,10 @@ class AssistantResponseClass {
 
   playChime (sound) {
     if (this.config.useChime && !(this.secretMode || this.sayMode)) {
-      if (sound == "open") sound = "Google_beep_open"
-      if (sound == "close") sound = "Google_beep_close"
       if (this.config.useHTML5) {
-        this.audioChime.src = "modules/MMM-AssistantMk2/resources/" + sound + ".mp3"
+        this.audioChime.src = "modules/MMM-AssistantMk2/resources/" + this.config.chime[sound]
       } else {
-        this.callbacks.playSound("resources/" + sound + ".mp3")
+        this.callbacks.playSound("resources/" + this.config.chime[sound])
       }
     }
   }
