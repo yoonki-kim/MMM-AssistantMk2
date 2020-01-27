@@ -24,22 +24,9 @@ class PLUGINS {
   }
   doHelperPlugins (notification,payload,callback) {
     this.send = callback
-    /** describe your code here **/
+    // /!\ do not remove TAG_AUTOINSERT !
+    //_TAG_AUTOINSERT_
 
-    /*
-    // Say if your plugin is enabled or not with INIT notification
-    // example :
-    if (notification == "INIT") log("Snowboy is " + (this.pluginsConfig.snowboy.useSnowboy ? "enabled" : "disabled"))
-
-    //log("Notification:", notification)
-    //log("Payload:", payload)
-    //log("AMk2 Config:", this.config)
-    //log("pluginsConfig:", this.pluginsConfig)
-    //log("Debug:", this.debug)
-
-    // for send socket notification "HELLO" and payload "TEST"
-    //this.send("HELLO","TEST")
-    */
   }
 }
 
