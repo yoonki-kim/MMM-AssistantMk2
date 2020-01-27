@@ -36,6 +36,13 @@ Module.register("MMM-AssistantMk2", {
       playProgram: "mpg321", //Your prefer sound play program. By example, if you are running this on OSX, `afplay` could be available.
       playOption: [], // If you need additional options to use playProgram, describe here. (except filename)
       // e.g: ["-d", "", "-t", "100"]
+      chime: {
+        beep: "beep.mp3",
+        error: "error.mp3",
+        continue: "continue.mp3",
+        open: "Google_beep_open.mp3",
+        close: "Google_beep_close.mp3",
+      },
     },
     micConfig: {
       recorder: "arecord",
@@ -110,7 +117,7 @@ Module.register("MMM-AssistantMk2", {
   start: function () {
     const helperConfig = [
       "debug", "recipes", "customActionConfig", "assistantConfig", "micConfig",
-      "playConfig", "responseConfig", "pluginsConfig"
+      "responseConfig", "pluginsConfig"
     ]
     this.helperConfig = {}
     if (this.config.debug) log = _log
