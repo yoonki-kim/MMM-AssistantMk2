@@ -11,13 +11,6 @@ class AssistantResponse extends AssistantResponseClass{
     logo.id = "AMK2_STATUS"
     dom.appendChild(logo)
 
-    if (this.config.useHTML5) {
-      var chime = document.createElement("audio") // for chime
-      chime.id = "AMK2_CHIME"
-      chime.autoplay = true;
-      dom.appendChild(chime)
-    }
-
     super.getDom()
     return dom
   } 
@@ -44,21 +37,7 @@ class AssistantResponse extends AssistantResponseClass{
     contener.appendChild(transcription)
 
     scoutpan.appendChild(contener)
-
-    if (this.config.useHTML5) {
-      dom.appendChild(scoutpan)
-      var auoutpan = document.createElement("div")
-      var auout = document.createElement("audio")
-      auout.id = "AMK2_AUDIO_RESPONSE"
-      auout.autoplay = true;
-      auout.addEventListener("ended", ()=>{
-        this.callbacks.doPlugin("onAfterAudioResponse")
-        console.log("audio end")
-        this.end()
-      })
-      auoutpan.appendChild(auout)
-      dom.appendChild(auoutpan)
-    }
+    dom.appendChild(scoutpan)
 
     document.body.appendChild(dom)
     super.prepare()

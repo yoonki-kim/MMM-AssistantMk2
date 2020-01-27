@@ -13,6 +13,19 @@ class AssistantResponseClass {
     this.hookChimed = false
     this.myStatus = { "actual" : "standby" , "old" : "standby" }
     this.sayMode = false
+
+    if (this.config.useHTML5) {
+      this.audioResponse = new Audio()
+      this.audioResponse.autoplay = true
+      this.audioResponse.addEventListener("ended", ()=>{
+        this.callbacks.doPlugin("onAfterAudioResponse")
+        log("audio end")
+        this.end()
+      })
+
+      this.audioChime = new Audio()
+      this.audioChime.autoplay = true
+    }
   }
 
   tunnel (payload) {
@@ -44,8 +57,7 @@ class AssistantResponseClass {
       if (sound == "open") sound = "Google_beep_open"
       if (sound == "close") sound = "Google_beep_close"
       if (this.config.useHTML5) {
-        var chime = document.getElementById("AMK2_CHIME")
-        chime.src = "modules/MMM-AssistantMk2/resources/" + sound + ".mp3"
+        this.audioChime.src = "modules/MMM-AssistantMk2/resources/" + sound + ".mp3"
       } else {
         this.callbacks.playSound("resources/" + sound + ".mp3")
       }
@@ -198,8 +210,7 @@ class AssistantResponseClass {
     var iframe = document.getElementById("AMK2_SCREENOUTPUT")
     iframe.src = "about:blank"
     if (this.config.useHTML5) {
-      var audioSrc = document.getElementById("AMK2_AUDIO_RESPONSE")
-      audioSrc.src = ""
+      this.audioResponse.src = ""
     }
     var tr = document.getElementById("AMK2_TRANSCRIPTION")
     tr.innerHTML = ""
@@ -222,8 +233,7 @@ class AssistantResponseClass {
       this.callbacks.doPlugin("onBeforeAudioResponse")
       this.showing = true
       if (this.config.useHTML5) {
-        var audioSrc = document.getElementById("AMK2_AUDIO_RESPONSE")
-        audioSrc.src = this.makeUrl(response.audio.uri)
+        this.audioResponse.src = this.makeUrl(response.audio.uri)
       }
       return true
     }
