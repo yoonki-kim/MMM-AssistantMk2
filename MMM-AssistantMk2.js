@@ -416,9 +416,8 @@ Module.register("MMM-AssistantMk2", {
   },
 
   postProcess: function (response, callback_done=()=>{}, callback_none=()=>{}) {
-    if (response.continue || response.lastQuery.status == "continue") return callback_none()
-    var foundHook = []
-    foundHook = this.findAllHooks(response)
+    if (response.lastQuery.status == "continue") return callback_none()
+    var foundHook = this.findAllHooks(response)
     if (foundHook.length > 0) {
       this.assistantResponse.status("hook")
       for (var i = 0; i < foundHook.length; i++) {
