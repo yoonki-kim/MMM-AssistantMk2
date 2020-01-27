@@ -117,7 +117,8 @@ module.exports = NodeHelper.create({
   },
 
   playAudioRespone: function(file,chimed) {
-    if (file && this.config.responseConfig.useAudioOutput) {
+    if (!file) return
+    if ((this.config.responseConfig.useChime && chimed) || this.config.responseConfig.useAudioOutput) {
       log("Sound: Audio starts with " + this.config.responseConfig.playProgram, file)
       this.player.play(file, (err) => {
         if (err) {
@@ -144,7 +145,7 @@ module.exports = NodeHelper.create({
     this.cleanUptmp()
     log("Response delay is set to " + this.config.responseConfig.delay + ((this.config.responseConfig.delay > 1) ? " seconds" : " second"))
     this.HelperPlugins = new HelperPlugins(this.config)
-    if (!this.config.responseConfig.UseHTML5) {
+    if (!this.config.responseConfig.useHTML5) {
       this.player = playSound(opts = {"player": this.config.responseConfig.playProgram})
       log( "Use " +  this.config.responseConfig.playProgram + " for audio response")
     }
