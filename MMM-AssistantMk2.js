@@ -43,6 +43,8 @@ Module.register("MMM-AssistantMk2", {
         open: "Google_beep_open.mp3",
         close: "Google_beep_close.mp3",
       },
+      // false - animated icons, 'standby' - static icons only for standby state, true - all static icons
+      useStaticIcons: false
     },
     micConfig: {
       recorder: "arecord",
