@@ -99,7 +99,8 @@ class ASSISTANT {
       screen: null, // html response
       audio: null, // audio response
       transcription: null, // {transcription:String, done:Boolean} or null
-      continue: false
+      continue: false,
+      volume: null
     }
 
     var responseFile = "tmp/lastResponse.mp3"
@@ -124,6 +125,7 @@ class ASSISTANT {
     conversation
     .on('volume-percent', (percent) => {
       log("CONVERSATION:VOLUME", percent)
+      this.response.volume = percent
     })
     .on('end-of-utterance', () => {
       log("CONVERSATION:END_OF_UTTERANCE")

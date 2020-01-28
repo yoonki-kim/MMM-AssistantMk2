@@ -341,6 +341,10 @@ Module.register("MMM-AssistantMk2", {
           }
           delete this.session[payload.session]
         }
+        if (payload.volume !== null) {
+          // Notification to MMM-Volume without recipes
+          this.sendNotification("VOLUME_SET", payload.volume)
+        }
         this.assistantResponse.start(payload)
         break
       case "TUNNEL":
