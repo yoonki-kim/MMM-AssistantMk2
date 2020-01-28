@@ -63,6 +63,7 @@ class AssistantResponse extends AssistantResponseClass{
           if (status.actual == "standby") { // check again for hidden
             MM.getModules().exceptWithClass("MMM-AssistantMk2").enumerate(function(module) {
               module.show(1000, {lockString: "AMK2_LOCKED"})
+              AMK2.classList.remove("out")
               AMK2.classList.add("hidden")
             })
           }
