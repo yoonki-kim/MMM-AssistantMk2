@@ -4,15 +4,10 @@
 
 
 class AssistantResponse extends AssistantResponseClass{
-  constructor (responseConfig, callbacks) {
-    super(responseConfig, callbacks)
-  }
- 
   getDom () {
-    var dom = document.createElement("div")
-    dom.id = "AMK2"
-    dom.className = "hidden"
-    
+    var dom = super.getDom()
+    dom.classList.add("hidden")
+
     var contener = document.createElement("div")
     contener.id = "AMK2_CONTENER"
 
@@ -59,11 +54,11 @@ class AssistantResponse extends AssistantResponseClass{
         module.hide(15, {lockString: "AMK2_LOCKED"})
       })
       AMK2.classList.remove("hidden")
-      AMK2.classList = "in"
+      AMK2.classList.add("in")
     } else  if(!(this.secretMode || this.sayMode)) {
       if (status && status.actual == "standby") { // only on standby mode
         AMK2.classList.remove("in")
-        AMK2.classList = "out"
+        AMK2.classList.add("out")
         this.displayTimer = setTimeout (() => {
           if (status.actual == "standby") { // check again for hidden
             MM.getModules().exceptWithClass("MMM-AssistantMk2").enumerate(function(module) {

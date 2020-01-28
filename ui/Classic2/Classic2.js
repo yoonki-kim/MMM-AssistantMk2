@@ -4,8 +4,7 @@ class AssistantResponse extends AssistantResponseClass{
   }
  
   getDom () {
-    var dom = document.createElement("div")
-    dom.id = "AMK2"
+    var dom = super.getDom()
 
     var logo = document.createElement("div")
     logo.id = "AMK2_STATUS"
