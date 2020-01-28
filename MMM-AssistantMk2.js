@@ -292,6 +292,7 @@ Module.register("MMM-AssistantMk2", {
         this.doCommand(payload.command, payload.param, sender.name)
         break
       case "ASSISTANT_QUERY":
+        this.doPlugin("onBeforeActivated", payload)
         this.assistantResponse.setSayMode(false)
         this.assistantResponse.setSecret(false)
         this.assistantResponse.fullscreen(true)
