@@ -34,7 +34,7 @@ Installer_info "Updating..."
 git pull
 #fresh package.json
 git checkout package.json
-Installer_info "Restaure helperPlungins.js"
+Installer_info "Restaure addons.js"
 rm -f addons/addons.js
 cp -f addons/addons.js.sav addons/addons.js
 rm -f addons/addons.js.sav
