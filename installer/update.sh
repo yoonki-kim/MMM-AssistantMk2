@@ -24,19 +24,20 @@ Installer_info "Welcome to AMk2 updater !"
 echo
 
 cd ~/MagicMirror/modules/MMM-AssistantMk2
-Installer_info "Backup helperPlugins.js"
+Installer_info "Backup addons.js"
 # deleting package.json because npm install add/update package
 rm -f package.json
 rm -f package-lock.json
-cp -f plugins/helperPlugins.js plugins/helperPlugins.js.sav
-rm -f plugins/helperPlugins.js
+cp -f addons/addons.js addons/addons.js.sav
+rm -f addons/addons.js
 Installer_info "Updating..."
 git pull
 #fresh package.json
 git checkout package.json
 Installer_info "Restaure helperPlungins.js"
-cp -f plugins/helperPlugins.js.sav plugins/helperPlugins.js
-rm -f plugins/helperPlugins.js.sav
+rm -f addons/addons.js
+cp -f addons/addons.js.sav addons/addons.js
+rm -f addons/addons.js.sav
 Installer_info "Installing..."
 # launch installer
 npm install
