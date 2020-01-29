@@ -3,8 +3,15 @@
 `MMM-AssistantMk2` is an embedded Google assistant on MagicMirror.
 
 ## NEW UPDATES
-**3.0.3 ($date)** 
-  * Possibility to add a personal plugin in node_helper (helperplugins.js)
+**3.1.0-1 (30/01/2020)** 
+  * **ADD/CONFIG:** Possibility to add a personal addons in node_helper (addons.js)
+  * **ISSUE:** correct mmap issue : 
+    * choice HTML5 audio or native audio
+  * **CONFIG:** reduce CPU usage by possibility disabled animated icons with static icons
+  * **ADD:** vocal volume sound control via MMM-Volumejs)
+  * **ADD/CONFIG:** posibility use static icons
+  * **CONFIG:** posibility use personal chimes
+  * **ADD:** npm install with new dependencies
 
 ## [**Preview Video**](https://youtu.be/e7Xg95mL8JE)
 
