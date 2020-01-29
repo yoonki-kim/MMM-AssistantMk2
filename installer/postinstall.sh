@@ -2,7 +2,6 @@
 # +--------------------------------+
 # | npm postinstall                |
 # | AMK2 v3 Installer by Bugsounet |
-# | Rev 1.0.8                      |
 # +--------------------------------+
 
 # get the installer directory
@@ -25,6 +24,12 @@ source utils.sh
 # del last log
 rm installer.log 2>/dev/null
 
+# module name
+Installer_module="MMM-AssistantMk2"
+
+# use beep request questions ?
+Installer_beep=true
+
 # logs in installer.log file
 Installer_log
 
@@ -32,7 +37,7 @@ Installer_log
 Installer_version="$(cat ../package.json | grep version | cut -c14-30 2>/dev/null)"
 
 # Let's start !
-Installer_info "Welcome to AssistantMk2 $Installer_version"
+Installer_info "Welcome to $Installer_module $Installer_version"
 Installer_info "postinstall script v$Installer_vinstaller"
 
 echo
@@ -59,7 +64,7 @@ echo
 Installer_yesno "Do you want to execute automatic intallation ?" || exit 0
 
 # check dependencies
-dependencies=(git wget libasound2-dev sox libsox-fmt-all gcc-7 alsamixer aplay arecord libsox-fmt-mp3 mpg321)
+dependencies=(git wget libasound2-dev sox libsox-fmt-all gcc-7 libsox-fmt-mp3 build-essential mpg321)
 Installer_info "Checking all dependencies..."
 Installer_check_dependencies
 Installer_success "All Dependencies needed are installed !"
@@ -80,8 +85,21 @@ Installer_info "Electron Rebuild"
 Installer_yesno "Do you want to execute electron rebuild" && (
   Installer_electronrebuild
   Installer_success "Electron Rebuild Complete!"
-
 )
+echo
+
+# pulse audio and mmap issue
+if Installer_is_installed "pulseaudioa"; then
+  if [ "$os_name" == "raspbian" ]; then
+    Installer_warning "RPI Pulseaudio check"
+    Installer_warning "Pulseaudio is installed"
+    Installer_error "You might have some mmap error and no response audio"
+    Installer_warning "if you are not using Bluetooth, you can uninstall pulseaudio"
+    Installer_warning "Note: You can try whithout uninstalling pulseaudio"
+    Installer_warning "using the play-sound version (useHTML5: false and playProgram: \"mpg321\")"
+    Installer_yesno "Do you want uninstall pulseaudio?" && Installer_remove "pulseaudio"
+  fi
+fi
 
 echo
 # Audio out/in checking
@@ -100,7 +118,6 @@ Installer_yesno "Do you want check your audio configuration" && (
     echo
     Installer_warning "micConfig: {"
     Installer_warning "  recorder: \"arecord\","
-
     Installer_warning "  device: \"$plug_rec\""
     Installer_warning "},"
   fi
@@ -109,4 +126,4 @@ Installer_yesno "Do you want check your audio configuration" && (
 echo
 
 # the end...
-Installer_exit "AssistantMK2 is now installed !"
+Installer_exit "$Installer_module is now installed !"
