@@ -5,7 +5,7 @@
 /** @bugsounet **/
 
 var _log = function() {
-    var context = "[AMK2:PLUGINS]"
+    var context = "[AMK2:ADDONS]"
     return Function.prototype.bind.call(console.log, console, context)
 }()
 
@@ -13,16 +13,16 @@ var log = function() {
   //do nothing
 }
 
-class PLUGINS {
+class ADDONS {
   constructor(config) {
     this.config= config
-    this.pluginsConfig = config.pluginsConfig
+    this.addonsConfig = config.addonsConfig
     var debug = (this.config.debug) ? this.config.debug : false
     if (debug == true) log = _log
     this.debug = debug
-    log((Object.entries(this.pluginsConfig).length == 0) ? "No plugins found !" : "Started !")
+    log((Object.entries(this.addonsConfig).length == 0) ? "No plugins found !" : "Started !")
   }
-  doHelperPlugins (notification,payload,callback) {
+  doAddons (notification,payload,callback) {
     this.send = callback
     // /!\ do not remove TAG_AUTOINSERT !
     //_TAG_AUTOINSERT_
@@ -30,4 +30,4 @@ class PLUGINS {
   }
 }
 
-module.exports = PLUGINS
+module.exports = ADDONS

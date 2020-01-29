@@ -8,7 +8,7 @@ const fs = require("fs")
 const Assistant = require("./components/assistant.js")
 const ScreenParser = require("./components/screenParser.js")
 const ActionManager = require("./components/actionManager.js")
-const HelperPlugins = require("./plugins/helperPlugins.js")
+const Addons = require("./addons/addons.js")
 const playSound = require('play-sound')
 
 var _log = function() {
@@ -56,11 +56,11 @@ module.exports = NodeHelper.create({
         this.playAudioRespone(filepath,true)
         break
     }
-    if ((Object.entries(this.config.pluginsConfig).length > 0))
-      this.HelperPlugins.doHelperPlugins(noti,payload,(send,params)=>{ this.HelperCallback(send,params) })
+    if ((Object.entries(this.config.addonsConfig).length > 0))
+      this.addons.doAddons(noti,payload,(send,params)=>{ this.addonsCallback(send,params) })
   },
   
-  HelperCallback: function(send,params) {
+  addonsCallback: function(send,params) {
     if (send) this.sendSocketNotification(send,params)
   },
 
@@ -144,7 +144,7 @@ module.exports = NodeHelper.create({
     })
     this.cleanUptmp()
     log("Response delay is set to " + this.config.responseConfig.delay + ((this.config.responseConfig.delay > 1) ? " seconds" : " second"))
-    this.HelperPlugins = new HelperPlugins(this.config)
+    this.addons = new Addons(this.config)
     if (!this.config.responseConfig.useHTML5) {
       this.player = playSound(opts = {"player": this.config.responseConfig.playProgram})
       log( "Use " +  this.config.responseConfig.playProgram + " for audio response")
