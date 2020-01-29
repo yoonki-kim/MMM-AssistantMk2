@@ -12,6 +12,7 @@
   * **ADD/CONFIG:** posibility use static icons
   * **CONFIG:** posibility use personal chimes
   * **ADD:** npm install with new dependencies
+  * **ADD:** add update script (npm run update)
 
 ## [**Preview Video**](https://youtu.be/e7Xg95mL8JE)
 
