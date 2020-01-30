@@ -56,7 +56,8 @@ module.exports = NodeHelper.create({
         this.playAudioRespone(filepath,true)
         break
     }
-    if ((Object.entries(this.config.addonsConfig).length > 0))
+
+    if (this.config.addons)
       this.addons.doAddons(noti,payload,(send,params)=>{ this.addonsCallback(send,params) })
   },
   
@@ -144,7 +145,7 @@ module.exports = NodeHelper.create({
     })
     this.cleanUptmp()
     log("Response delay is set to " + this.config.responseConfig.delay + ((this.config.responseConfig.delay > 1) ? " seconds" : " second"))
-    this.addons = new Addons(this.config)
+    if (this.config.addons) this.addons = new Addons(this.config)
     if (!this.config.responseConfig.useHTML5) {
       this.player = playSound(opts = {"player": this.config.responseConfig.playProgram})
       log( "Use " +  this.config.responseConfig.playProgram + " for audio response")
