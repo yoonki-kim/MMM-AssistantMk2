@@ -4,15 +4,15 @@
 
 ## NEW UPDATES
 **3.1.0-1 (30/01/2020)** 
-  * **ADD/CONFIG:** Possibility to add a personal addons in node_helper (addons.js)
+  * **ADD/CONFIG:** ability to add a personal addons in node_helper (addons.js)
   * **ISSUE:** correct mmap issue : 
     * choice HTML5 audio or native audio
-  * **CONFIG:** reduce CPU usage by possibility disabled animated icons with static icons
-  * **ADD:** vocal volume sound control via MMM-Volumejs)
-  * **ADD/CONFIG:** posibility use static icons
-  * **CONFIG:** posibility use personal chimes
+  * **CONFIG:** reduce CPU usage by ability to disable animated icons
+  * **ADD:** volume control via [MMM-Volume](https://github.com/eouia/MMM-Volume)
+  * **ADD/CONFIG:** ability to use static icons
+  * **CONFIG:** ability to use personal chimes
   * **ADD:** npm install with new dependencies
-  * **ADD:** add update script (npm run update)
+  * **ADD:** added update script (npm run update)
 
 ## [**Preview Video**](https://youtu.be/e7Xg95mL8JE)
 
