@@ -35,7 +35,7 @@ class ADDONS {
   doAddons (notification,payload,callback) {
     this.send = callback
     // /!\ do not remove TAG_AUTOINSERTADDONS !
-    //_TAG_AUTOINSERT_
+    //_TAG_AUTOINSERTADDONS_
 
     // test_plugin
     if (notification == "INIT") log("Test_plugin is " + (this.addonsConfig.test.useTest ? "enabled" : "disabled"))
