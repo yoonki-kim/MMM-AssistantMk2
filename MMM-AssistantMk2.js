@@ -269,7 +269,6 @@ Module.register("MMM-AssistantMk2", {
         this.setProfile(payload)
         break
       case "ASSISTANT_ACTIVATE":
-        this.doPlugin("onBeforeActivated", payload)
         var session = Date.now()
         payload.secretMode = (payload.secretMode) ? payload.secretMode : false
         payload.sayMode = (payload.sayMode) ? payload.sayMode : false
@@ -284,7 +283,6 @@ Module.register("MMM-AssistantMk2", {
         }
         this.assistantResponse.fullscreen(true)
         this.assistantActivate(payload, session)
-        this.doPlugin("onAfterActivated", payload)
         break
       case "ASSISTANT_COMMAND":
         this.assistantResponse.setSecret(false)
@@ -292,7 +290,6 @@ Module.register("MMM-AssistantMk2", {
         this.doCommand(payload.command, payload.param, sender.name)
         break
       case "ASSISTANT_QUERY":
-        this.doPlugin("onBeforeActivated", payload)
         this.assistantResponse.setSayMode(false)
         this.assistantResponse.setSecret(false)
         this.assistantResponse.fullscreen(true)
@@ -396,6 +393,7 @@ Module.register("MMM-AssistantMk2", {
   },
 
   assistantActivate: function(payload, session) {
+    this.doPlugin("onBeforeActivated", payload)
     this.lastQuery = null
     var options = {
       type: "TEXT",
@@ -415,6 +413,7 @@ Module.register("MMM-AssistantMk2", {
     setTimeout(() => {
       this.assistantResponse.status(options.type, true)
       this.sendSocketNotification("ACTIVATE_ASSISTANT", options)
+      this.doPlugin("onAfterActivated", payload)
     }, this.config.responseConfig.delay * 1000)
   },
 
