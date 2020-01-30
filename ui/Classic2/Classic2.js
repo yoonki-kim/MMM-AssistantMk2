@@ -4,17 +4,11 @@ class AssistantResponse extends AssistantResponseClass{
   }
  
   getDom () {
-    var dom = document.createElement("div")
-    dom.id = "AMK2"
+    var dom = super.getDom()
 
     var logo = document.createElement("div")
     logo.id = "AMK2_STATUS"
     dom.appendChild(logo)
-
-    var chime = document.createElement("audio") // for chime
-    chime.id = "AMK2_CHIME"
-    chime.autoplay = true;
-    dom.appendChild(chime)
 
     super.getDom()
     return dom
@@ -66,20 +60,7 @@ class AssistantResponse extends AssistantResponseClass{
     contener.appendChild(contener2)
         
     scoutpan.appendChild(contener)
-
     dom.appendChild(scoutpan)
-    var auoutpan = document.createElement("div")
-    var auout = document.createElement("audio")
-    auout.id = "AMK2_AUDIO_RESPONSE"
-    auout.autoplay = true;
-    auout.addEventListener("ended", ()=>{
-      this.callbacks.doPlugin("onAfterAudioResponse")
-      console.log("audio end")
-      this.end()
-    })
-    auoutpan.appendChild(auout)
-
-    dom.appendChild(auoutpan)
 
     document.body.appendChild(dom)
     super.prepare()

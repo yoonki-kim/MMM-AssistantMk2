@@ -4,15 +4,10 @@
 
 
 class AssistantResponse extends AssistantResponseClass{
-  constructor (responseConfig, callbacks) {
-    super(responseConfig, callbacks)
-  }
- 
   getDom () {
-    var dom = document.createElement("div")
-    dom.id = "AMK2"
-    dom.className = "hidden"
-    
+    var dom = super.getDom()
+    dom.classList.add("hidden")
+
     var contener = document.createElement("div")
     contener.id = "AMK2_CONTENER"
 
@@ -30,11 +25,6 @@ class AssistantResponse extends AssistantResponseClass{
     
     dom.appendChild(contener)
 
-    var chime = document.createElement("audio")
-    chime.id = "AMK2_CHIME"
-    chime.autoplay = true;
-    dom.appendChild(chime)
-    
     super.getDom()
     return dom
   } 
@@ -50,17 +40,7 @@ class AssistantResponse extends AssistantResponseClass{
     scout.id = "AMK2_SCREENOUTPUT"
     scoutpan.appendChild(scout)
     dom.appendChild(scoutpan)
-    var auoutpan = document.createElement("div")
-    var auout = document.createElement("audio")
-    auout.id = "AMK2_AUDIO_RESPONSE"
-    auout.autoplay = true;
-    auout.addEventListener("ended", ()=>{
-      this.callbacks.doPlugin("onAfterAudioResponse")
-      console.log("audio end")
-      this.end()
-    })
-    auoutpan.appendChild(auout)
-    dom.appendChild(auoutpan)
+
     document.body.appendChild(dom)
     super.prepare()
   }
@@ -74,15 +54,16 @@ class AssistantResponse extends AssistantResponseClass{
         module.hide(15, {lockString: "AMK2_LOCKED"})
       })
       AMK2.classList.remove("hidden")
-      AMK2.classList = "in"
+      AMK2.classList.add("in")
     } else  if(!(this.secretMode || this.sayMode)) {
       if (status && status.actual == "standby") { // only on standby mode
         AMK2.classList.remove("in")
-        AMK2.classList = "out"
+        AMK2.classList.add("out")
         this.displayTimer = setTimeout (() => {
           if (status.actual == "standby") { // check again for hidden
             MM.getModules().exceptWithClass("MMM-AssistantMk2").enumerate(function(module) {
               module.show(1000, {lockString: "AMK2_LOCKED"})
+              AMK2.classList.remove("out")
               AMK2.classList.add("hidden")
             })
           }

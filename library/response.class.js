@@ -13,6 +13,19 @@ class AssistantResponseClass {
     this.hookChimed = false
     this.myStatus = { "actual" : "standby" , "old" : "standby" }
     this.sayMode = false
+
+    if (this.config.useHTML5) {
+      this.audioResponse = new Audio()
+      this.audioResponse.autoplay = true
+      this.audioResponse.addEventListener("ended", ()=>{
+        this.callbacks.doPlugin("onAfterAudioResponse")
+        log("audio end")
+        this.end()
+      })
+
+      this.audioChime = new Audio()
+      this.audioChime.autoplay = true
+    }
   }
 
   tunnel (payload) {
@@ -41,10 +54,11 @@ class AssistantResponseClass {
 
   playChime (sound) {
     if (this.config.useChime && !(this.secretMode || this.sayMode)) {
-      if (sound == "open") sound = "Google_beep_open"
-      if (sound == "close") sound = "Google_beep_close"
-      var chime = document.getElementById("AMK2_CHIME")
-      chime.src = "modules/MMM-AssistantMk2/resources/" + sound + ".mp3"
+      if (this.config.useHTML5) {
+        this.audioChime.src = "modules/MMM-AssistantMk2/resources/" + this.config.chime[sound]
+      } else {
+        this.callbacks.playSound("resources/" + this.config.chime[sound])
+      }
     }
   }
 
@@ -74,7 +88,13 @@ class AssistantResponseClass {
   }
 
   getDom () {
-    // needed class plugin
+    var dom = document.createElement("div")
+    dom.id = "AMK2"
+    if (this.config.useStaticIcons) {
+      dom.classList.add(this.config.useStaticIcons === "standby" ? "static-standby" : "static")
+    }
+    console.warn(this.config.useStaticIcons)
+    return dom
   }
 
   showError (text) {
@@ -168,13 +188,18 @@ class AssistantResponseClass {
     var normalResponse = (response) => {
       this.showing = true
       var so = this.showScreenOutput(response)
-      var ao = this.playAudioOutput(response)
-      if (ao) {
-        this.status("reply")
-        log("Wait audio to finish")
+      if (this.config.useHTML5) {
+        var ao = this.playAudioOutput(response)
+        if (ao) {
+          this.status("reply")
+          log("Wait audio to finish")
+        } else {
+          log("No response")
+          this.end()
+        }
       } else {
-        log("No response") // Error ?
-        this.end()
+        this.callbacks.doPlugin("onBeforeAudioResponse")
+        this.showing = true
       }
     }
     this.postProcess(
@@ -193,8 +218,9 @@ class AssistantResponseClass {
     winh.classList.add("hidden")
     var iframe = document.getElementById("AMK2_SCREENOUTPUT")
     iframe.src = "about:blank"
-    var audioSrc = document.getElementById("AMK2_AUDIO_RESPONSE")
-    audioSrc.src = ""
+    if (this.config.useHTML5) {
+      this.audioResponse.src = ""
+    }
     var tr = document.getElementById("AMK2_TRANSCRIPTION")
     tr.innerHTML = ""
     var ts = document.getElementById("AMK2_TRYSAY")
@@ -215,8 +241,9 @@ class AssistantResponseClass {
     if (response.audio && this.config.useAudioOutput) {
       this.callbacks.doPlugin("onBeforeAudioResponse")
       this.showing = true
-      var audioSrc = document.getElementById("AMK2_AUDIO_RESPONSE")
-      audioSrc.src = this.makeUrl(response.audio.uri)
+      if (this.config.useHTML5) {
+        this.audioResponse.src = this.makeUrl(response.audio.uri)
+      }
       return true
     }
     return false

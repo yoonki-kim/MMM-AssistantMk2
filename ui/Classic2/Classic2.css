@@ -22,12 +22,18 @@
   background-repeat: no-repeat;
   background-size: 180%;
 }
+#AMK2.static #AMK2_STATUS.reply {
+  background-image:url('../../resources/reply-think.png');
+}
 
 #AMK2_STATUS.error {
   background-image:url('../../resources/error.gif');
   background-position: -60px;
   background-repeat: no-repeat;
   background-size: 180%;
+}
+#AMK2.static #AMK2_STATUS.error {
+  background-image:url('../../resources/confirmation-error.png');
 }
 
 #AMK2_STATUS.think {
@@ -36,12 +42,18 @@
   background-repeat: no-repeat;
   background-size: 180%;
 }
+#AMK2.static #AMK2_STATUS.think {
+  background-image:url('../../resources/reply-think.png');
+}
 
 #AMK2_STATUS.continue {
   background-image:url('../../resources/continue.gif');
   background-position: -60px;
   background-repeat: no-repeat;
   background-size: 180%;
+}
+#AMK2.static #AMK2_STATUS.continue {
+  background-image:url('../../resources/continue-listen.png');
 }
 
 #AMK2_STATUS.listen {
@@ -50,13 +62,18 @@
   background-repeat: no-repeat;
   background-size: 180%;
 }
+#AMK2.static #AMK2_STATUS.listen {
+  background-image:url('../../resources/continue-listen.png');
+}
 
 #AMK2_STATUS.confirmation {
   background-image:url('../../resources/confirmation.gif');
-  background-position: 10px;
   background-position: -60px;
   background-repeat: no-repeat;
   background-size: 180%;
+}
+#AMK2.static #AMK2_STATUS.confirmation {
+  background-image:url('../../resources/confirmation-error.png');
 }
 
 #AMK2_STATUS.standby {
@@ -64,7 +81,10 @@
   background-position: 10px -10px;
   background-repeat: no-repeat;
   background-size: 85%;
-
+}
+#AMK2.static #AMK2_STATUS.standby,
+#AMK2.static-standby #AMK2_STATUS.standby {
+  background-image:url('../../resources/standby.png');
 }
 
 #AMK2_STATUS.hook {
@@ -73,12 +93,11 @@
   background-repeat: no-repeat;
   background-size: 170%;
 }
-
-#AMK2.hidden {
-  display: none
+#AMK2.static #AMK2_STATUS.hook {
+  background-image:url('../../resources/hook.png');
 }
 
-#AMK2_CHIME {
+#AMK2.hidden {
   display: none
 }
 
@@ -118,6 +137,7 @@
     flex: none;
     height: 100px;
     background-color: #f3f3f3; /* better than #181818 */
+    color: #000;
 }
 
 #AMK2_CONTENER2 {

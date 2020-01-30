@@ -26,12 +26,25 @@ Module.register("MMM-AssistantMk2", {
       longitude: -0.076132,
     },
     responseConfig: {
+      useHTML5: true,
       useScreenOutput: true,
       useAudioOutput: true,
       useChime: true,
       timer: 5000,
       myMagicWord: false,
-      delay: 0.5
+      delay: 0.5,
+      //Your prefer sound play program. By example, if you are running this on OSX, `afplay` could be available.
+      //needed if you don't use HTML5
+      playProgram: "mpg321",
+      chime: {
+        beep: "beep.mp3",
+        error: "error.mp3",
+        continue: "continue.mp3",
+        open: "Google_beep_open.mp3",
+        close: "Google_beep_close.mp3",
+      },
+      // false - animated icons, 'standby' - static icons only for standby state, true - all static icons
+      useStaticIcons: false
     },
     micConfig: {
       recorder: "arecord",
@@ -42,6 +55,7 @@ Module.register("MMM-AssistantMk2", {
       autoUpdateAction: false,
       // actionLocale: "en", // multi language action is not supported yet
     },
+    addonsConfig: {},
     recipes: [],
     transcriptionHooks: {},
     actions: {},
@@ -56,7 +70,6 @@ Module.register("MMM-AssistantMk2", {
       }
     },
   },
-
   plugins: {
     onReady: [],
     onBeforeAudioResponse: [],
@@ -106,7 +119,7 @@ Module.register("MMM-AssistantMk2", {
   start: function () {
     const helperConfig = [
       "debug", "recipes", "customActionConfig", "assistantConfig", "micConfig",
-      "responseConfig"
+      "responseConfig", "addonsConfig"
     ]
     this.helperConfig = {}
     if (this.config.debug) log = _log
@@ -144,9 +157,16 @@ Module.register("MMM-AssistantMk2", {
       },
       doPlugin: (pluginName, args) => {
         return this.doPlugin(pluginName, args)
+      },
+      playSound: (sound) => {
+        return this.playSound(sound)
       }
     }
     this.assistantResponse = new AssistantResponse(this.helperConfig["responseConfig"], callbacks)
+  },
+
+  playSound: function(sound) {
+    this.sendSocketNotification("PLAY_SOUND", sound)
   },
 
   doPlugin: function(pluginName, args) {
@@ -249,7 +269,6 @@ Module.register("MMM-AssistantMk2", {
         this.setProfile(payload)
         break
       case "ASSISTANT_ACTIVATE":
-        this.doPlugin("onBeforeActivated", payload)
         var session = Date.now()
         payload.secretMode = (payload.secretMode) ? payload.secretMode : false
         payload.sayMode = (payload.sayMode) ? payload.sayMode : false
@@ -264,7 +283,6 @@ Module.register("MMM-AssistantMk2", {
         }
         this.assistantResponse.fullscreen(true)
         this.assistantActivate(payload, session)
-        this.doPlugin("onAfterActivated", payload)
         break
       case "ASSISTANT_COMMAND":
         this.assistantResponse.setSecret(false)
@@ -288,10 +306,9 @@ Module.register("MMM-AssistantMk2", {
         this.assistantResponse.fullscreen(true)
         this.assistantActivate({ type: "TEXT", key: magicQuery}, Date.now())
         break
-      case "ASSISTANT_DEMO": {
+      case "ASSISTANT_DEMO":
         if (this.config.developer) this.demo()
         break
-      }
     }
     this.doPlugin("onAfterNotificationReceived", {notification:noti, payload:payload})
   },
@@ -322,10 +339,18 @@ Module.register("MMM-AssistantMk2", {
           }
           delete this.session[payload.session]
         }
+        if (payload.volume !== null) {
+          // Notification to MMM-Volume without recipes
+          this.sendNotification("VOLUME_SET", payload.volume)
+        }
         this.assistantResponse.start(payload)
         break
       case "TUNNEL":
         this.assistantResponse.tunnel(payload)
+        break
+      case "ASSISTANT_AUDIO_RESULT_ENDED":
+        this.doPlugin("onAfterAudioResponse")
+        this.assistantResponse.end()
         break
     }
     this.doPlugin("onAfterSocketNotificationReceived", {notification:noti, payload:payload})
@@ -368,6 +393,7 @@ Module.register("MMM-AssistantMk2", {
   },
 
   assistantActivate: function(payload, session) {
+    this.doPlugin("onBeforeActivated", payload)
     this.lastQuery = null
     var options = {
       type: "TEXT",
@@ -376,6 +402,7 @@ Module.register("MMM-AssistantMk2", {
       lang: null,
       useScreenOutput: this.config.responseConfig.useScreenOutput,
       useAudioOutput: this.config.responseConfig.useAudioOutput,
+      useHTML5: this.config.responseConfig.useHTML5,
       session: session,
       status: this.myStatus.old,
     }
@@ -386,6 +413,7 @@ Module.register("MMM-AssistantMk2", {
     setTimeout(() => {
       this.assistantResponse.status(options.type, true)
       this.sendSocketNotification("ACTIVATE_ASSISTANT", options)
+      this.doPlugin("onAfterActivated", payload)
     }, this.config.responseConfig.delay * 1000)
   },
 
@@ -394,9 +422,8 @@ Module.register("MMM-AssistantMk2", {
   },
 
   postProcess: function (response, callback_done=()=>{}, callback_none=()=>{}) {
-    if (response.continue || response.lastQuery.status == "continue") return callback_none()
-    var foundHook = []
-    foundHook = this.findAllHooks(response)
+    if (response.lastQuery.status == "continue") return callback_none()
+    var foundHook = this.findAllHooks(response)
     if (foundHook.length > 0) {
       this.assistantResponse.status("hook")
       for (var i = 0; i < foundHook.length; i++) {
