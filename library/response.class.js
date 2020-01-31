@@ -127,6 +127,7 @@ class AssistantResponseClass {
           key: null,
           lang: response.lastQuery.lang,
           useScreenOutput: response.lastQuery.useScreenOutput,
+          retry: true
         }, Date.now())
 
       } else {
@@ -165,7 +166,8 @@ class AssistantResponseClass {
           key: response.transcription.transcription,
           lang: response.lastQuery.lang,
           useScreenOutput: response.lastQuery.useScreenOutput,
-          session: response.lastQuery.session
+          session: response.lastQuery.session,
+          retry: true
         }, null)
         return
       }
@@ -177,6 +179,7 @@ class AssistantResponseClass {
           key: null,
           lang: response.lastQuery.lang,
           useScreenOutput: response.lastQuery.useScreenOutput,
+          retry: true
         }, Date.now())
         return
       }
