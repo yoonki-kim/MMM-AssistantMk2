@@ -151,7 +151,7 @@ module.exports = NodeHelper.create({
       log( "Use " +  this.config.responseConfig.playProgram + " for audio response")
     }
     else log("Use HTML5 for audio response")
-    console.log("[AMK2] AssistantMk2 v3 is initialized.")
+    console.log("[AMK2] AssistantMk2 is initialized.")
   },
 
   cleanUptmp: function() {

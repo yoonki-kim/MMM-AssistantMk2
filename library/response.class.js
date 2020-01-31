@@ -93,7 +93,7 @@ class AssistantResponseClass {
     if (this.config.useStaticIcons) {
       dom.classList.add(this.config.useStaticIcons === "standby" ? "static-standby" : "static")
     }
-    console.warn(this.config.useStaticIcons)
+    //console.warn(this.config.useStaticIcons)
     return dom
   }
 
