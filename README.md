@@ -4,9 +4,8 @@
 
 ## NEW UPDATES
 **3.1.X-X (XX/02/2020)**
- * **DELETE/MOVE:** addonsConfig is noved to addons/addons.js
+ * **DELETE/MOVE:** addonsConfig:{} is noved to addons/addons.js
  * **ADD/CONFIG:** addons: BOOLEAN to activate or not addons.js
- * **MODIFY/CONFIG:** ability to activate addons section
  * **ADD**: touch icon to activate assistant
 
 
