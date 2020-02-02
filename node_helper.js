@@ -56,7 +56,6 @@ module.exports = NodeHelper.create({
         this.playAudioRespone(filepath,true)
         break
     }
-
     if (this.config.addons)
       this.addons.doAddons(noti,payload,(send,params)=>{ this.addonsCallback(send,params) })
   },
@@ -145,13 +144,13 @@ module.exports = NodeHelper.create({
     })
     this.cleanUptmp()
     log("Response delay is set to " + this.config.responseConfig.delay + ((this.config.responseConfig.delay > 1) ? " seconds" : " second"))
-    if (this.config.addons) this.addons = new Addons(this.config)
     if (!this.config.responseConfig.useHTML5) {
       this.player = playSound(opts = {"player": this.config.responseConfig.playProgram})
       log( "Use " +  this.config.responseConfig.playProgram + " for audio response")
     }
     else log("Use HTML5 for audio response")
     console.log("[AMK2] AssistantMk2 is initialized.")
+    if (this.config.addons) this.addons = new Addons(this.config)
   },
 
   cleanUptmp: function() {
