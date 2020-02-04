@@ -8,7 +8,7 @@ const fs = require("fs")
 const Assistant = require("./components/assistant.js")
 const ScreenParser = require("./components/screenParser.js")
 const ActionManager = require("./components/actionManager.js")
-const Addons = require("./addons/addons.js")
+const ContructorAddons = require("./components/contructorAddons.js")
 const playSound = require('play-sound')
 
 var _log = function() {
@@ -57,7 +57,7 @@ module.exports = NodeHelper.create({
         break
     }
     if (this.config.addons)
-      this.addons.doAddons(noti,payload,(send,params)=>{ this.addonsCallback(send,params) })
+      this.addons.sendToAddons(noti,payload,(send,params)=>{ this.addonsCallback(send,params) })
   },
   
   addonsCallback: function(send,params) {
@@ -150,7 +150,7 @@ module.exports = NodeHelper.create({
     }
     else log("Use HTML5 for audio response")
     console.log("[AMK2] AssistantMk2 is initialized.")
-    if (this.config.addons) this.addons = new Addons(this.config)
+    if (this.config.addons) this.addons = new ContructorAddons(this.config)
   },
 
   cleanUptmp: function() {

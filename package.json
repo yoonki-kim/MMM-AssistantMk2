@@ -5,7 +5,7 @@
   "main": "MMM-AssistantMk2.js",
   "scripts": {
     "postinstall": "installer/postinstall.sh",
-    "update" : "installer/update.sh"
+    "update": "installer/update.sh"
   },
   "keywords": [
     "magic mirror",
