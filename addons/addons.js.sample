@@ -3,6 +3,7 @@
 /** (with external source) **/
 /** /!\ Think to backup your file before update ! **/
 /** @bugsounet **/
+const AddAddonRecipe = require("../components/addAddonRecipe.js")
 
 var _log = function() {
     var context = "[AMK2:ADDONS]"
@@ -30,6 +31,7 @@ class ADDONS {
     if (debug == true) log = _log
     this.debug = debug
     this.addonsConfig = addonsConfig
+    this.addRecipe = new AddAddonRecipe(this.config)
   }
   doAddons (notification,payload,send) {
     this.sendSocketNotification = send
@@ -44,36 +46,6 @@ class ADDONS {
       console.log("[AMK2:ADDONS] addonsConfig:", this.addonsConfig)
       // for send socket notification "HELLO" and payload "TEST" for recipe instructions receive
       //this.sendSocketNotification("HELLO","TEST")
-    }
-  }
-
- // /!\ do not remove addRecipe !
-  addRecipe (recipe,name) {
-    if (!name) {
-      log("[ERROR] NO_NAME_FOR_ADDON")
-      return false
-    }
-    if (recipe) {
-      let replacer = (key, value) => {
-        if (typeof value == "function") {
-          return "__FUNC__" + value.toString()
-        }
-        return value
-      }
-      try {
-        var p = require("../addons/" + recipe).addon
-        this.sendSocketNotification("LOAD_RECIPE", JSON.stringify(p, replacer, 2))
-        log("ADDON_LOADED:", recipe)
-        log(name +" is enabled")
-        return true
-      } catch (e) {
-        log(`ADDON_ERROR (${recipe}):`, e.message)
-        log(name +" is disabled")
-        return false
-      }
-    } else {
-      log("[ERROR] NO_ADDON_TO_LOAD")
-      return false
     }
   }
 }

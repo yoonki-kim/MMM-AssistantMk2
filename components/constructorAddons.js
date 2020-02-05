@@ -32,9 +32,8 @@ class CONSTRUCTOR {
 
   }
 
-  sendToAddons (noti,payload,cb) {
-    this.sendSocketNotification = cb
-    if (this.activate) this.addons.doAddons(noti,payload,(send,params)=>{ this.sendSocketNotification(send,params) })
+  sendToAddons (noti,payload,callback = () => {}) {
+    if (this.activate) this.addons.doAddons(noti,payload,callback)
   }
 }
 
