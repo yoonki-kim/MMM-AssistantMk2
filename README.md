@@ -3,11 +3,10 @@
 `MMM-AssistantMk2` is an embedded Google assistant on MagicMirror.
 
 ## NEW UPDATES
-**3.1.X-X (XX/02/2020)**
+**3.1.0-2 (05/02/2020)**
  * **DELETE/MOVE:** addonsConfig:{} is noved to addons/addons.js
  * **ADD/CONFIG:** addons: BOOLEAN to activate or not addons.js
  * **ADD**: touch icon to activate assistant
-
 
 ## [**Preview Video**](https://youtu.be/e7Xg95mL8JE)
 
