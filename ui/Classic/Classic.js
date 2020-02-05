@@ -1,6 +1,7 @@
 class AssistantResponse extends AssistantResponseClass{
   constructor (responseConfig, callbacks) {
     super(responseConfig, callbacks)
+    this.callbacks = callbacks
   }
  
   getDom () {
@@ -8,6 +9,12 @@ class AssistantResponse extends AssistantResponseClass{
 
     var logo = document.createElement("div")
     logo.id = "AMK2_STATUS"
+    logo.onclick = (e) => {
+      this.callbacks.assistantActivate({
+          type: "MIC",
+          profile: "default"
+        }, Date.now())
+    }
     dom.appendChild(logo)
 
     return dom

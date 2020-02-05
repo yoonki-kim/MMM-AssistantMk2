@@ -8,7 +8,7 @@ const fs = require("fs")
 const Assistant = require("./components/assistant.js")
 const ScreenParser = require("./components/screenParser.js")
 const ActionManager = require("./components/actionManager.js")
-const Addons = require("./addons/addons.js")
+const ConstructorAddons = require("./components/constructorAddons.js")
 const playSound = require('play-sound')
 
 var _log = function() {
@@ -56,8 +56,8 @@ module.exports = NodeHelper.create({
         this.playAudioRespone(filepath,true)
         break
     }
-    if ((Object.entries(this.config.addonsConfig).length > 0))
-      this.addons.doAddons(noti,payload,(send,params)=>{ this.addonsCallback(send,params) })
+    if (this.config.addons)
+      this.addons.sendToAddons(noti,payload,(send,params)=>{ this.addonsCallback(send,params) })
   },
   
   addonsCallback: function(send,params) {
@@ -144,13 +144,13 @@ module.exports = NodeHelper.create({
     })
     this.cleanUptmp()
     log("Response delay is set to " + this.config.responseConfig.delay + ((this.config.responseConfig.delay > 1) ? " seconds" : " second"))
-    this.addons = new Addons(this.config)
     if (!this.config.responseConfig.useHTML5) {
       this.player = playSound(opts = {"player": this.config.responseConfig.playProgram})
       log( "Use " +  this.config.responseConfig.playProgram + " for audio response")
     }
     else log("Use HTML5 for audio response")
-    console.log("[AMK2] AssistantMk2 v3 is initialized.")
+    console.log("[AMK2] AssistantMk2 is initialized.")
+    if (this.config.addons) this.addons = new ConstructorAddons(this.config)
   },
 
   cleanUptmp: function() {

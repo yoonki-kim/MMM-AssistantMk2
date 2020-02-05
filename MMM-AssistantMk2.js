@@ -55,7 +55,7 @@ Module.register("MMM-AssistantMk2", {
       autoUpdateAction: false,
       // actionLocale: "en", // multi language action is not supported yet
     },
-    addonsConfig: {},
+    addons: false,
     recipes: [],
     transcriptionHooks: {},
     actions: {},
@@ -119,7 +119,7 @@ Module.register("MMM-AssistantMk2", {
   start: function () {
     const helperConfig = [
       "debug", "recipes", "customActionConfig", "assistantConfig", "micConfig",
-      "responseConfig", "addonsConfig"
+      "responseConfig", "addons"
     ]
     this.helperConfig = {}
     if (this.config.debug) log = _log
@@ -393,6 +393,7 @@ Module.register("MMM-AssistantMk2", {
   },
 
   assistantActivate: function(payload, session) {
+    if (this.myStatus.actual != "standby" && !payload.retry) return log("Assistant is busy.")
     this.doPlugin("onBeforeActivated", payload)
     this.lastQuery = null
     var options = {
