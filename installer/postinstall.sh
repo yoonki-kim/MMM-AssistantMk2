@@ -89,7 +89,7 @@ Installer_yesno "Do you want to execute electron rebuild" && (
 echo
 
 # pulse audio and mmap issue
-if Installer_is_installed "pulseaudioa"; then
+if Installer_is_installed "pulseaudio"; then
   if [ "$os_name" == "raspbian" ]; then
     Installer_warning "RPI Pulseaudio check"
     Installer_warning "Pulseaudio is installed"
