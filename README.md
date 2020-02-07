@@ -6,6 +6,7 @@
 
 **3.1.0-3 (07/02/2002)**
  * **BUG**: correct issue with no response audio and play-sound (freeze)
+ 
 **3.1.0-2 (05/02/2020)**
  * **DELETE/MOVE:** addonsConfig:{} is noved to addons/addons.js
  * **ADD/CONFIG:** addons: BOOLEAN to activate or not addons.js
