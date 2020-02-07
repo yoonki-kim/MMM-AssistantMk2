@@ -16,7 +16,6 @@ class CONSTRUCTOR {
     if (debug == true) log = _log
     this.debug = debug
     this.activate= true
-    const path = './file.txt'
     try {
       if (fs.existsSync("modules/MMM-AssistantMk2/addons/addons.js")) {
         const Addons = require("../addons/addons.js")
