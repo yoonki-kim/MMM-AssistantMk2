@@ -125,5 +125,17 @@ Installer_yesno "Do you want check your audio configuration" && (
 
 echo
 
+# addons
+Installer_info "addons repository..."
+Installer_yesno "Do you want to install addons repository" && (
+  cd ~/MagicMirror/modules/MMM-AssistantMk2/
+  rm -rf addons
+  git clone https://github.com/bugsounet/addons.git addons
+  Installer_yesno "Do you want to execute addons installer" && (
+    cd addons
+    ./install
+  )
+)
+
 # the end...
 Installer_exit "$Installer_module is now installed !"
