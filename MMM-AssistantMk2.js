@@ -577,14 +577,62 @@ Module.register("MMM-AssistantMk2", {
     }
 
     if (command.hasOwnProperty("soundExec")) {
-      var se = command.soundExec
-      if (se.chime && typeof se.chime == 'string') {
-        console.log(se.chime)
-        if (se.chime == "open") this.assistantResponse.playChime("open")
-        if (se.chime == "close") this.assistantResponse.playChime("close")
+      var snde = command.soundExec
+      if (snde.chime && typeof snde.chime == 'string') {
+        if (snde.chime == "open") this.assistantResponse.playChime("open")
+        if (snde.chime == "close") this.assistantResponse.playChime("close")
       }
-      if (se.say && typeof se.say == 'string' && this.config.responseConfig.myMagicWord) {
-          this.notificationReceived("ASSISTANT_SAY", se.say , this.name)
+      if (snde.say && typeof snde.say == 'string' && this.config.responseConfig.myMagicWord) {
+          this.notificationReceived("ASSISTANT_SAY", snde.say , this.name)
+      }
+    }
+
+/** return a socket notification for addons **/
+/** socketExec: {
+ *    socket: "socket notification to send",
+ *    payload: "payload",
+ *   }
+**/
+    if (command.hasOwnProperty("socketExec")) {
+      var soe = command.socketExec
+      if (soe.socket) {
+        var fsoen = (typeof soe.socket == "function") ?  soe.soket(param, from) : soe.socket
+        var soep = (soe.payload) ? ((typeof soe.payload == "function") ?  soe.payload(param, from) : soe.payload) : null
+        var fsoep = (typeof soep == "object") ? Object.assign({}, soep) : soep
+        log (`Command ${commandId} is executed (socketExec).`)
+        this.sendSocketNotification(fsoen, fsoep)
+      }
+      else log (`Command ${commandId} syntax error (socketExec).`)
+    }
+
+/** compare socket notification received to socket notification wanted and return another socket notification for addons **/
+/** onSocketExec: {
+ *    "Name1" : {
+ *      received: "socket noti received",
+ *      socket: "send this socket noti",
+ *      payload: "Optional", or {}
+ *      status: "AMk2 assistant status compare" // standby, continue, ...
+ *      execAssistant: true // for execute assistant -- socket is not needed
+ *    }
+ *  }
+**/
+    if (command.hasOwnProperty("onSocketExec")) {
+      var osoe = command.onSocketExec
+      for (var x in osoe) {
+        if (osoe[x].received && (param.notification == osoe[x].received)) {
+          if ((osoe[x].status && osoe[x].status == this.myStatus.actual) || !osoe[x].status) {
+            if (osoe[x].execAssistant) {
+              this.notificationReceived("ASSISTANT_ACTIVATE", { type: "MIC", profile: "default" })
+              log (`Command ${x} of ${commandId} is executed (onSocketExec).`)
+            } else if (osoe[x].socket) {
+              var fosoen = (typeof osoe[x].socket == "function") ?  osoe[x].socket(param, from) : osoe[x].socket
+              var osoep = (osoe[x].payload) ? ((typeof osoe[x].payload == "function") ?  osoe[x].payload(param, from) : osoe[x].payload) : null
+              var fosoep = (typeof osoep == "object") ? Object.assign({}, osoep) : osoep
+              log (`Command ${x} of ${commandId} is executed (onSocketExec).`)
+              this.sendSocketNotification(fosoen, fosoep)
+            }
+          }
+        }
       }
     }
   },
