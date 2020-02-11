@@ -6,6 +6,7 @@
 
 **3.1.0-4 (XX/02/202)**
  * **ADD**: add new function for addons-recipe (socketExec, onSocketExec)
+ * **BUG**: continous conversation bug - infinite loop on no user response
 
 **3.1.0-3 (07/02/2002)**
  * **BUG**: correct issue with no response audio and play-sound (freeze)

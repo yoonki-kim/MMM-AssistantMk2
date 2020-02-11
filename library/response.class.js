@@ -13,7 +13,7 @@ class AssistantResponseClass {
     this.hookChimed = false
     this.myStatus = { "actual" : "standby" , "old" : "standby" }
     this.sayMode = false
-
+    this.loopCount = 0
     if (this.config.useHTML5) {
       this.audioResponse = new Audio()
       this.audioResponse.autoplay = true
@@ -119,6 +119,7 @@ class AssistantResponseClass {
       var response = this.response
       this.response = null
       if (response && response.continue) {
+        this.loopCount = 0
         this.status("continue")
         log("Continuous Conversation")
         this.callbacks.assistantActivate({
@@ -171,7 +172,7 @@ class AssistantResponseClass {
         }, null)
         return
       }
-      if (response.error == "NO_RESPONSE" && response.lastQuery.status == "continue") {
+      if (response.error == "NO_RESPONSE" && response.lastQuery.status == "continue" && this.loopCount < 3) {
         this.status("continue")
         this.callbacks.assistantActivate({
           type: "MIC",
@@ -181,6 +182,8 @@ class AssistantResponseClass {
           useScreenOutput: response.lastQuery.useScreenOutput,
           retry: true
         }, Date.now())
+        this.loopCount += 1
+        log("Loop Continuous Count: "+ this.loopCount + "/3")
         return
       }
       this.showError(this.callbacks.translate(response.error))
