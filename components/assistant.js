@@ -116,7 +116,7 @@ class ASSISTANT {
         sampleRate: 16000,
         verbose:this.debug
       }
-      //console.log(this.micConfig)
+
       this.mic = new Record(Object.assign({}, defaultOption, this.micConfig),conversation, (err)=>{ this.afterListening(err) })
       log("MIC:RECORDING START.")
       this.mic.start()
@@ -162,6 +162,11 @@ class ASSISTANT {
     })
     .on('ended', (error, continueConversation) => {
       log("CONVERSATION_ALL_RESPONSES_RECEIVED")
+      log("@eouia : where is the timer !?")
+      log("there is no timeout in this file ??")
+      log("timer:", this.timer)
+      log("timeout:", this.timeout)
+      log("@bugsounet")
       clearTimeout(this.timer)
       this.timer = null
       if (this.timeout) {
@@ -198,11 +203,12 @@ class ASSISTANT {
     })
     .on('error', (error) => {
       if (this.useAudioOutput) b2m.close()
-      log("CONVERSATION_ERROR :", error)
+      log("CONVERSATION_ERROR: " + error)
       this.response.error = "CONVERSATION_ERROR"
       if (error.code == "14") {
         log (">> This error might happen when improper configuration or invalid Mic setup.")
       }
+      this.stopListening()
       conversation.end()
       endCallback(this.response)
     })
