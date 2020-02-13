@@ -168,7 +168,8 @@ class AssistantResponseClass {
           lang: response.lastQuery.lang,
           useScreenOutput: response.lastQuery.useScreenOutput,
           session: response.lastQuery.session,
-          retry: true
+          retry: true,
+          nochime: true
         }, null)
         return
       }
