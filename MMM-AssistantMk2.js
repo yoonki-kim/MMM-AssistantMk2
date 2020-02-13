@@ -406,13 +406,14 @@ Module.register("MMM-AssistantMk2", {
       useHTML5: this.config.responseConfig.useHTML5,
       session: session,
       status: this.myStatus.old,
+      nochime: false
     }
     var options = Object.assign({}, options, payload)
     if (payload.hasOwnProperty("profile") && typeof this.config.profiles[payload.profile] !== "undefined") {
       options.profile = this.config.profiles[payload.profile]
     }
     setTimeout(() => {
-      this.assistantResponse.status(options.type, true)
+      this.assistantResponse.status(options.type, (options.nochime) ? false : true)
       this.sendSocketNotification("ACTIVATE_ASSISTANT", options)
       this.doPlugin("onAfterActivated", payload)
     }, this.config.responseConfig.delay * 1000)
