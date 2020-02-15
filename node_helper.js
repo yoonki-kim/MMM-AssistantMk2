@@ -35,7 +35,7 @@ module.exports = NodeHelper.create({
       var query = url.parse(req.url, true).query;
       if (query.query) {
         var queryToSend = JSON.parse(JSON.stringify(query.query))
-        self.sendSocketNotification("ASSISTANT_WEB", { type: "TEXT", key: queryToSend })
+        self.sendSocketNotification("ASSISTANT_WEB", { type: "TEXT", key: queryToSend, force: true, chimed: false })
         log(`[WEB] Send: ${queryToSend} to assistant`)
         return res.send(`[AMK2:WEB] Send: ${queryToSend} to assistant`)
       }

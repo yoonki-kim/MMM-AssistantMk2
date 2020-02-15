@@ -128,7 +128,7 @@ class AssistantResponseClass {
           key: null,
           lang: response.lastQuery.lang,
           useScreenOutput: response.lastQuery.useScreenOutput,
-          retry: true
+          force: true
         }, Date.now())
 
       } else {
@@ -170,7 +170,7 @@ class AssistantResponseClass {
           lang: response.lastQuery.lang,
           useScreenOutput: response.lastQuery.useScreenOutput,
           session: response.lastQuery.session,
-          retry: true,
+          force: true,
           chimed: false
         }, null)
         return
@@ -183,7 +183,7 @@ class AssistantResponseClass {
           key: null,
           lang: response.lastQuery.lang,
           useScreenOutput: response.lastQuery.useScreenOutput,
-          retry: true
+          force: true
         }, Date.now())
         this.loopCount += 1
         log("Loop Continuous Count: "+ this.loopCount + "/3")
@@ -291,7 +291,9 @@ class AssistantResponseClass {
               this.callbacks.assistantActivate({
                 type: "TEXT",
                 key: value,
-                profile: "default"
+                profile: "default",
+                force: true,
+                chimed: false
               }, Date.now())
             }
             wordbox.appendChild(word[item])

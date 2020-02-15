@@ -398,7 +398,7 @@ Module.register("MMM-AssistantMk2", {
   },
 
   assistantActivate: function(payload, session) {
-    if (this.myStatus.actual != "standby" && !payload.retry) return log("Assistant is busy.")
+    if (this.myStatus.actual != "standby" && !payload.force) return log("Assistant is busy.")
     this.doPlugin("onBeforeActivated", payload)
     this.lastQuery = null
     var options = {
