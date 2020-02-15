@@ -106,11 +106,11 @@ module.exports = NodeHelper.create({
       if (response.screen) {
         parser.parse(response, (result)=>{
           delete result.screen.originalContent
-          log(result)
+          log("ASSISTANT_RESULT", result)
           this.sendSocketNotification("ASSISTANT_RESULT", result)
         })
       } else {
-        log (response)
+        log ("ASSISTANT_RESULT", response)
         this.sendSocketNotification("ASSISTANT_RESULT", response)
       }
     })

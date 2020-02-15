@@ -14,9 +14,8 @@ var log = function() {
 }
 
 class SCREENPARSER {
-  constructor(config) {
+  constructor(config,debug) {
     this.config = config
-    var debug = (config.debug) ? config.debug : false
     if (debug == true) log = _log
   }
 
@@ -35,14 +34,6 @@ class SCREENPARSER {
       var url = "/modules/MMM-AssistantMk2/" + this.config.screenOutputCSS + "?seed=" + Date.now()
       str = str.replace(/<style>html,body[^<]+<\/style>/gmi, `<link rel="stylesheet" href="${url}">`)
 
-      /***Test HelpWord***/
-      // reset helpbox answser
-      response.screen.help = null
-      response.screen.trysay = null
-      response.screen.help = this.helpWord(str)
-      response.screen.trysay = this.helpTrySay(str)
-      /*******************/
-
       response.screen = this.parseScreenLink(response.screen)
       var ret = HTMLParser.parse(response.screen.originalContent)
       var dom = ret.querySelector(".popout-content")
@@ -54,6 +45,29 @@ class SCREENPARSER {
           response.screen.photos.push(photos[i].attributes["data-image-url"])
         }
       }
+
+      response.screen.help = []
+      var help = ret.querySelectorAll('.follow-up-query')
+      if (help) {
+        for (var i=0; i < help.length; i++) {
+          response.screen.help.push(help[i].attributes["data-follow-up-query"])
+          log("HELP:WORD", help[i].attributes["data-follow-up-query"])
+        }
+      }
+
+      response.screen.trysay = null
+      var trysay = ret.querySelectorAll(".assistant_response")
+      if (trysay) {
+        response.screen.trysay = trysay[0].rawText
+        log("TRYSAY:TRANSLATE", trysay[0].rawText)
+      }
+
+      // it can't do this work this node-html-parser
+      // because result ret.toString() != str
+      // I am looking for another require without touching the original str
+      // to just add this stupid link to the button class
+      //<button class="suggestion follow-up-query" aria-labelledby="suggestion_header suggestion_0" data-follow-up-query="Et Chewbacca ?" id="suggestion_0">Et Chewbacca ?</button>
+
       var contents = fs.writeFile(filePath, str, (error) => {
         if (error) {
          log("CONVERSATION:SCREENOUTPUT_CREATION_ERROR", error)
@@ -67,44 +81,6 @@ class SCREENPARSER {
       })
     }
   }
-
-  /** to eouia : how to simplify helpWord and HelpTrySay function !? **/
-
-  /** research "try to say..." words **/
-  helpWord(html) {
-    var result = [];
-    var exp1 = /(<div id="assistant-scroll-bar">[\s\S]*?<\/div>)/gi
-    var exp2 = /(id="suggestion_[\s\S]*?<)/gi
-    var exp3= /(>[\s\S]*?<)/gi
-    if (!html.match(exp1)) return null
-    html= html.match(exp1).toString()
-    html= html.match(exp2)
-
-    for (var i = 0; i < html.length; i++) {
-      var str = html[i].match(exp3).toString()
-      str = str.replace('<', "")
-      str = str.replace('>', "")
-      //log("HelpWord: ", str)
-      result.push(str);
-    }
-    return result;
-  }
-
-  /** research "try to say..." translation **/
-  helpTrySay(html) {
-    var exp1 = /(<span class="assistant_response" id="suggestion_header">[\s\S]*?<\/span>)/gi
-    var exp2= /(>[\s\S]*?<)/gi
-    if (!html.match(exp1)) return null
-    // search exp1 (try say section)
-    html = html.match(exp1).toString()
-    // extract "try to say" translation > return:  ">Try To Say...<"
-    html = html.match(exp2).toString()
-    // and delete < and >
-    html = html.replace('<', "")
-    html = html.replace('>', "")
-    return html
-  }
-  /************************/
 
   parseScreenLink(screen) {
     var html = screen.originalContent
@@ -126,8 +102,5 @@ class SCREENPARSER {
     return screen
   }
 }
-
-
-
 
 module.exports = SCREENPARSER

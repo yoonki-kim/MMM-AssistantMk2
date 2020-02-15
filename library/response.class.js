@@ -271,20 +271,6 @@ class AssistantResponseClass {
       this.showing = true
       var iframe = document.getElementById("AMK2_SCREENOUTPUT")
       iframe.src = this.makeUrl(response.screen.uri)
-      /*
-      // stupid clicking button
-      // don't find how do a callback
-      var test = document.getElementsByClassName('suggestion follow-up-query')
-      console.log("1 - !!!!!!!!! " , test.length)
-      console.log("2 - !!!!!!!!! ", test[0])
-      if (test.length > 0) {
-        test[0].addEventListener("click", this.callbacks.assistantActivate({
-          type: "MIC",
-          profile: "default"
-        }, Date.now()))
-      }
-      //<button class="suggestion follow-up-query" aria-labelledby="suggestion_header suggestion_0" data-follow-up-query="Et Chewbacca ?" id="suggestion_0">Et Chewbacca ?</button>
-      */
       var winh = document.getElementById("AMK2_HELPER")
       winh.classList.remove("hidden")
 
