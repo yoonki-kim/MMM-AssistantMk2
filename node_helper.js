@@ -10,6 +10,7 @@ const ScreenParser = require("./components/screenParser.js")
 const ActionManager = require("./components/actionManager.js")
 const ConstructorAddons = require("./components/constructorAddons.js")
 const playSound = require('play-sound')
+const url = require("url");
 
 var _log = function() {
   var context = "[AMK2]"
@@ -27,10 +28,27 @@ module.exports = NodeHelper.create({
     this.config = {}
   },
 
+  web: function() {
+    var self = this
+    this.expressApp.get("/activate/bytext", function(req, res) {
+      log("[WEB] hello Web!")
+      var query = url.parse(req.url, true).query;
+      if (query.query) {
+        var queryToSend = JSON.parse(JSON.stringify(query.query))
+        self.sendSocketNotification("ASSISTANT_WEB", { type: "TEXT", key: queryToSend })
+        log(`[WEB] Send: ${queryToSend} to assistant`)
+        return res.send(`[AMK2:WEB] Send: ${queryToSend} to assistant`)
+      }
+      else return res.send("[AMK2:WEB][ERROR] Query empty!")
+    })
+    log ("ASSISTANT_WEB Started")
+  },
+
   socketNotificationReceived: function (noti, payload) {
     switch (noti) {
       case "INIT":
         this.initialize(payload)
+        this.web()
         break
       case "ACTIVATE_ASSISTANT":
         this.activateAssistant(payload)

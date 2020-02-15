@@ -326,6 +326,8 @@ Module.register("MMM-AssistantMk2", {
         log("Initialized.")
         this.assistantResponse.status("standby")
         this.doPlugin("onReady")
+        // if the force is with me ! (ahahah)
+        if (this.config.developer) this.assistantActivate({ type: "TEXT", key: "Who is yoda ?"}, Date.now())
         break
       case "ASSISTANT_RESULT":
         if (payload.session && this.session.hasOwnProperty(payload.session)) {
@@ -351,6 +353,9 @@ Module.register("MMM-AssistantMk2", {
       case "ASSISTANT_AUDIO_RESULT_ENDED":
         this.doPlugin("onAfterAudioResponse")
         this.assistantResponse.end()
+        break
+      case "ASSISTANT_WEB":
+        if (payload) this.assistantActivate(payload, Date.now())
         break
     }
     this.doPlugin("onAfterSocketNotificationReceived", {notification:noti, payload:payload})

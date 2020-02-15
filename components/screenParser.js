@@ -1,4 +1,5 @@
 const HTMLParser = require("node-html-parser")
+const Cheerio = require("cheerio")
 const path = require("path")
 const fs = require("fs")
 const Entities = require('html-entities').AllHtmlEntities
@@ -57,17 +58,28 @@ class SCREENPARSER {
 
       response.screen.trysay = null
       var trysay = ret.querySelectorAll(".assistant_response")
-      if (trysay) {
+      if (trysay && trysay[0]) {
         response.screen.trysay = trysay[0].rawText
         log("TRYSAY:TRANSLATE", trysay[0].rawText)
       }
 
-      // it can't do this work this node-html-parser
-      // because result ret.toString() != str
-      // I am looking for another require without touching the original str
-      // to just add this stupid link to the button class
-      //<button class="suggestion follow-up-query" aria-labelledby="suggestion_header suggestion_0" data-follow-up-query="Et Chewbacca ?" id="suggestion_0">Et Chewbacca ?</button>
+      var cheerio = Cheerio.load(str)
+      var length = cheerio(".follow-up-query").length // length of keyword
+      if (length) { // if exist
+        var add= []
+        for (var x = 0; x < length; x++) {
+          add[x]= "location.href='http://127.0.0.1:8080/activate/bytext/?query=" + response.screen.help[x] + "'";
+          //console.log("add:", add[x])
+          var sug = "#suggestion_" + x
+          //console.log("sug", sug)
+          var change= cheerio(sug) // search with suggestion number
+          change = change.attr("onClick",add[x]) // add click link to ASSISTANT_WEB
+          //console.log("change:", change)
+        }
+      }
 
+      str = cheerio.html() // store change
+      //ready for write ! let's go ...
       var contents = fs.writeFile(filePath, str, (error) => {
         if (error) {
          log("CONVERSATION:SCREENOUTPUT_CREATION_ERROR", error)
