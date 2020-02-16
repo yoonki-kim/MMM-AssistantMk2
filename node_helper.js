@@ -28,27 +28,10 @@ module.exports = NodeHelper.create({
     this.config = {}
   },
 
-  web: function() {
-    var self = this
-    this.expressApp.get("/activate/bytext", function(req, res) {
-      log("[WEB] hello Web!")
-      var query = url.parse(req.url, true).query;
-      if (query.query) {
-        var queryToSend = JSON.parse(JSON.stringify(query.query))
-        self.sendSocketNotification("ASSISTANT_WEB", { type: "TEXT", key: queryToSend, force: true, chimed: false })
-        log(`[WEB] Send: ${queryToSend} to assistant`)
-        return res.send(`[AMK2:WEB] Send: ${queryToSend} to assistant`)
-      }
-      else return res.send("[AMK2:WEB][ERROR] Query empty!")
-    })
-    log ("ASSISTANT_WEB Started")
-  },
-
   socketNotificationReceived: function (noti, payload) {
     switch (noti) {
       case "INIT":
         this.initialize(payload)
-        this.web()
         break
       case "ACTIVATE_ASSISTANT":
         this.activateAssistant(payload)
@@ -100,8 +83,8 @@ module.exports = NodeHelper.create({
     assistantConfig.session = payload.session
     assistantConfig.lang = (payload.lang) ? payload.lang : ((payload.profile.lang) ? payload.profile.lang : null)
     assistantConfig.useScreenOutput = payload.useScreenOutput
-    assistantConfig.useAudioOutput = payload.useAudioOutput // ?
-    assistantConfig.useHTML5 = payload.useHTML5 // ?
+    assistantConfig.useAudioOutput = payload.useAudioOutput
+    assistantConfig.useHTML5 = payload.useHTML5
     assistantConfig.micConfig = this.config.micConfig
     this.assistant = new Assistant(assistantConfig, (obj)=>{this.tunnel(obj)})
 
@@ -167,6 +150,7 @@ module.exports = NodeHelper.create({
       log( "Use " +  this.config.responseConfig.playProgram + " for audio response")
     }
     else log("Use HTML5 for audio response")
+    this.assistantWeb()
     console.log("[AMK2] AssistantMk2 is initialized.")
     if (this.config.addons) this.addons = new ConstructorAddons(this.config)
   },
@@ -214,4 +198,28 @@ module.exports = NodeHelper.create({
     }
   },
 
+  /** Assistant Web **/
+  /** http://127.0.0.1:8080/activatebytext/?query=<request> **/
+  /** For Fullscreen UI keyword link **/
+  assistantWeb: function() {
+    var self = this
+    this.expressApp.get("/activatebytext", function(req, res) {
+      var response = {
+        success: true
+      }
+      if (self.config.debug) console.log("[AMK2:WEB] Hello Web!")
+      var query = url.parse(req.url, true).query
+      if (query.query) {
+        response.query = JSON.parse(JSON.stringify(query.query))
+        self.sendSocketNotification("ASSISTANT_WEB", response.query)
+        if (self.config.debug) console.log(`[AMK2:WEB][SEND] ${response.query}`)
+      } else {
+        response.success= false,
+        response.error= "query_is_empty"
+        if (self.config.debug) console.log(`[AMK2:WEB][ERROR] ${response.error}`)
+      }
+      return res.send(response)
+    })
+    if (this.config.debug) console.log ("[AMK2:WEB] ASSISTANT_WEB Started")
+  }
 })

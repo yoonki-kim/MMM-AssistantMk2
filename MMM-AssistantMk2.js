@@ -355,7 +355,12 @@ Module.register("MMM-AssistantMk2", {
         this.assistantResponse.end()
         break
       case "ASSISTANT_WEB":
-        if (payload) this.assistantActivate(payload, Date.now())
+        if (payload) {
+          this.assistantResponse.setSayMode(false)
+          this.assistantResponse.setSecret(false)
+          this.assistantResponse.fullscreen(true)
+          this.assistantActivate({ type: "TEXT", key: payload, force: true, chimed: false }, Date.now())
+        }
         break
     }
     this.doPlugin("onAfterSocketNotificationReceived", {notification:noti, payload:payload})

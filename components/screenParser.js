@@ -68,7 +68,7 @@ class SCREENPARSER {
       if (length) { // if exist
         var add= []
         for (var x = 0; x < length; x++) {
-          add[x]= "location.href='http://127.0.0.1:8080/activate/bytext/?query=" + response.screen.help[x] + "'";
+          add[x]= "location.href='http://127.0.0.1:8080/activatebytext/?query=" + response.screen.help[x] + "'";
           //console.log("add:", add[x])
           var sug = "#suggestion_" + x
           //console.log("sug", sug)
