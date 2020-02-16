@@ -1,6 +1,6 @@
 #!/bin/bash
 # +--------------------------------+
-# | switch to dev branch           |
+# | switch to master branch        |
 # | Rev 1.0.0                      |
 # +--------------------------------+
 
@@ -22,7 +22,7 @@ cd "$Installer_dir"
 
 source utils.sh
 
-Installer_info "Welcome to AMk2 switch to dev branch script"
+Installer_info "Welcome to AMk2 switch to master branch script"
 Installer_warning "This script will erase all AMK2 core to sync with master branch"
 Installer_error "If you have personal recipes, SAVE it before launch this script."
 Installer_error "credentials.json, token.json and profiles will be not erased"
@@ -35,10 +35,9 @@ rm -rf README.md *.js update recipes resources translations components library u
 Installer_success "Done."
 echo
 Installer_info "Upgrading AMk2..."
-git branch dev
-git checkout -f dev
-git pull origin dev
+git branch master
+git checkout -f master
+git pull origin master
 Installer_success "Done."
 echo
 npm install
-
