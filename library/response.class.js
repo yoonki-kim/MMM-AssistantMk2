@@ -171,7 +171,7 @@ class AssistantResponseClass {
           useScreenOutput: response.lastQuery.useScreenOutput,
           session: response.lastQuery.session,
           force: true,
-          chimed: false
+          chime: false
         }, null)
         return
       }
@@ -293,7 +293,7 @@ class AssistantResponseClass {
                 key: value,
                 profile: "default",
                 force: true,
-                chimed: false
+                chime: false
               }, Date.now())
             }
             wordbox.appendChild(word[item])

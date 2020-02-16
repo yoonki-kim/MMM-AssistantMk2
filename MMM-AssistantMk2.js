@@ -359,7 +359,7 @@ Module.register("MMM-AssistantMk2", {
           this.assistantResponse.setSayMode(false)
           this.assistantResponse.setSecret(false)
           this.assistantResponse.fullscreen(true)
-          this.assistantActivate({ type: "TEXT", key: payload, force: true, chimed: false }, Date.now())
+          this.assistantActivate({ type: "TEXT", key: payload, force: true, chime: false }, Date.now())
         }
         break
     }
@@ -416,14 +416,14 @@ Module.register("MMM-AssistantMk2", {
       useHTML5: this.config.responseConfig.useHTML5,
       session: session,
       status: this.myStatus.old,
-      chimed: true
+      chime: true
     }
     var options = Object.assign({}, options, payload)
     if (payload.hasOwnProperty("profile") && typeof this.config.profiles[payload.profile] !== "undefined") {
       options.profile = this.config.profiles[payload.profile]
     }
     setTimeout(() => {
-      this.assistantResponse.status(options.type, (options.chimed) ? true : false)
+      this.assistantResponse.status(options.type, (options.chime) ? true : false)
       this.sendSocketNotification("ACTIVATE_ASSISTANT", options)
       this.doPlugin("onAfterActivated", payload)
     }, this.config.responseConfig.delay * 1000)
