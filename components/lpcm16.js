@@ -25,7 +25,8 @@ class LPCM16 {
       thresholdEnd: null,
       silence: '1.0',
       verbose: false,
-      recorder: 'rec'
+      recorder: 'rec',
+      debug: false
     }
     this.options = Object.assign(defaults, options)
     this.stream = null
@@ -33,7 +34,7 @@ class LPCM16 {
     this.afterCallback = afterCallback
     this.cp = null
     this.terminated = false
-    var debug = (this.options.verbose) ? this.options.verbose : false
+    var debug = (this.options.debug) ? this.options.debug : false
     if (debug == true) log = _log
   }
 
@@ -115,7 +116,7 @@ class LPCM16 {
     this.cp.stderr.on('data', (data) => {
       var dataToString = data.toString()
       if (dataToString.search("WARN" > -1)) {
-        return
+        return console.log("[AMK2:16][WARN] " + dataToString)
       } else {
         this.stream.destroy()
         return this.afterCallback(data.toString())
@@ -127,14 +128,12 @@ class LPCM16 {
     })
 
     this.stream = this.cp.stdout
-    if (options.verbose) {
-      log(
+    log(
         'START LISTENING',
         options.channels,
         'channels with sample rate',
         options.sampleRate
-      )
-    }
+    )
     this.stream.on('data', (data) => {
       if (options.verbose) log("Listening " + data.length + " bytes")
     })

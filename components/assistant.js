@@ -111,7 +111,8 @@ class ASSISTANT {
         recorder: "sox",
         threshold: 0,
         sampleRate: 16000,
-        verbose:this.debug
+        verbose: false,
+        debug: this.debug
       }
 
       this.mic = new Record(Object.assign({}, defaultOption, this.micConfig),conversation, (err)=>{ this.afterListening(err) })
