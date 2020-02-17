@@ -35,7 +35,7 @@ rm -rf README.md *.js update recipes resources translations components library u
 Installer_success "Done."
 echo
 Installer_info "Upgrading AMk2..."
-git branch dev
+
 git checkout -f dev
 git pull origin dev
 Installer_success "Done."
