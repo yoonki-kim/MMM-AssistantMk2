@@ -146,7 +146,8 @@ module.exports = NodeHelper.create({
     this.cleanUptmp()
     log("Response delay is set to " + this.config.responseConfig.delay + ((this.config.responseConfig.delay > 1) ? " seconds" : " second"))
     if (!this.config.responseConfig.useHTML5) {
-      this.player = playSound(opts = {"player": this.config.responseConfig.playProgram})
+      let opts = {"player": this.config.responseConfig.playProgram}
+      this.player = playSound(opts)
       log( "Use " +  this.config.responseConfig.playProgram + " for audio response")
     }
     else log("Use HTML5 for audio response")
