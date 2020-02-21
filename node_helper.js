@@ -109,10 +109,14 @@ module.exports = NodeHelper.create({
           delete result.screen.originalContent
           log("ASSISTANT_RESULT", result)
           this.sendSocketNotification("ASSISTANT_RESULT", result)
+          if (this.config.addons)
+            this.addons.sendToAddons("ASSISTANT_RESULT",result,(send,params)=>{ this.addonsCallback(send,params) })
         })
       } else {
         log ("ASSISTANT_RESULT", response)
         this.sendSocketNotification("ASSISTANT_RESULT", response)
+        if (this.config.addons)
+          this.addons.sendToAddons("ASSISTANT_RESULT",response,(send,params)=>{ this.addonsCallback(send,params) })
       }
     })
   },
