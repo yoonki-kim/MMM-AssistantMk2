@@ -44,7 +44,8 @@ Module.register("MMM-AssistantMk2", {
         close: "Google_beep_close.mp3",
       },
       // false - animated icons, 'standby' - static icons only for standby state, true - all static icons
-      useStaticIcons: false
+      useStaticIcons: false,
+      useA2D: true
     },
     micConfig: {
       recorder: "arecord",
@@ -330,6 +331,7 @@ Module.register("MMM-AssistantMk2", {
         if (this.config.developer) this.assistantActivate({ type: "TEXT", key: "Who is yoda ?"}, Date.now())
         break
       case "ASSISTANT_RESULT":
+        if (this.config.responseConfig.useA2D) this.Assistant2Display(payload)
         if (payload.session && this.session.hasOwnProperty(payload.session)) {
           var session = this.session[payload.session]
           if (typeof session.callback == "function") {
@@ -688,6 +690,28 @@ Module.register("MMM-AssistantMk2", {
         } , 4000)
       }, 1000 + i)
       i += 4000
+    }
+  },
+
+/** Send needed part of response screen to MMM-Assistant2Display **/
+
+  Assistant2Display: function(response) {
+    var opt = {
+      "photos": null,
+      "urls": null,
+      "transcription":null,
+      "trysay": null,
+      "help": null
+    }
+
+    if (response.screen && (response.screen.links.length > 0 || response.screen.photos.length > 0)) {
+      opt.photos = response.screen.photos
+      opt.urls= response.screen.links
+      opt.transcription= response.transcription
+      opt.trysay= response.screen.trysay
+      opt.help= response.screen.help
+      log("[A2D] Send:", opt)
+      this.sendNotification("ASSISTANT2DISPLAY", opt)
     }
   }
 })

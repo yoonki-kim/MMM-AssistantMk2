@@ -109,14 +109,10 @@ module.exports = NodeHelper.create({
           delete result.screen.originalContent
           log("ASSISTANT_RESULT", result)
           this.sendSocketNotification("ASSISTANT_RESULT", result)
-          if (this.config.addons)
-            this.addons.sendToAddons("ASSISTANT_RESULT",result,(send,params)=>{ this.addonsCallback(send,params) })
         })
       } else {
         log ("ASSISTANT_RESULT", response)
         this.sendSocketNotification("ASSISTANT_RESULT", response)
-        if (this.config.addons)
-          this.addons.sendToAddons("ASSISTANT_RESULT",response,(send,params)=>{ this.addonsCallback(send,params) })
       }
     })
   },
@@ -156,6 +152,7 @@ module.exports = NodeHelper.create({
     }
     else log("Use HTML5 for audio response")
     this.assistantWeb()
+    if (this.config.responseConfig.useA2D) log ("Assistant2Display Started")
     console.log("[AMK2] AssistantMk2 is initialized.")
     if (this.config.addons) this.addons = new ConstructorAddons(this.config)
   },
