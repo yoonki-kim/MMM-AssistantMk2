@@ -45,7 +45,6 @@ Module.register("MMM-AssistantMk2", {
       },
       // false - animated icons, 'standby' - static icons only for standby state, true - all static icons
       useStaticIcons: false,
-      useA2D: true
     },
     micConfig: {
       recorder: "arecord",
@@ -328,10 +327,10 @@ Module.register("MMM-AssistantMk2", {
         this.assistantResponse.status("standby")
         this.doPlugin("onReady")
         // if the force is with me ! (ahahah)
-        if (this.config.developer) this.assistantActivate({ type: "TEXT", key: "Who is yoda ?"}, Date.now())
+        if (this.config.developer) this.assistantActivate({ type: "TEXT", key: "Who is YODA ?"}, Date.now())
         break
       case "ASSISTANT_RESULT":
-        if (this.config.responseConfig.useA2D) this.Assistant2Display(payload)
+        if (this.config.addons) this.Assistant2Display(payload)
         if (payload.session && this.session.hasOwnProperty(payload.session)) {
           var session = this.session[payload.session]
           if (typeof session.callback == "function") {
@@ -710,7 +709,7 @@ Module.register("MMM-AssistantMk2", {
       opt.transcription= response.transcription
       opt.trysay= response.screen.trysay
       opt.help= response.screen.help
-      log("[A2D] Send:", opt)
+      log("Send A2D Response.")
       this.sendNotification("ASSISTANT2DISPLAY", opt)
     }
   }
