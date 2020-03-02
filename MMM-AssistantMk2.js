@@ -98,10 +98,6 @@ Module.register("MMM-AssistantMk2", {
        "/modules/MMM-AssistantMk2/library/response.class.js",
        "/modules/MMM-AssistantMk2/ui/" + ui
       ]
-    } else {
-      return [
-       "/modules/MMM-AssistantMk2/library/response.class.js"
-      ]
     }
   },
 
