@@ -4,7 +4,7 @@
 
 ## NEW UPDATES
 
-**3.1.1-0 (XX/03/2020)**
+**3.1.1-0 (02/03/2020)**
  * **ADD**: add new function for addons-recipe (socketExec, onSocketExec)
  * **BUG**: continous conversation bug - infinite loop on no user response
  * **BUG**: double chimed on TRANSCRIPTION_FAILS retry
