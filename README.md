@@ -4,12 +4,22 @@
 
 ## NEW UPDATES
 
-**3.1.0-3 (07/02/2002)**
+**3.1.1-0 (XX/03/2020)**
+ * **ADD**: add new function for addons-recipe (socketExec, onSocketExec)
+ * **BUG**: continous conversation bug - infinite loop on no user response
+ * **BUG**: double chimed on TRANSCRIPTION_FAILS retry
+ * **ADD**: ability to set no chime on activate assistant
+ * **ADD**: touching the keyword "try to say" activates the assistant for the suggested search (Fullscreen and Classic2 ui)
+ * **ADD**: ASSISTANT_WEB server for activate with keyword
+ * **MOTIFY** : search KEYWORD/ TRYTOSAY translation script to improve performance
+ * **BUG**: correct screen parser log
+
+**3.1.0-3 (07/02/2020)**
  * **BUG**: correct issue with no response audio and play-sound (freeze)
  
 **3.1.0-2 (05/02/2020)**
- * **DELETE/MOVE:** addonsConfig:{} is noved to addons/addons.js
- * **ADD/CONFIG:** addons: BOOLEAN to activate or not addons.js
+ * **DELETE/MOVE**: addonsConfig:{} is noved to addons/addons.js
+ * **ADD/CONFIG**: addons: BOOLEAN to activate or not addons.js
  * **ADD**: touch icon to activate assistant
 
 ## [**Preview Video**](https://youtu.be/e7Xg95mL8JE)

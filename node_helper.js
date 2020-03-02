@@ -10,6 +10,7 @@ const ScreenParser = require("./components/screenParser.js")
 const ActionManager = require("./components/actionManager.js")
 const ConstructorAddons = require("./components/constructorAddons.js")
 const playSound = require('play-sound')
+const url = require("url");
 
 var _log = function() {
   var context = "[AMK2]"
@@ -82,8 +83,8 @@ module.exports = NodeHelper.create({
     assistantConfig.session = payload.session
     assistantConfig.lang = (payload.lang) ? payload.lang : ((payload.profile.lang) ? payload.profile.lang : null)
     assistantConfig.useScreenOutput = payload.useScreenOutput
-    assistantConfig.useAudioOutput = payload.useAudioOutput // ?
-    assistantConfig.useHTML5 = payload.useHTML5 // ?
+    assistantConfig.useAudioOutput = payload.useAudioOutput
+    assistantConfig.useHTML5 = payload.useHTML5
     assistantConfig.micConfig = this.config.micConfig
     this.assistant = new Assistant(assistantConfig, (obj)=>{this.tunnel(obj)})
 
@@ -106,11 +107,11 @@ module.exports = NodeHelper.create({
       if (response.screen) {
         parser.parse(response, (result)=>{
           delete result.screen.originalContent
-          log(result)
+          log("ASSISTANT_RESULT", result)
           this.sendSocketNotification("ASSISTANT_RESULT", result)
         })
       } else {
-        log (response)
+        log ("ASSISTANT_RESULT", response)
         this.sendSocketNotification("ASSISTANT_RESULT", response)
       }
     })
@@ -145,10 +146,13 @@ module.exports = NodeHelper.create({
     this.cleanUptmp()
     log("Response delay is set to " + this.config.responseConfig.delay + ((this.config.responseConfig.delay > 1) ? " seconds" : " second"))
     if (!this.config.responseConfig.useHTML5) {
-      this.player = playSound(opts = {"player": this.config.responseConfig.playProgram})
+      let opts = {"player": this.config.responseConfig.playProgram}
+      this.player = playSound(opts)
       log( "Use " +  this.config.responseConfig.playProgram + " for audio response")
     }
     else log("Use HTML5 for audio response")
+    this.assistantWeb()
+    if (this.config.responseConfig.useA2D) log ("Assistant2Display Started")
     console.log("[AMK2] AssistantMk2 is initialized.")
     if (this.config.addons) this.addons = new ConstructorAddons(this.config)
   },
@@ -196,4 +200,28 @@ module.exports = NodeHelper.create({
     }
   },
 
+  /** Assistant Web **/
+  /** http://127.0.0.1:8080/activatebytext/?query=<request> **/
+  /** For Fullscreen UI keyword link **/
+  assistantWeb: function() {
+    var self = this
+    this.expressApp.get("/activatebytext", function(req, res) {
+      var response = {
+        success: true
+      }
+      if (self.config.debug) console.log("[AMK2:WEB] Hello Web!")
+      var query = url.parse(req.url, true).query
+      if (query.query) {
+        response.query = JSON.parse(JSON.stringify(query.query))
+        self.sendSocketNotification("ASSISTANT_WEB", response.query)
+        if (self.config.debug) console.log(`[AMK2:WEB][SEND] ${response.query}`)
+      } else {
+        response.success= false,
+        response.error= "query_is_empty"
+        if (self.config.debug) console.log(`[AMK2:WEB][ERROR] ${response.error}`)
+      }
+      return res.send(response)
+    })
+    if (this.config.debug) console.log ("[AMK2:WEB] ASSISTANT_WEB Started")
+  }
 })

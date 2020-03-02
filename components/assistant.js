@@ -21,7 +21,6 @@ class ASSISTANT {
     var debug = (config.debug) ? config.debug : false
     this.session = config.session
     this.modulePath = config.modulePath
-    this.screenZoom = config.screenZoom
     this.micConfig = config.micConfig
     this.useAudioOutput = config.useAudioOutput
 
@@ -52,8 +51,6 @@ class ASSISTANT {
     this.useScreenOutput = config.useScreenOutput
     if (debug == true) log = _log
     this.debug = debug
-    this.timer = null
-    this.timeout = false
     this.micMode = false
     this.tunnel = tunnel
     this.mic = null
@@ -114,9 +111,10 @@ class ASSISTANT {
         recorder: "sox",
         threshold: 0,
         sampleRate: 16000,
-        verbose:this.debug
+        verbose: false,
+        debug: this.debug
       }
-      //console.log(this.micConfig)
+
       this.mic = new Record(Object.assign({}, defaultOption, this.micConfig),conversation, (err)=>{ this.afterListening(err) })
       log("MIC:RECORDING START.")
       this.mic.start()
@@ -162,11 +160,6 @@ class ASSISTANT {
     })
     .on('ended', (error, continueConversation) => {
       log("CONVERSATION_ALL_RESPONSES_RECEIVED")
-      clearTimeout(this.timer)
-      this.timer = null
-      if (this.timeout) {
-        error = "Timeout: Too late response."
-      }
       if (error) {
         log('CONVERSATION_END:ERROR', error)
         this.response.error = error
@@ -198,11 +191,12 @@ class ASSISTANT {
     })
     .on('error', (error) => {
       if (this.useAudioOutput) b2m.close()
-      log("CONVERSATION_ERROR :", error)
+      log("CONVERSATION_ERROR: " + error)
       this.response.error = "CONVERSATION_ERROR"
       if (error.code == "14") {
         log (">> This error might happen when improper configuration or invalid Mic setup.")
       }
+      this.stopListening()
       conversation.end()
       endCallback(this.response)
     })

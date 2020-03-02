@@ -13,7 +13,7 @@ class AssistantResponseClass {
     this.hookChimed = false
     this.myStatus = { "actual" : "standby" , "old" : "standby" }
     this.sayMode = false
-
+    this.loopCount = 0
     if (this.config.useHTML5) {
       this.audioResponse = new Audio()
       this.audioResponse.autoplay = true
@@ -119,6 +119,7 @@ class AssistantResponseClass {
       var response = this.response
       this.response = null
       if (response && response.continue) {
+        this.loopCount = 0
         this.status("continue")
         log("Continuous Conversation")
         this.callbacks.assistantActivate({
@@ -127,7 +128,7 @@ class AssistantResponseClass {
           key: null,
           lang: response.lastQuery.lang,
           useScreenOutput: response.lastQuery.useScreenOutput,
-          retry: true
+          force: true
         }, Date.now())
 
       } else {
@@ -138,9 +139,11 @@ class AssistantResponseClass {
         clearTimeout(this.aliveTimer)
         this.aliveTimer = null
         this.aliveTimer = setTimeout(()=>{
-          this.stopResponse(()=>{
-            this.fullscreen(false, this.myStatus)
-          })
+          if (!this.config.developer) {
+            this.stopResponse(()=>{
+              this.fullscreen(false, this.myStatus)
+            })
+          }
         }, this.config.timer)
       }
     } else {
@@ -167,11 +170,12 @@ class AssistantResponseClass {
           lang: response.lastQuery.lang,
           useScreenOutput: response.lastQuery.useScreenOutput,
           session: response.lastQuery.session,
-          retry: true
+          force: true,
+          chime: false
         }, null)
         return
       }
-      if (response.error == "NO_RESPONSE" && response.lastQuery.status == "continue") {
+      if (response.error == "NO_RESPONSE" && response.lastQuery.status == "continue" && this.loopCount < 3) {
         this.status("continue")
         this.callbacks.assistantActivate({
           type: "MIC",
@@ -179,8 +183,10 @@ class AssistantResponseClass {
           key: null,
           lang: response.lastQuery.lang,
           useScreenOutput: response.lastQuery.useScreenOutput,
-          retry: true
+          force: true
         }, Date.now())
+        this.loopCount += 1
+        log("Loop Continuous Count: "+ this.loopCount + "/3")
         return
       }
       this.showError(this.callbacks.translate(response.error))
@@ -281,6 +287,15 @@ class AssistantResponseClass {
             word[item] = document.createElement("div")
             word[item].id = "AMK2_WORD"
             word[item].textContent = value
+            word[item].onclick = (e) => {
+              this.callbacks.assistantActivate({
+                type: "TEXT",
+                key: value,
+                profile: "default",
+                force: true,
+                chime: false
+              }, Date.now())
+            }
             wordbox.appendChild(word[item])
           }
         }

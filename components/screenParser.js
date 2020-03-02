@@ -1,4 +1,5 @@
 const HTMLParser = require("node-html-parser")
+const Cheerio = require("cheerio")
 const path = require("path")
 const fs = require("fs")
 const Entities = require('html-entities').AllHtmlEntities
@@ -14,9 +15,8 @@ var log = function() {
 }
 
 class SCREENPARSER {
-  constructor(config) {
+  constructor(config,debug) {
     this.config = config
-    var debug = (config.debug) ? config.debug : false
     if (debug == true) log = _log
   }
 
@@ -35,14 +35,6 @@ class SCREENPARSER {
       var url = "/modules/MMM-AssistantMk2/" + this.config.screenOutputCSS + "?seed=" + Date.now()
       str = str.replace(/<style>html,body[^<]+<\/style>/gmi, `<link rel="stylesheet" href="${url}">`)
 
-      /***Test HelpWord***/
-      // reset helpbox answser
-      response.screen.help = null
-      response.screen.trysay = null
-      response.screen.help = this.helpWord(str)
-      response.screen.trysay = this.helpTrySay(str)
-      /*******************/
-
       response.screen = this.parseScreenLink(response.screen)
       var ret = HTMLParser.parse(response.screen.originalContent)
       var dom = ret.querySelector(".popout-content")
@@ -54,6 +46,40 @@ class SCREENPARSER {
           response.screen.photos.push(photos[i].attributes["data-image-url"])
         }
       }
+
+      response.screen.help = []
+      var help = ret.querySelectorAll('.follow-up-query')
+      if (help) {
+        for (var i=0; i < help.length; i++) {
+          response.screen.help.push(help[i].attributes["data-follow-up-query"])
+          log("HELP:WORD", help[i].attributes["data-follow-up-query"])
+        }
+      }
+
+      response.screen.trysay = null
+      var trysay = ret.querySelectorAll(".assistant_response")
+      if (trysay && trysay[0]) {
+        response.screen.trysay = trysay[0].rawText
+        log("TRYSAY:TRANSLATE", trysay[0].rawText)
+      }
+
+      var cheerio = Cheerio.load(str)
+      var length = cheerio(".follow-up-query").length // length of keyword
+      if (length) { // if exist
+        var add= []
+        for (var x = 0; x < length; x++) {
+          add[x]= "location.href='http://127.0.0.1:8080/activatebytext/?query=" + response.screen.help[x] + "'";
+          //console.log("add:", add[x])
+          var sug = "#suggestion_" + x
+          //console.log("sug", sug)
+          var change= cheerio(sug) // search with suggestion number
+          change = change.attr("onClick",add[x]) // add click link to ASSISTANT_WEB
+          //console.log("change:", change)
+        }
+      }
+
+      str = cheerio.html() // store change
+      //ready for write ! let's go ...
       var contents = fs.writeFile(filePath, str, (error) => {
         if (error) {
          log("CONVERSATION:SCREENOUTPUT_CREATION_ERROR", error)
@@ -67,44 +93,6 @@ class SCREENPARSER {
       })
     }
   }
-
-  /** to eouia : how to simplify helpWord and HelpTrySay function !? **/
-
-  /** research "try to say..." words **/
-  helpWord(html) {
-    var result = [];
-    var exp1 = /(<div id="assistant-scroll-bar">[\s\S]*?<\/div>)/gi
-    var exp2 = /(id="suggestion_[\s\S]*?<)/gi
-    var exp3= /(>[\s\S]*?<)/gi
-    if (!html.match(exp1)) return null
-    html= html.match(exp1).toString()
-    html= html.match(exp2)
-
-    for (var i = 0; i < html.length; i++) {
-      var str = html[i].match(exp3).toString()
-      str = str.replace('<', "")
-      str = str.replace('>', "")
-      //log("HelpWord: ", str)
-      result.push(str);
-    }
-    return result;
-  }
-
-  /** research "try to say..." translation **/
-  helpTrySay(html) {
-    var exp1 = /(<span class="assistant_response" id="suggestion_header">[\s\S]*?<\/span>)/gi
-    var exp2= /(>[\s\S]*?<)/gi
-    if (!html.match(exp1)) return null
-    // search exp1 (try say section)
-    html = html.match(exp1).toString()
-    // extract "try to say" translation > return:  ">Try To Say...<"
-    html = html.match(exp2).toString()
-    // and delete < and >
-    html = html.replace('<', "")
-    html = html.replace('>', "")
-    return html
-  }
-  /************************/
 
   parseScreenLink(screen) {
     var html = screen.originalContent
@@ -126,8 +114,5 @@ class SCREENPARSER {
     return screen
   }
 }
-
-
-
 
 module.exports = SCREENPARSER
