@@ -156,6 +156,9 @@ Module.register("MMM-AssistantMk2", {
       },
       playSound: (sound) => {
         return this.playSound(sound)
+      },
+      playChime: (chime) => {
+        return this.playChime(chime)
       }
     }
     this.assistantResponse = new AssistantResponse(this.helperConfig["responseConfig"], callbacks)
@@ -163,6 +166,10 @@ Module.register("MMM-AssistantMk2", {
 
   playSound: function(sound) {
     this.sendSocketNotification("PLAY_SOUND", sound)
+  },
+
+  playChime: function(chime) {
+    this.sendSocketNotification("PLAY_CHIME", chime)
   },
 
   doPlugin: function(pluginName, args) {

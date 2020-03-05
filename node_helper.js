@@ -52,9 +52,13 @@ module.exports = NodeHelper.create({
           })
         })
         break
+      case "PLAY_CHIME":
+        var filepath = path.resolve(__dirname, payload)
+        this.playAudioResponse(filepath,true)
+        break
       case "PLAY_SOUND":
         var filepath = path.resolve(__dirname, payload)
-        this.playAudioRespone(filepath,true)
+        this.playAudioResponse(filepath)
         break
     }
     if (this.config.addons)
@@ -103,7 +107,7 @@ module.exports = NodeHelper.create({
         }
       }
       if (response.error == "TOO_SHORT" && response) response.error = null
-      if (response.audio && response.audio.path && !assistantConfig.useHTML5) this.playAudioRespone(response.audio.path);
+      //if (response.audio && response.audio.path && !assistantConfig.useHTML5) this.playAudioRespone(response.audio.path);
       if (response.screen) {
         parser.parse(response, (result)=>{
           delete result.screen.originalContent
@@ -116,12 +120,39 @@ module.exports = NodeHelper.create({
       }
     })
   },
-
+/*
   playAudioRespone: function(file,chimed) {
     if (!file) return
     if ((this.config.responseConfig.useChime && chimed) || this.config.responseConfig.useAudioOutput) {
       log("Sound: Audio starts with " + this.config.responseConfig.playProgram, file)
       this.player.play(file, (err) => {
+        if (err) {
+          log("Sound: Error", err)
+        } else {
+          log("Sound: Audio ends")
+        }
+        if (!chimed) this.sendSocketNotification("ASSISTANT_AUDIO_RESULT_ENDED")
+      })
+    }
+  },
+*/
+
+  playAudioResponse: function(file,chimed) {
+    if (!file) return
+    var self = this
+    var opt = {}
+    var options = null
+    if ((this.config.responseConfig.useChime && chimed) || this.config.responseConfig.useAudioOutput) {
+      var program = this.config.responseConfig.playProgram
+
+      if (program == "cvlc") {
+        options = "--play-and-exit"
+        opt[program] = [options]
+      }
+      log("Sound: Audio starts with " + program + " " + (options ? options : ""), file)
+
+      //log("opt", opt)
+      this.player.play(file, opt, (err) => {
         if (err) {
           log("Sound: Error", err)
         } else {

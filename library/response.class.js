@@ -57,7 +57,7 @@ class AssistantResponseClass {
       if (this.config.useHTML5) {
         this.audioChime.src = "modules/MMM-AssistantMk2/resources/" + this.config.chime[sound]
       } else {
-        this.callbacks.playSound("resources/" + this.config.chime[sound])
+        this.callbacks.playChime("resources/" + this.config.chime[sound])
       }
     }
   }
@@ -93,7 +93,6 @@ class AssistantResponseClass {
     if (this.config.useStaticIcons) {
       dom.classList.add(this.config.useStaticIcons === "standby" ? "static-standby" : "static")
     }
-    //console.warn(this.config.useStaticIcons)
     return dom
   }
 
@@ -198,22 +197,12 @@ class AssistantResponseClass {
       this.showing = true
       this.status("reply")
       var so = this.showScreenOutput(response)
-      if (this.config.useHTML5) {
-        var ao = this.playAudioOutput(response)
-        if (ao) {
-          log("HTML5: Wait audio to finish")
-        } else {
-          log("HTML5: No response")
-          this.end()
-        }
+      var ao = this.playAudioOutput(response)
+      if (ao) {
+        log("Wait audio to finish")
       } else {
-        if (response.audio) {
-          this.callbacks.doPlugin("onBeforeAudioResponse")
-          log("Sound-play: Playing audio")
-        } else {
-          log("Sound-play: No response")
-          this.end()
-        }
+        log("No response")
+        this.end()
       }
     }
     this.postProcess(
@@ -255,7 +244,8 @@ class AssistantResponseClass {
     if (response.audio && this.config.useAudioOutput) {
       this.callbacks.doPlugin("onBeforeAudioResponse")
       this.showing = true
-      this.audioResponse.src = this.makeUrl(response.audio.uri)
+      if (this.config.useHTML5) this.audioResponse.src = this.makeUrl(response.audio.uri)
+      else this.callbacks.playSound(response.audio.path)
       return true
     }
     return false
