@@ -107,7 +107,6 @@ module.exports = NodeHelper.create({
         }
       }
       if (response.error == "TOO_SHORT" && response) response.error = null
-      //if (response.audio && response.audio.path && !assistantConfig.useHTML5) this.playAudioRespone(response.audio.path);
       if (response.screen) {
         parser.parse(response, (result)=>{
           delete result.screen.originalContent
@@ -120,22 +119,6 @@ module.exports = NodeHelper.create({
       }
     })
   },
-/*
-  playAudioRespone: function(file,chimed) {
-    if (!file) return
-    if ((this.config.responseConfig.useChime && chimed) || this.config.responseConfig.useAudioOutput) {
-      log("Sound: Audio starts with " + this.config.responseConfig.playProgram, file)
-      this.player.play(file, (err) => {
-        if (err) {
-          log("Sound: Error", err)
-        } else {
-          log("Sound: Audio ends")
-        }
-        if (!chimed) this.sendSocketNotification("ASSISTANT_AUDIO_RESULT_ENDED")
-      })
-    }
-  },
-*/
 
   playAudioResponse: function(file,chimed) {
     if (!file) return
@@ -151,7 +134,6 @@ module.exports = NodeHelper.create({
       }
       log("Sound: Audio starts with " + program + " " + (options ? options : ""), file)
 
-      //log("opt", opt)
       this.player.play(file, opt, (err) => {
         if (err) {
           log("Sound: Error", err)
@@ -183,9 +165,11 @@ module.exports = NodeHelper.create({
     }
     else log("Use HTML5 for audio response")
     this.assistantWeb()
-    if (this.config.responseConfig.useA2D) log ("Assistant2Display Started")
     console.log("[AMK2] AssistantMk2 is initialized.")
-    if (this.config.addons) this.addons = new ConstructorAddons(this.config)
+    if (this.config.addons) {
+      this.addons = new ConstructorAddons(this.config)
+      log ("Assistant2Display Started")
+    }
   },
 
   cleanUptmp: function() {
