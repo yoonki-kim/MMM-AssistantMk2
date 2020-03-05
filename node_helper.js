@@ -57,8 +57,7 @@ module.exports = NodeHelper.create({
         this.playAudioResponse(filepath,true)
         break
       case "PLAY_SOUND":
-        var filepath = path.resolve(__dirname, payload)
-        this.playAudioResponse(filepath)
+        this.playAudioResponse(payload)
         break
     }
     if (this.config.addons)
