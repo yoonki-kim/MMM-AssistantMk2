@@ -64,7 +64,7 @@ echo
 Installer_yesno "Do you want to execute automatic intallation ?" || exit 0
 
 # check dependencies
-dependencies=(git wget libasound2-dev sox libsox-fmt-all gcc-7 libsox-fmt-mp3 build-essential mpg321)
+dependencies=(git wget libasound2-dev sox libsox-fmt-all gcc-7 libsox-fmt-mp3 build-essential mpg321 vlc)
 Installer_info "Checking all dependencies..."
 Installer_check_dependencies
 Installer_success "All Dependencies needed are installed !"
@@ -96,7 +96,8 @@ if Installer_is_installed "pulseaudio"; then
     Installer_error "You might have some mmap error and no response audio"
     Installer_warning "if you are not using Bluetooth, you can uninstall pulseaudio"
     Installer_warning "Note: You can try whithout uninstalling pulseaudio"
-    Installer_warning "using the play-sound version (useHTML5: false and playProgram: \"mpg321\")"
+    Installer_warning "by using the play-sound version"
+    Installer_warning "useHTML5: false --- playProgram: \"mpg321\" , playProgram: \"mpg123\" or playProgram: \"cvlc\""
     Installer_yesno "Do you want uninstall pulseaudio?" && Installer_remove "pulseaudio"
   fi
 fi
