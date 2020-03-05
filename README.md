@@ -49,6 +49,13 @@ Read the docs in [wiki](https://github.com/eouia/MMM-AssistantMk2/wiki)
 Not easy. Remove existence then reinstall fresh.
 - You'd better backup your `credentials.json` and profiles.
 
+## Update from 3.x
+
+```sh
+cd ~/MagicMirror/modules/MMM-AssistantMk2
+npm run update
+```
+
 ## UPDATE HISTORY
 
 **3.1.0-3 (07/02/2020)**
