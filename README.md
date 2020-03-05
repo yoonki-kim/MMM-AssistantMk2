@@ -4,7 +4,11 @@
 
 ## NEW UPDATES
 
-**3.1.1-0 (XX/03/2020)**
+**3.1.1-1 (05/03/2020)**
+ * **BUG**: correct audio cutting response for mpg321 (test)
+ * **ADD**: add cvlc audio out support (vlc using)
+
+**3.1.1-0 (02/03/2020)**
  * **ADD**: add new function for addons-recipe (socketExec, onSocketExec)
  * **BUG**: continous conversation bug - infinite loop on no user response
  * **BUG**: double chimed on TRANSCRIPTION_FAILS retry
@@ -14,13 +18,7 @@
  * **MOTIFY** : search KEYWORD/ TRYTOSAY translation script to improve performance
  * **BUG**: correct screen parser log
 
-**3.1.0-3 (07/02/2020)**
- * **BUG**: correct issue with no response audio and play-sound (freeze)
- 
-**3.1.0-2 (05/02/2020)**
- * **DELETE/MOVE**: addonsConfig:{} is noved to addons/addons.js
- * **ADD/CONFIG**: addons: BOOLEAN to activate or not addons.js
- * **ADD**: touch icon to activate assistant
+
 
 ## [**Preview Video**](https://youtu.be/e7Xg95mL8JE)
 
@@ -52,6 +50,14 @@ Not easy. Remove existence then reinstall fresh.
 - You'd better backup your `credentials.json` and profiles.
 
 ## UPDATE HISTORY
+
+**3.1.0-3 (07/02/2020)**
+ * **BUG**: correct issue with no response audio and play-sound (freeze)
+ 
+**3.1.0-2 (05/02/2020)**
+ * **DELETE/MOVE**: addonsConfig:{} is noved to addons/addons.js
+ * **ADD/CONFIG**: addons: BOOLEAN to activate or not addons.js
+ * **ADD**: touch icon to activate assistant
 
 **3.1.0-1 (30/01/2020)**
   * **ADD/CONFIG:** ability to add a personal addons in node_helper (addons.js)
