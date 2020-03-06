@@ -11,6 +11,10 @@
   background-color:#f3f3f3;
 }
 
+#AMK2.fullscreen_above {
+  width:100%;
+}
+
 #AMK2.in {
   animation-duration: 0.5s;
   animation-name: fadeInDown;
@@ -189,6 +193,16 @@
   height:100%;
   bottom:0;
   display:block;
+}
+
+#AMK2_HELPER.fullscreen_above {
+  position:fixed;
+  height:90%;
+  overflow:auto;
+  border:none;
+  top:10%;
+  left:0;
+  z-index:99998;
 }
 
 #AMK2_HELPER.hidden {

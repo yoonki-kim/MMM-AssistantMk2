@@ -330,7 +330,10 @@ Module.register("MMM-AssistantMk2", {
         this.assistantResponse.status("standby")
         this.doPlugin("onReady")
         // if the force is with me ! (ahahah)
-        if (this.config.developer) this.assistantActivate({ type: "TEXT", key: "Who is YODA ?"}, Date.now())
+        if (this.config.developer) {
+          this.assistantResponse.fullscreen(true)
+          this.assistantActivate({ type: "TEXT", key: "Who is YODA ?"}, Date.now())
+        }
         break
       case "ASSISTANT_RESULT":
         if (this.config.addons) this.Assistant2Display(payload)

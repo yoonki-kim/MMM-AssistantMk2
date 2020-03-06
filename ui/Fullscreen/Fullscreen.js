@@ -7,6 +7,7 @@ class AssistantResponse extends AssistantResponseClass{
   getDom () {
     var dom = super.getDom()
     dom.classList.add("hidden")
+    if(this.fullscreenAbove) dom.classList.add("fullscreen_above")
 
     var contener = document.createElement("div")
     contener.id = "AMK2_CONTENER"
@@ -28,11 +29,12 @@ class AssistantResponse extends AssistantResponseClass{
     super.getDom()
     return dom
   } 
- 
+
   prepare () {
     var dom = document.createElement("div")
     dom.id = "AMK2_HELPER"
     dom.classList.add("hidden")
+    if(this.fullscreenAbove) dom.classList.add("fullscreen_above")
 
     var scoutpan = document.createElement("div")
     scoutpan.id = "AMK2_RESULT_WINDOW"

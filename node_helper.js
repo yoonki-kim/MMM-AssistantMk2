@@ -5,12 +5,13 @@
 const path = require("path")
 const exec = require("child_process").exec
 const fs = require("fs")
+const url = require("url")
 const Assistant = require("./components/assistant.js")
 const ScreenParser = require("./components/screenParser.js")
 const ActionManager = require("./components/actionManager.js")
 const ConstructorAddons = require("./components/constructorAddons.js")
-const playSound = require('play-sound')
-const url = require("url");
+const Sound = require("./components/sound.js")
+
 
 var _log = function() {
   var context = "[AMK2]"
@@ -54,10 +55,10 @@ module.exports = NodeHelper.create({
         break
       case "PLAY_CHIME":
         var filepath = path.resolve(__dirname, payload)
-        this.playAudioResponse(filepath,true)
+        this.sound.play(filepath,true)
         break
       case "PLAY_SOUND":
-        this.playAudioResponse(payload)
+        this.sound.play(payload)
         break
     }
     if (this.config.addons)
@@ -119,31 +120,6 @@ module.exports = NodeHelper.create({
     })
   },
 
-  playAudioResponse: function(file,chimed) {
-    if (!file) return
-    var self = this
-    var opt = {}
-    var options = null
-    if ((this.config.responseConfig.useChime && chimed) || this.config.responseConfig.useAudioOutput) {
-      var program = this.config.responseConfig.playProgram
-
-      if (program == "cvlc") {
-        options = "--play-and-exit"
-        opt[program] = [options]
-      }
-      log("Sound: Audio starts with " + program + " " + (options ? options : ""), file)
-
-      this.player.play(file, opt, (err) => {
-        if (err) {
-          log("Sound: Error", err)
-        } else {
-          log("Sound: Audio ends")
-        }
-        if (!chimed) this.sendSocketNotification("ASSISTANT_AUDIO_RESULT_ENDED")
-      })
-    }
-  },
-
   initialize: function (config) {
     this.config = config
     this.config.assistantConfig["modulePath"] = __dirname
@@ -158,9 +134,8 @@ module.exports = NodeHelper.create({
     this.cleanUptmp()
     log("Response delay is set to " + this.config.responseConfig.delay + ((this.config.responseConfig.delay > 1) ? " seconds" : " second"))
     if (!this.config.responseConfig.useHTML5) {
-      let opts = {"player": this.config.responseConfig.playProgram}
-      this.player = playSound(opts)
-      log( "Use " +  this.config.responseConfig.playProgram + " for audio response")
+      this.sound = new Sound(this.config.responseConfig, (send) => { this.sendSocketNotification(send) } , this.config.debug )
+      this.sound.init()
     }
     else log("Use HTML5 for audio response")
     this.assistantWeb()
