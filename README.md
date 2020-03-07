@@ -4,6 +4,12 @@
 
 ## NEW UPDATES
 
+**3.1.1-2 (06/03/2020)**
+ * **ADD/MODIFY**: `ui: "Fullscreen"`
+   * `position: "fullscreen_above"` is now ui like `Google Home`
+ * **MODIFY**: user interface priority order Assistant2Display -> AMk2
+ * **ADD**: move native sound to class
+
 **3.1.1-1 (05/03/2020)**
  * **BUG**: correct audio cutting response for mpg321 (test)
  * **ADD**: add cvlc audio out support (vlc using)
@@ -17,8 +23,6 @@
  * **ADD**: ASSISTANT_WEB server for activate with keyword
  * **MOTIFY** : search KEYWORD/ TRYTOSAY translation script to improve performance
  * **BUG**: correct screen parser log
-
-
 
 ## [**Preview Video**](https://youtu.be/e7Xg95mL8JE)
 

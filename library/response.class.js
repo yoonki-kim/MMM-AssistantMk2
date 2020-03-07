@@ -26,6 +26,7 @@ class AssistantResponseClass {
       this.audioChime = new Audio()
       this.audioChime.autoplay = true
     }
+    this.fullscreenAbove = false
   }
 
   tunnel (payload) {
@@ -87,7 +88,17 @@ class AssistantResponseClass {
     // needed class plugin
   }
 
+  modulePosition () {
+    var self = this
+    MM.getModules().withClass("MMM-AssistantMk2").enumerate(function(module) {
+      if (module.data.position === "fullscreen_above") {
+        self.fullscreenAbove = true
+      }
+    })
+  }
+
   getDom () {
+    this.modulePosition()
     var dom = document.createElement("div")
     dom.id = "AMK2"
     if (this.config.useStaticIcons) {

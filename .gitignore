@@ -38,3 +38,4 @@ package-lock.json
 /installer/snowboy.sh
 /installer/sound.sh
 /addons/.gitignore
+/addons/addons.js
