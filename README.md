@@ -4,6 +4,9 @@
 
 ## NEW UPDATES
 
+**3.1.1-3 (xx/xx/2020)**
+ * **BUG**: correct youtube search link
+ 
 **3.1.1-2 (06/03/2020)**
  * **ADD/MODIFY**: `ui: "Fullscreen"`
    * `position: "fullscreen_above"` is now ui like `Google Home`
