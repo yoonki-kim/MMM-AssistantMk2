@@ -443,13 +443,19 @@ Module.register("MMM-AssistantMk2", {
   postProcess: function (response, callback_done=()=>{}, callback_none=()=>{}) {
     if (response.lastQuery.status == "continue") return callback_none()
     var foundHook = this.findAllHooks(response)
+    var forceResponse = false
     if (foundHook.length > 0) {
       this.assistantResponse.status("hook")
       for (var i = 0; i < foundHook.length; i++) {
         var hook = foundHook[i]
         this.doCommand(hook.command, hook.params, hook.from)
+        if (hook.from == "CUSTOM_DEVICE_ACTION") forceResponse = true
       }
-      callback_done()
+      if (forceResponse) {
+        callback_none()
+      } else {
+        callback_done()
+      }
     } else {
       callback_none()
     }

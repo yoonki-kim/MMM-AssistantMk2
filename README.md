@@ -3,6 +3,8 @@
 `MMM-AssistantMk2` is an embedded Google assistant on MagicMirror.
 
 ## NEW UPDATES
+**3.1.2**
+ * **FIX**: No sound response issue when custom action is used.
 
 **3.1.1-2 (06/03/2020)**
  * **ADD/MODIFY**: `ui: "Fullscreen"`
@@ -11,18 +13,18 @@
  * **ADD**: move native sound to class
 
 **3.1.1-1 (05/03/2020)**
- * **BUG**: correct audio cutting response for mpg321 (test)
+ * **FIX**: correct audio cutting response for mpg321 (test)
  * **ADD**: add cvlc audio out support (vlc using)
 
 **3.1.1-0 (02/03/2020)**
  * **ADD**: add new function for addons-recipe (socketExec, onSocketExec)
- * **BUG**: continous conversation bug - infinite loop on no user response
- * **BUG**: double chimed on TRANSCRIPTION_FAILS retry
- * **ADD**: ability to set no chime on activate assistant
- * **ADD**: touching the keyword "try to say" activates the assistant for the suggested search (Fullscreen and Classic2 ui)
+ * **FIX**: continous conversation bug - infinite loop on no user response
+ * **FIX**: double chimed on TRANSCRIPTION_FAILS retry
+ * **FIX**: ability to set no chime on activate assistant
+ * **FIX**: touching the keyword "try to say" activates the assistant for the suggested search (Fullscreen and Classic2 ui)
  * **ADD**: ASSISTANT_WEB server for activate with keyword
  * **MOTIFY** : search KEYWORD/ TRYTOSAY translation script to improve performance
- * **BUG**: correct screen parser log
+ * **FIX**: correct screen parser log
 
 ## [**Preview Video**](https://youtu.be/e7Xg95mL8JE)
 
@@ -64,7 +66,7 @@ npm run update
 
 **3.1.0-3 (07/02/2020)**
  * **BUG**: correct issue with no response audio and play-sound (freeze)
- 
+
 **3.1.0-2 (05/02/2020)**
  * **DELETE/MOVE**: addonsConfig:{} is noved to addons/addons.js
  * **ADD/CONFIG**: addons: BOOLEAN to activate or not addons.js
