@@ -329,11 +329,6 @@ Module.register("MMM-AssistantMk2", {
         log("Initialized.")
         this.assistantResponse.status("standby")
         this.doPlugin("onReady")
-        // if the force is with me ! (ahahah)
-        if (this.config.developer) {
-          this.assistantResponse.fullscreen(true)
-          this.assistantActivate({ type: "TEXT", key: "Who is YODA ?"}, Date.now())
-        }
         break
       case "ASSISTANT_RESULT":
         if (this.config.addons) this.Assistant2Display(payload)
@@ -724,5 +719,7 @@ Module.register("MMM-AssistantMk2", {
       log("Send A2D Response.")
       this.sendNotification("ASSISTANT2DISPLAY", opt)
     }
+    if (response.transcription && ((response.transcription.transcription == "stop") || (response.transcription.transcription == "stoppe")))
+      this.sendNotification("A2D_STOP")
   }
 })
