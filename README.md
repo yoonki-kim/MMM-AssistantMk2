@@ -3,11 +3,10 @@
 `MMM-AssistantMk2` is an embedded Google assistant on MagicMirror.
 
 ## NEW UPDATES
-**3.1.2**
+**3.1.2 (17/03/2020)**
  * **FIX**: No sound response issue when custom action is used.
-
-**3.1.1-3 (xx/xx/2020)**
- * **BUG**: correct youtube search link
+ * **FIX**: correct youtube search link.
+ * **ADD**: Add A2D stop command (beta)
  
 **3.1.1-2 (06/03/2020)**
  * **ADD/MODIFY**: `ui: "Fullscreen"`
