@@ -163,7 +163,7 @@ module.exports = NodeHelper.create({
           log(`RECIPE_ERROR (${recipes[i]}):`, e.message)
         }
       }
-      if (this.config.actions && Object.keys(this.config.actions).length > 1) {
+      if (this.config.actions && Object.keys(this.config.actions).length > 0) {
         var actionConfig = Object.assign({}, this.config.customActionConfig)
         actionConfig.actions = Object.assign({}, this.config.actions)
         actionConfig.projectId = this.config.assistantConfig.projectId
