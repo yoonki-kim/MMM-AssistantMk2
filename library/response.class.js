@@ -76,8 +76,10 @@ class AssistantResponseClass {
     if (status == "MIC") this.myStatus.actual = (this.myStatus.old == "continue") ? "continue" : "listen"
     log("Status from " + this.myStatus.old + " to " + this.myStatus.actual)
     if (!(this.secretMode || this.sayMode)) {
-      Status.classList.remove(this.myStatus.old)
-      Status.classList.add(this.myStatus.actual)
+      Status.className = this.myStatus.actual
+      if (this.config.useStaticIcons) {
+        Status.classList.add(this.config.useStaticIcons === "standby" ? "static-standby" : "static")
+      }
     }
     this.callbacks.myStatus(this.myStatus) // send status external
     this.callbacks.sendNotification("ASSISTANT_" + this.myStatus.actual.toUpperCase())
@@ -89,21 +91,14 @@ class AssistantResponseClass {
   }
 
   modulePosition () {
-    var self = this
-    MM.getModules().withClass("MMM-AssistantMk2").enumerate(function(module) {
-      if (module.data.position === "fullscreen_above") {
-        self.fullscreenAbove = true
-      }
+    MM.getModules().withClass("MMM-AssistantMk2").enumerate((module)=> {
+      if (module.data.position === "fullscreen_above") this.fullscreenAbove = true
     })
   }
 
   getDom () {
-    this.modulePosition()
     var dom = document.createElement("div")
     dom.id = "AMK2"
-    if (this.config.useStaticIcons) {
-      dom.classList.add(this.config.useStaticIcons === "standby" ? "static-standby" : "static")
-    }
     return dom
   }
 
