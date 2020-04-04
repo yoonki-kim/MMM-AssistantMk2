@@ -4,6 +4,7 @@
 
 ## NEW UPDATES
 **3.2.0 (xx/04/2020)**
+ * **ADD**: ability to play personnal sound on recipes soundExec command (see wiki)
  * **FIX**: no fade in animation on first use in Fullscreen ui
  * **DEL**: full addon code and cleanning
  * **ADD**: add control if A2D used

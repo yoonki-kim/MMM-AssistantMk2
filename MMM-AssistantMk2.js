@@ -601,6 +601,9 @@ Module.register("MMM-AssistantMk2", {
         if (snde.chime == "open") this.assistantResponse.playChime("open")
         if (snde.chime == "close") this.assistantResponse.playChime("close")
       }
+      if (snde.sound && typeof snde.sound == 'string') {
+        this.assistantResponse.playChime(snde.sound, true)
+      }
       if (snde.say && typeof snde.say == 'string' && this.config.responseConfig.myMagicWord) {
           this.notificationReceived("ASSISTANT_SAY", snde.say , this.name)
       }
@@ -625,8 +628,12 @@ Module.register("MMM-AssistantMk2", {
   },
 
 /** Send needed part of response screen to MMM-Assistant2Display **/
-
   Assistant2Display: function(response) {
+    if (response.lastQuery.secretMode || response.lastQuery.sayMode) return
+
+    if (response.transcription && ((response.transcription.transcription == "stop") || (response.transcription.transcription == "stoppe")))
+      return this.sendNotification("A2D_STOP")
+
     var opt = {
       "photos": null,
       "urls": null,
@@ -644,7 +651,5 @@ Module.register("MMM-AssistantMk2", {
       log("Send A2D Response.")
       this.sendNotification("A2D", opt)
     }
-    if (response.transcription && ((response.transcription.transcription == "stop") || (response.transcription.transcription == "stoppe")))
-      this.sendNotification("A2D_STOP")
   }
 })

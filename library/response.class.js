@@ -53,12 +53,12 @@ class AssistantResponseClass {
     this.sayMode = sayMode
   }
 
-  playChime (sound) {
+  playChime (sound, external) {
     if (this.config.useChime && !(this.secretMode || this.sayMode)) {
       if (this.config.useHTML5) {
-        this.audioChime.src = "modules/MMM-AssistantMk2/resources/" + this.config.chime[sound]
+        this.audioChime.src = "modules/MMM-AssistantMk2/resources/" + (external ? sound : this.config.chime[sound])
       } else {
-        this.callbacks.playChime("resources/" + this.config.chime[sound])
+        this.callbacks.playChime("resources/" + (external ? sound : this.config.chime[sound]))
       }
     }
   }
@@ -103,9 +103,10 @@ class AssistantResponseClass {
   }
 
   showError (text) {
-    this.status("error")
     this.showTranscription(text, "error")
+    this.status("error")
     this.callbacks.doPlugin("onError", text)
+    return true
   }
 
   showTranscription (text, className = "transcription") {
@@ -139,8 +140,8 @@ class AssistantResponseClass {
       } else {
         this.callbacks.doPlugin("onBeforeInactivated")
         log("Conversation ends.")
-        this.callbacks.endResponse()
         this.status("standby")
+        this.callbacks.endResponse()
         clearTimeout(this.aliveTimer)
         this.aliveTimer = null
         this.aliveTimer = setTimeout(()=>{
