@@ -1,3 +1,4 @@
+### [简体中文 Chinese_simplified](./Chinese_simplified/README_zh-CN.md)
 # MMM-AssistantMk2
 ![](https://raw.githubusercontent.com/eouia/MMM-AssistantMk2/master/resources/AMk2_Big.png)
 `MMM-AssistantMk2` is an embedded Google assistant on MagicMirror.
