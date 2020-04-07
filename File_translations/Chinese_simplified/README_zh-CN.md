@@ -51,8 +51,8 @@
  - 更简单的 `custom action` 管理
 
  ## 安装 & 指引
-[中文wiki](https://github.com/eouia/MMM-AssistantMk2/wiki)
-[英文wiki](./wiki/Home.md)
+[英文wiki](https://github.com/eouia/MMM-AssistantMk2/wiki)
+[中文wiki](./wiki/Home.md)
 
 ## 从2.x升级
 不太简单。移除所有文件然后重新安装。
