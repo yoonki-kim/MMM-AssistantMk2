@@ -220,7 +220,7 @@ recipes: [
 激活 [Assistant2Display](https://github.com/bugsounet/MMM-Assistant2Display) build-in addon
 
 ## 和插件 `MMM-Hotword` 一起使用
-译者注：说白了就是性化唤醒词
+译者注：说白了就是个性化唤醒词
 ```js
 {
   module: "MMM-Hotword",
@@ -239,6 +239,7 @@ recipes: [
   }  
 },
 ```
-这会使 `smart mirror` 中的 `MMM-Hotword` 插件作为 `MMM-AssistantMk2` 的触发因素
+这会使 `smart mirror` 中的 `MMM-Hotword` 插件作为 `MMM-AssistantMk2` 的触发因素。
 额外的，这个新的版本会使 `seamless query` 成文可能。这意味着你不需要等待 AMK2 响应就可以继续说下去。 `Smart mirror! (waiting a beep) What time is it?` and `Smart mirror, what time is it?` 两者都可以使用，就像真的 Google Home 设备一样 So cool.
+
 译者注：作者这里大概率指的是那个Google推出的智能音箱。

@@ -63,4 +63,4 @@ npm install --save-dev electron-rebuild
 * 可通过修改config.js文件，使其含有 `useHTML5: false` 以及 `playProgram: "mpg321"` 
 * 如果你不用蓝牙的话，移除 pulseaudio 包
 
-We are working around this issue
+我们正在修复这个issue
