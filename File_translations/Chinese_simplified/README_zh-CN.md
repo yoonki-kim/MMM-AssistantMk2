@@ -85,6 +85,6 @@ npm run update
   - @bugsounet
   - @Anonym-tsk
 - 译者 ：
-  - [@Vince 迷航者](www.vincehut.top)
+  - [@Vince 迷航者](https://www.vincehut.top)
 - 证书 : MIT
   - **按Google助手SDK条款,您不得将本模块用于商业用途。**

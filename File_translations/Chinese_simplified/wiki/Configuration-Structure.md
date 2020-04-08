@@ -49,7 +49,7 @@ _Notes_:
 |- modelId | 文本 |""
 |- instanceId | 文本 | ""
 
-- `latitude` & `longitude` : location of your MagicMirror installed.
+- `latitude` & `longitude` : 你的魔镜所在的位置
 - `credentialPath` : 你不需要更改这条内容;
 - `projectId`, `modelId`, `instanceId` : 除非你需要使用 `custom action` 或者注册设备到Google Home网络，你或许不需要这些值
 译者注：当然你可以用开源的Home Assistant代替Google Home，开源的软件它不香么？
