@@ -25,4 +25,4 @@
 ## 提示
 - [注册魔镜为谷歌助手关联设备](./Register-your-Mirror-as-Google-Assistant-related-device.md)
 - [提issue前的自检](./Self-check-for-issue.md)
-- [处理mmap问题以及无音频响应](./Resolving-mmap-issue-and-no-response audio.md)
+- [处理mmap问题以及无音频响应](./Resolving-mmap-issue-and-no-response-audio.md)
