@@ -54,6 +54,8 @@
 [英文wiki](https://github.com/eouia/MMM-AssistantMk2/wiki)
 [中文wiki](./wiki/Home.md)
 
+对于中文wiki，目前翻译了基础的部分，你可以通过参考它们来搭建基础的语音服务，以后会翻译更多内容。
+
 ## 从2.x升级
 不太简单。移除所有文件然后重新安装。
 - 建议备份你的 `credentials.json` 以及其他配置文件。
@@ -83,6 +85,6 @@ npm run update
   - @bugsounet
   - @Anonym-tsk
 - 译者 ：
-  - @Vince 迷航者
+  - [@Vince 迷航者](www.vincehut.top)
 - 证书 : MIT
   - **按Google助手SDK条款,您不得将本模块用于商业用途。**
