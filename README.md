@@ -3,7 +3,8 @@
 `MMM-AssistantMk2` is an embedded Google assistant on MagicMirror.
 
 ## NEW UPDATES
-**3.2.0 (xx/04/2020)**
+**3.2.0 (09/04/2020)**
+ * **ADD**: Chinese_simplified translate (thx to @wlmqpsc)
  * **ADD**: ability to play personnal sound on recipes soundExec command (see wiki)
  * **FIX**: no fade in animation on first use in Fullscreen ui
  * **DEL**: full addon code and cleanning
