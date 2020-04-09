@@ -1,4 +1,3 @@
-### [简体中文 Chinese_simplified](./File_translations/Chinese_simplified/README_zh-CN.md)
 # MMM-AssistantMk2
 ![](https://raw.githubusercontent.com/eouia/MMM-AssistantMk2/master/resources/AMk2_Big.png)
 `MMM-AssistantMk2` is an embedded Google assistant on MagicMirror.
@@ -33,8 +32,8 @@
 - Easier `custom action` managing.
 
 ## Installation & Guides
-Read the docs in [wiki](https://github.com/eouia/MMM-AssistantMk2/wiki)
-
+Read the docs in [wiki](https://github.com/eouia/MMM-AssistantMk2/wiki)<br>
+[简体中文 Chinese_simplified](./File_translations/Chinese_simplified/README_zh-CN.md)
 ## Update from 2.x
 Not easy. Remove existence then reinstall fresh.
 - You'd better backup your `credentials.json` and profiles.
@@ -112,5 +111,7 @@ npm run update
   - @eouia
   - @bugsounet
   - @Anonym-tsk
+- Chinese simplified translate : 
+  - @wlmqpsc
 - License : MIT
   - **By terms of Google Assistant SDK, You are not allowed to use or provide this module for commercial purpose.**
