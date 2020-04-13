@@ -202,6 +202,7 @@ class AssistantResponseClass {
 
     var normalResponse = (response) => {
       this.showing = true
+      this.callbacks.A2D(response)
       this.status("reply")
       var so = this.showScreenOutput(response)
       var ao = this.playAudioOutput(response)

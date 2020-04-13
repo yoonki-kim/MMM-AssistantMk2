@@ -159,6 +159,10 @@ Module.register("MMM-AssistantMk2", {
       },
       playChime: (chime) => {
         return this.playChime(chime)
+      },
+      A2D: (response)=> {
+        if (this.config.useA2D)
+         return this.Assistant2Display(response)
       }
     }
     this.assistantResponse = new AssistantResponse(this.helperConfig["responseConfig"], callbacks)
@@ -329,7 +333,7 @@ Module.register("MMM-AssistantMk2", {
         this.doPlugin("onReady")
         break
       case "ASSISTANT_RESULT":
-        if (this.config.useA2D) this.Assistant2Display(payload)
+        //if (this.config.useA2D) this.Assistant2Display(payload)
         if (payload.session && this.session.hasOwnProperty(payload.session)) {
           var session = this.session[payload.session]
           if (typeof session.callback == "function") {
