@@ -95,7 +95,7 @@ Module.register("MMM-AssistantMk2", {
     if (this.config.ui) {
       var ui = this.config.ui + "/" + this.config.ui + '.js'
       return [
-       "/modules/MMM-AssistantMk2/library/response.class.js",
+       "/modules/MMM-AssistantMk2/components/response.js",
        "/modules/MMM-AssistantMk2/ui/" + ui
       ]
     }
