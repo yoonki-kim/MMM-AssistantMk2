@@ -3,7 +3,7 @@
 `MMM-AssistantMk2` is an embedded Google assistant on MagicMirror.
 
 ## NEW UPDATES
-**3.2.1 (xx/15/2020)**
+**3.2.1 (16/04/2020)**
  * **FIX**: Send A2D response only on no hooked response
  * **FIX**: repository change owner
  * **ADD**: preprared recipe with-radio_fr.js recipe for A2D Radio (FR Only)
