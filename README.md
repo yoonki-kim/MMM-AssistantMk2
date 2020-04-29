@@ -9,8 +9,10 @@
  * **OPT**: Optional Build with Snowboy embed
  * **ADD**: `A2DStopCommand` for personalize your stop command
  * **FIX**: some logs
+ 
 **3.2.2**
  * **FIX**: Package.json (google-assistant)
+ 
 **3.2.1 (16/04/2020)**
  * **FIX**: Send A2D response only on no hooked response
  * **FIX**: repository change owner
