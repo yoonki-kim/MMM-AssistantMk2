@@ -5,13 +5,13 @@
 ## NEW UPDATES
 
 
-**3.2.3** (30/04/2020)
+**3.2.3 (30/04/2020)**
  * **ADD**: New ui -> Simple
  * **OPT**: Optional Build with Snowboy embed
  * **ADD**: `A2DStopCommand` for personalize your stop command
  * **FIX**: some logs
  
-**3.2.2** (14/04/2020)
+**3.2.2 (17/04/2020)**
  * **FIX**: Package.json (google-assistant)
  
 **3.2.1 (16/04/2020)**
