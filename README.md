@@ -6,6 +6,7 @@
 
 
 **3.2.3**
+ * **ADD**: New ui -> Simple
  * **OPT**: Optional Build with Snowboy embed
  * **ADD**: `A2DStopCommand` for personalize your stop command
  * **FIX**: some logs
