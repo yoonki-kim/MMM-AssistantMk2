@@ -75,7 +75,7 @@ class AssistantResponseClass {
     if (status == "WAVEFILE" || status == "TEXT") this.myStatus.actual = "think"
     if (status == "MIC") this.myStatus.actual = (this.myStatus.old == "continue") ? "continue" : "listen"
     log("Status from " + this.myStatus.old + " to " + this.myStatus.actual)
-    if (!(this.secretMode || this.sayMode)) {
+    if (!(this.secretMode || this.sayMode) || (status == "standby" && this.sayMode)) {
       Status.className = this.myStatus.actual
       if (this.config.useStaticIcons) {
         Status.classList.add(this.config.useStaticIcons === "standby" ? "static-standby" : "static")
@@ -155,6 +155,7 @@ class AssistantResponseClass {
     } else {
       this.callbacks.doPlugin("onBeforeInactivated")
       this.status("standby")
+      this.fullscreen(false, this.myStatus)
       this.callbacks.endResponse()
     }
   }

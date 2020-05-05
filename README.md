@@ -4,7 +4,9 @@
 
 ## NEW UPDATES
 
-
+**3.2.4 (xx/05/2020)**
+ * **FIX**: `soundExec: { say: "some text" }`
+ * **UPD**: with_radio_fr.js
 **3.2.3 (30/04/2020)**
  * **ADD**: New ui -> Simple
  * **OPT**: Optional Build with Snowboy embed
