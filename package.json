@@ -30,6 +30,7 @@
   },
   "homepage": "https://github.com/bugsounet/MMM-AssistantMk2",
   "dependencies": {
+    "@bugsounet/buffertomp3": "^1.0.0",
     "@bugsounet/lpcm16": "^1.0.0",
     "cheerio": "^1.0.0-rc.3",
     "google-assistant": "^0.5.4",
