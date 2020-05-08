@@ -4,7 +4,8 @@
 
 ## NEW UPDATES
 
-**3.2.4 (xx/05/2020)**
+**3.3.0 (08/05/2020)**
+ * **ADD**: update to lpcm16/addbuffermp3 npm library
  * **FIX**: `soundExec: { say: "some text" }`
  * **UPD**: with_radio_fr.js
  
