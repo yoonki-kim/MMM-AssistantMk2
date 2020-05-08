@@ -319,7 +319,7 @@ Module.register("MMM-AssistantMk2", {
         magicQuery = magicQuery.replace("%REPEATWORD%", myWord)
         magicQuery = magicQuery.replace("%TEXT%", text)
         this.assistantResponse.fullscreen(true)
-        this.assistantActivate({ type: "TEXT", key: magicQuery}, Date.now())
+        this.assistantActivate({ type: "TEXT", key: magicQuery, force: true }, Date.now())
         break
       case "SNOWBOY_START":
 		if (this.config.useSnowboy) this.sendSocketNotification("ASSISTANT_READY")
