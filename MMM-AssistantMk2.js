@@ -567,6 +567,10 @@ Module.register("MMM-AssistantMk2", {
 
   doCommand: function (commandId, originalParam, from) {
     this.assistantResponse.doCommand(commandId, originalParam, from)
+    if (commandId == "action.devices.commands.SetVolume") {
+      log("Volume Control:", originalParam)
+      return this.sendNotification("VOLUME_SET", originalParam.volumeLevel)
+    }
     if (this.commands.hasOwnProperty(commandId)) {
       var command = this.commands[commandId]
     } else {
