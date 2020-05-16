@@ -5,7 +5,7 @@
 var recipe = {
   transcriptionHooks: {
     "SEARCH_SPOTIFY": {
-      pattern: "(.*) sur spotify",
+      pattern: "(.*) on spotify",
       command: "SEARCH_SPOTIFY"
     },
     "START_SPOTIFY" : {
@@ -55,7 +55,6 @@ var recipe = {
       notificationExec: {
         notification: "SPOTIFY_SEARCH",
         payload: (params) => {
-          console.log(params)
           return {
             type: "artist,track,album,playlist",
             query: params[1], 
