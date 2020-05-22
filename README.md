@@ -3,13 +3,16 @@
 `MMM-AssistantMk2` is an embedded Google assistant on MagicMirror.
 
 ## NEW UPDATES
-**3.2.0 (09/04/2020)**
- * **ADD**: Chinese_simplified translate (thx to @wlmqpsc)
- * **ADD**: ability to play personnal sound on recipes soundExec command (see wiki)
- * **FIX**: no fade in animation on first use in Fullscreen ui
- * **DEL**: full addon code and cleanning
- * **ADD**: add control if A2D used
 
+**3.3.1 (11/05/2020)**
+ * **ADD**: new format of response on volume request
+ * **FIX**: Installer dependencies with @bugsounet/snowboy
+
+**3.3.0 (08/05/2020)**
+ * **ADD**: update to lpcm16/addbuffermp3 npm library
+ * **FIX**: `soundExec: { say: "some text" }`
+ * **UPD**: with_radio_fr.js
+ 
 ## [**Preview Video**](https://youtu.be/e7Xg95mL8JE)
 
 ## Screenshot
@@ -32,9 +35,9 @@
 - pre-built recipes are served.
 - Easier `custom action` managing.
 
-## Installation & Guides
+## Installation, update & Guides
 Read the docs in [wiki](https://github.com/eouia/MMM-AssistantMk2/wiki)<br>
-[简体中文 Chinese_simplified](./File_translations/Chinese_simplified/README_zh-CN.md)
+[简体中文 Chinese_simplified](./translations/Chinese_simplified/README_zh-CN.md)
 ## Update from 2.x
 Not easy. Remove existence then reinstall fresh.
 - You'd better backup your `credentials.json` and profiles.
@@ -46,12 +49,40 @@ cd ~/MagicMirror/modules/MMM-AssistantMk2
 npm run update
 ```
 
+## Update on new MagicMirror version (exemple v2.10.x to v2.11.x)
+```sh
+cd ~/MagicMirror/modules/MMM-AssistantMk2
+npm run rebuild
+```
+
 ## UPDATE HISTORY
+**3.2.3 (30/04/2020)**
+ * **ADD**: New ui -> Simple
+ * **OPT**: Optional Build with Snowboy embed
+ * **ADD**: `A2DStopCommand` for personalize your stop command
+ * **FIX**: some logs
+
+**3.2.2 (17/04/2020)**
+ * **FIX**: Package.json (google-assistant)
+
+**3.2.1 (16/04/2020)**
+ * **FIX**: Send A2D response only on no hooked response
+ * **FIX**: repository change owner
+ * **ADD**: preprared recipe with-radio_fr.js recipe for A2D Radio (FR Only)
+ * **ADD**: npm run rebuild -> REFRESH installation on MagicMirror version change
+
+**3.2.0 (09/04/2020)**
+ * **ADD**: Chinese_simplified translate (thx to @wlmqpsc)
+ * **ADD**: ability to play personnal sound on recipes soundExec command (see wiki)
+ * **FIX**: no fade in animation on first use in Fullscreen ui
+ * **DEL**: full addon code and cleanning
+ * **ADD**: add control if A2D used
+
 **3.1.2 (17/03/2020)**
  * **FIX**: No sound response issue when custom action is used.
  * **FIX**: correct youtube search link.
  * **ADD**: Add A2D stop command (beta)
- 
+
 **3.1.1-2 (06/03/2020)**
  * **ADD/MODIFY**: `ui: "Fullscreen"`
    * `position: "fullscreen_above"` is now ui like `Google Home`
@@ -104,15 +135,12 @@ npm run update
 - MacOS Catalina 10.15.2 / MacBookPro 2017 15" / nodeJS v11.12.0 / npm v6.9.0
 - debian 10 / nodeJS v10.18.0 / npm v6.13.4
 
-
-
-
 ## Credits
 - Author :
   - @eouia
   - @bugsounet
   - @Anonym-tsk
-- Chinese simplified translate : 
+- Chinese simplified translate :
   - @wlmqpsc
 - License : MIT
   - **By terms of Google Assistant SDK, You are not allowed to use or provide this module for commercial purpose.**

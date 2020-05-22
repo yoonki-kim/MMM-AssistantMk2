@@ -16,6 +16,9 @@ var log = function() {
 Module.register("MMM-AssistantMk2", {
   defaults: {
     debug:false,
+    useA2D: false,
+    A2DStopCommand: "stop",
+    useSnowboy: false,
     ui: "Fullscreen",
     assistantConfig: {
       credentialPath: "credentials.json",
@@ -55,7 +58,6 @@ Module.register("MMM-AssistantMk2", {
       autoUpdateAction: false,
       // actionLocale: "en", // multi language action is not supported yet
     },
-    useA2D: true,
     recipes: [],
     transcriptionHooks: {},
     actions: {},
@@ -69,6 +71,12 @@ Module.register("MMM-AssistantMk2", {
         lang: "en-US"
       }
     },
+    snowboy: {
+      audioGain: 2.0,
+      Frontend: true,
+      Model: "jarvis",
+      Sensitivity: null
+    }
   },
   plugins: {
     onReady: [],
@@ -95,7 +103,7 @@ Module.register("MMM-AssistantMk2", {
     if (this.config.ui) {
       var ui = this.config.ui + "/" + this.config.ui + '.js'
       return [
-       "/modules/MMM-AssistantMk2/library/response.class.js",
+       "/modules/MMM-AssistantMk2/components/response.js",
        "/modules/MMM-AssistantMk2/ui/" + ui
       ]
     }
@@ -115,7 +123,7 @@ Module.register("MMM-AssistantMk2", {
   start: function () {
     const helperConfig = [
       "debug", "recipes", "customActionConfig", "assistantConfig", "micConfig",
-      "responseConfig", "useA2D"
+      "responseConfig", "useA2D", "useSnowboy", "snowboy"
     ]
     this.helperConfig = {}
     if (this.config.debug) log = _log
@@ -159,6 +167,10 @@ Module.register("MMM-AssistantMk2", {
       },
       playChime: (chime) => {
         return this.playChime(chime)
+      },
+      A2D: (response)=> {
+        if (this.config.useA2D)
+         return this.Assistant2Display(response)
       }
     }
     this.assistantResponse = new AssistantResponse(this.helperConfig["responseConfig"], callbacks)
@@ -307,7 +319,13 @@ Module.register("MMM-AssistantMk2", {
         magicQuery = magicQuery.replace("%REPEATWORD%", myWord)
         magicQuery = magicQuery.replace("%TEXT%", text)
         this.assistantResponse.fullscreen(true)
-        this.assistantActivate({ type: "TEXT", key: magicQuery}, Date.now())
+        this.assistantActivate({ type: "TEXT", key: magicQuery, force: true }, Date.now())
+        break
+      case "SNOWBOY_START":
+		if (this.config.useSnowboy) this.sendSocketNotification("ASSISTANT_READY")
+        break
+      case "SNOWBOY_STOP":
+        if (this.config.useSnowboy) this.sendSocketNotification("ASSISTANT_BUSY")
         break
     }
     this.doPlugin("onAfterNotificationReceived", {notification:noti, payload:payload})
@@ -325,11 +343,11 @@ Module.register("MMM-AssistantMk2", {
       case "INITIALIZED":
         log("Initialized.")
         this.sendNotification("ASSISTANT_READY")
+        if (this.config.useSnowboy) this.sendSocketNotification("ASSISTANT_READY")
         this.assistantResponse.status("standby")
         this.doPlugin("onReady")
         break
       case "ASSISTANT_RESULT":
-        if (this.config.useA2D) this.Assistant2Display(payload)
         if (payload.session && this.session.hasOwnProperty(payload.session)) {
           var session = this.session[payload.session]
           if (typeof session.callback == "function") {
@@ -361,6 +379,11 @@ Module.register("MMM-AssistantMk2", {
           this.assistantResponse.fullscreen(true)
           this.assistantActivate({ type: "TEXT", key: payload, force: true, chime: false }, Date.now())
         }
+        break
+      case "ASSISTANT_ACTIVATE":
+        var session = Date.now()
+        this.assistantResponse.fullscreen(true)
+        this.assistantActivate(payload, session)
         break
     }
     this.doPlugin("onAfterSocketNotificationReceived", {notification:noti, payload:payload})
@@ -406,6 +429,7 @@ Module.register("MMM-AssistantMk2", {
     if (this.myStatus.actual != "standby" && !payload.force) return log("Assistant is busy.")
     this.doPlugin("onBeforeActivated", payload)
     if (this.config.useA2D) this.sendNotification("A2D_AMK2_BUSY")
+    if (this.config.useSnowboy) this.sendSocketNotification("ASSISTANT_BUSY")
     this.lastQuery = null
     var options = {
       type: "TEXT",
@@ -433,6 +457,7 @@ Module.register("MMM-AssistantMk2", {
   endResponse: function() {
     this.doPlugin("onAfterInactivated")
     if (this.config.useA2D) this.sendNotification("A2D_AMK2_READY")
+    if (this.config.useSnowboy) this.sendSocketNotification("ASSISTANT_READY")
   },
 
   postProcess: function (response, callback_done=()=>{}, callback_none=()=>{}) {
@@ -542,6 +567,10 @@ Module.register("MMM-AssistantMk2", {
 
   doCommand: function (commandId, originalParam, from) {
     this.assistantResponse.doCommand(commandId, originalParam, from)
+    if (commandId == "action.devices.commands.SetVolume") {
+      log("Volume Control:", originalParam)
+      return this.sendNotification("VOLUME_SET", originalParam.volumeLevel)
+    }
     if (this.commands.hasOwnProperty(commandId)) {
       var command = this.commands[commandId]
     } else {
@@ -631,7 +660,7 @@ Module.register("MMM-AssistantMk2", {
   Assistant2Display: function(response) {
     if (response.lastQuery.secretMode || response.lastQuery.sayMode) return
 
-    if (response.transcription && ((response.transcription.transcription == "stop") || (response.transcription.transcription == "stoppe")))
+    if (response.transcription && (response.transcription.transcription == this.config.A2DStopCommand))
       return this.sendNotification("A2D_STOP")
 
     var opt = {
