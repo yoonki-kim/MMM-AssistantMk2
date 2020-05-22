@@ -36,7 +36,7 @@
  - 更简单的 `custom action` 管理
 
  ## 安装 & 指引
-[英文wiki](https://github.com/eouia/MMM-AssistantMk2/wiki)
+[英文wiki](https://github.com/bugsounent/MMM-AssistantMk2/wiki)
 [中文wiki](./wiki/Home.md)
 
 对于中文wiki，目前翻译了基础的部分，你可以通过参考它们来搭建基础的语音服务，以后会翻译更多内容。
