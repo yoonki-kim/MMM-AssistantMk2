@@ -1,5 +1,5 @@
 # MMM-AssistantMk2
-![](https://github.com/bugsounet/MMM-GoogleAssistant/blob/dev/resources/GA_Big.png)
+![](resources/AMk2_Big.png)
 `MMM-AssistantMk2` is an embedded Google assistant on MagicMirror.
 
 ## NEW UPDATES
@@ -18,11 +18,11 @@
 ## Screenshot
 - Classic UI
 
-![](https://raw.githubusercontent.com/eouia/MMM-AssistantMk2/master/resources/previewUI.jpg)
+![](resources/previewUI.jpg)
 
 - FullScreen UI
 
-![](https://raw.githubusercontent.com/eouia/MMM-AssistantMk2/master/resources/previewFS.jpg)
+![](resources/previewFS.jpg)
 
 ## What is updated on V3
 - Fully rebuild from scratch.
@@ -36,7 +36,7 @@
 - Easier `custom action` managing.
 
 ## Installation, update & Guides
-Read the docs in [wiki](https://github.com/eouia/MMM-AssistantMk2/wiki)<br>
+Read the docs in [wiki](https://github.com/bugsounet/MMM-AssistantMk2/wiki)<br>
 [简体中文 Chinese_simplified](./translations/Chinese_simplified/README_zh-CN.md)
 ## Update from 2.x
 Not easy. Remove existence then reinstall fresh.
