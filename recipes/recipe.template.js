@@ -1,17 +1,13 @@
 var recipe = {
-  transcriptionHooks: {
+  transcriptionHook: {
     // Describe your transcriptionHook here.
   },
-  actions: {
-    // Describe your custom Action here.
+  action: {
+    // Describe your gAction here.
   },
-  commands: {
+  command: {
     // Describe your command here.
-  },
-  plugins: {
-    // Describe your plugin callback functions here.
-    //
-  },
+  }
 }
 
 exports.recipe = recipe // Don't remove this line.
