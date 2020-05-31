@@ -426,10 +426,6 @@ Module.register("MMM-AssistantMk2", {
   },
 
   assistantActivate: function(payload, session) {
-    if (!this.config.disclaimer) {
-      this.assistantResponse.showTranscription("~~ DISCLAIMER ~~ MMM-AssistantMk2 is DISABLED")
-      return this.disclaimer()
-    }
     if (this.myStatus.actual != "standby" && !payload.force) return log("Assistant is busy.")
     this.doPlugin("onBeforeActivated", payload)
     if (this.config.useA2D) this.sendNotification("A2D_AMK2_BUSY")
@@ -685,28 +681,4 @@ Module.register("MMM-AssistantMk2", {
       this.sendNotification("A2D", opt)
     }
   },
-
-  /** disclaimer **/
-  disclaimer: function() {
-    var disclaimer = `<br>
-* I do this module for <b>MY SELF</b> and i force <b>NO ONE</b> to use it !!!<br>
-* I <b>SHARE</b> this module with pleasure and ... I don't ask any <b>MONEY</b> !<br>
-* I am not sponsored by google and others<br>
-* If you think there is too much update ... <b>**just go your way**</b> !<br>
-* So ... you can just try this: coding an equivalent by your self (without bugs of course ...)<br>
-<br>
-If you agree this disclaimer:<br><br>
-Add '<i><b>disclaimer: true,</b></i>' in your MMM-AssistantMk2 configuration file<br>
-And restart MagicMirror.<br><br>
-@bugsounet<br><br>
-MMM-AssistantMk2 is <b>ACTUALLY DISABLED</b>
-`
-    var html = "<div class='AMk2_warning'>" + disclaimer + "</div>"
-    this.sendNotification("SHOW_ALERT", {
-      type: "notification",
-      message: html,
-      title: "MMM-AssistantMk2",
-      timer: 60 * 1000
-    })
-  }
 })
