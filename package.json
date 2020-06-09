@@ -27,6 +27,7 @@
   "dependencies": {
     "@bugsounet/node-buffertomp3": "^1.0.0",
     "@bugsounet/node-lpcm16": "^1.0.0",
+    "@bugsounet/snowboy": "^1.5.0",
     "electron-rebuild": "^1.11.0",
     "google-assistant": "0.5.4",
     "grpc": "1.23.4",

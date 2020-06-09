@@ -2,8 +2,8 @@
 
 Module.register("MMM-AssistantMk2", {
   defaults: {
-    verbose: true,
-    startChime: "beep.mp3",
+    verbose: false,
+    startChime: "connection.mp3",
     useWelcomeMessage: "",
     lang: "fr_FR",
     coordinates: {
@@ -23,9 +23,11 @@ Module.register("MMM-AssistantMk2", {
       playProgram: "mpg321",
       playOption: [],
     },
-    notifications: {
-      ASSISTANT_ACTIVATED: "SNOWBOY_STOP",
-      ASSISTANT_DEACTIVATED: "SNOWBOY_START",
+    snowboy: {
+      audioGain: 2.0,
+      Frontend: true,
+      Model: "jarvis",
+      Sensitivity: null
     }
   },
 
@@ -59,16 +61,13 @@ Module.register("MMM-AssistantMk2", {
       case "DOM_OBJECTS_CREATED":
         this.assistant.initializeAfterLoading(this.config)
         break
-      case "ASSISTANT_ACTIVATE":
-        this.assistant.activate()
-        break
     }
   },
 
   socketNotificationReceived: function (notification, payload) {
     switch(notification) {
       case "INITIALIZED":
-        this.sendNotification(this.config.notifications.ASSISTANT_DEACTIVATED)
+        this.sendSocketNotification("SNOWBOY_START")
         if (this.config.useWelcomeMessage) {
           this.assistant.activate( this.config.useWelcomeMessage )
           this.config.useWelcomeMessage = ""
@@ -103,6 +102,9 @@ Module.register("MMM-AssistantMk2", {
       case "CONVERSATION_ERROR":
       case "ASSISTANT_ERROR":
         this.assistant.onError(notification)
+        break
+      case "ASSISTANT_ACTIVATE":
+        this.assistant.activate()
         break
     }
   },

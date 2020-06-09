@@ -145,7 +145,7 @@ class AssistantHelper {
   activate(textQuery=null, id=null) {
     if (this.status == "STANDBY" || this.status == "UNDERSTANDING" || this.status == "RESPONSING") {
       this.clearResponse()
-      this.sendNotification(this.config.notifications.ASSISTANT_ACTIVATED)
+      this.sendSocketNotification("SNOWBOY_STOP")
       this.changeStatus("READY")
       this.sendSocketNotification("START", {textQuery:textQuery, id:id})
       return true
@@ -157,7 +157,7 @@ class AssistantHelper {
 
   deactivate(cb=()=>{}) {
     this.changeStatus("STANDBY")
-    this.sendNotification(this.config.notifications.ASSISTANT_DEACTIVATED)
+    this.sendSocketNotification("SNOWBOY_START")
     this.quietRequest = false
     cb()
   }

@@ -5,6 +5,7 @@
 const path = require("path")
 const Record = require("@bugsounet/node-lpcm16")
 const B2M = require("@bugsounet/node-buffertomp3")
+const Snowboy = require("@bugsounet/snowboy").Snowboy
 const GoogleAssistant = require("google-assistant")
 const exec = require("child_process").exec
 const fs = require("fs")
@@ -66,11 +67,15 @@ module.exports = NodeHelper.create({
   },
 
   initializeAfterLoading: function (config, cb) {
+    console.log("[AMK2] MMM-AssistantMk2 Version:", require('./package.json').version)
     this.config = config
     if (!this.config.verbose) {
       console.log = function() {}
     }
     this.clearTmp()
+    this.snowboy = new Snowboy(this.config.snowboy, this.config.record, (detected) => { this.hotwordDetect(detected) } , this.config.verbose )
+    this.snowboy.init()
+    console.log ("[AMK2] AssistantMk2 is initialized.")
     cb()
   },
 
@@ -83,6 +88,12 @@ module.exports = NodeHelper.create({
         break
       case "START":
         this.prepareActivate(payload)
+        break
+      case "SNOWBOY_START":
+        this.snowboy.start()
+        break
+      case "SNOWBOY_STOP":
+        this.snowboy.stop()
         break
     }
   },
@@ -148,7 +159,7 @@ module.exports = NodeHelper.create({
       var mp3FilePath = "tmp/" + mp3FileName
 
       var mp3File = path.resolve(__dirname, mp3FilePath)
-      var b2m = new B2M ({debug:this.config.debug, file:mp3File, verbose: false})
+      var b2m = new B2M ({debug:this.config.verbose, file:mp3File, verbose: false})
 
       conversation
       .on("audio-data", (data) => {
@@ -254,7 +265,7 @@ module.exports = NodeHelper.create({
           threshold: 0,
           sampleRate: 16000,
           verbose: false,
-          debug: this.config.debug
+          debug: this.config.verbose
         }
         let recordConf = Object.assign({}, defaultOption, this.config.record)
         mic = new Record(recordConf,conversation, (err)=>{ if (err) console.log("[AMK2] Recorder Error: " + err) })
@@ -276,5 +287,9 @@ module.exports = NodeHelper.create({
       console.error("[AMK2] Assistant Error:", error)
       this.sendSocketNotification("ASSISTANT_ERROR", error)
     })
+  },
+  /** Snowboy Callback **/
+  hotwordDetect: function(detected) {
+    if (detected) this.sendSocketNotification("ASSISTANT_ACTIVATE")
   }
 })
