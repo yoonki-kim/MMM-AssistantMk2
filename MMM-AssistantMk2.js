@@ -5,7 +5,7 @@ Module.register("MMM-AssistantMk2", {
     verbose: false,
     startChime: "connection.mp3",
     useWelcomeMessage: "",
-    lang: "fr_FR",
+    lang: "en-US",
     coordinates: {
       latitude: 51.5033640,
       longitude: -0.1276250,
