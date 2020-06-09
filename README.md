@@ -4,7 +4,7 @@
 ### Install, Update & Configuration
 Read [WIKI:Installation](https://github.com/bugsounet/MMM-AssistantMk2/wiki)
 
-### Last Tested (2019-Jul-17)
+### Last Tested (2020-06-09)
 - MagicMirror : 2.11.0
 - RPI 3B+ / RPI4 : Raspbian Buster
 - **Raspbian Jessie or RPI 0 will not work**
