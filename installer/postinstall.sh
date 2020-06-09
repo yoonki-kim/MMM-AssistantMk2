@@ -47,7 +47,7 @@ Installer_yesno "Do you want check your audio output configuration" && (
       Installer_warning "Remember: if you are using RPI, it's better to use arecord program"
     fi
     echo
-    Installer_warning "micConfig: {"
+    Installer_warning "record: {"
     Installer_warning "  recorder: \"arecord\","
     Installer_warning "  device: \"$plug_rec\""
     Installer_warning "},"
