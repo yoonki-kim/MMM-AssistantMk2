@@ -5,9 +5,9 @@
 Read the docs in [wiki](https://github.com/bugsounet/MMM-AssistantMk2/wiki)<br>
 
 ## AssistantMk2 v3.5
-
 This module is a pure version of GoogleAssistant without any plugins.<br>
 If you don't need plugins or assistant for launching program<br>
-this module is yours !
+This module is yours !
+
 ---
 # **This project have moved to [MMM-GoogleAssistant](https://github.com/bugsounet/MMM-GoogleAssistant)**
