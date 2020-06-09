@@ -1,0 +1,23 @@
+{
+  "name": "MMM-AssistantMk2",
+  "description": "An embedded Google Assistant on MagicMirror.",
+  "main": "MMM-AssistantMk2.js",
+  "scripts": {
+    "preinstall": "installer/preinstall.sh"
+  },
+  "keywords": [
+    "magic mirror",
+    "module",
+    "google assistant",
+    "voice",
+    "embedded",
+    "assistant for device"
+  ],
+  "author": "bugsounet",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/bugsounet/MMM-AssistantMk2"
+  },
+  "homepage": "https://github.com/bugsounet/MMM-AssistantMk2"
+}
