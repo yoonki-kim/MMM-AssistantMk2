@@ -1,27 +1,9 @@
-Welcome to the MMM-AssistantMk2 Version 3.2.x wiki!
----
-## Installation & Configuration
+Welcome to the MMM-AssistantMk2 wiki!
 - [[Installation]]
-- [[Google Assistant Setup]]
-- [[Configuration Structure]]
-- [[Configuration Sample]]
+- [[Configuration]]
+- [[Usage]]
+- [[Update History]]
 ---
-## Usage
-- [[Notifications]]
-- [[Recipes]]
-- [[transcriptionHooks]]
-- [[responseHooks]]
-- [[plugins]]
-- [[commands]]
-- [[action]]
-- [MMM-Assistant2Display](https://github.com/bugsounet/MMM-Assistant2Display#mmm-assistant2display)
+- [[gAction]]
 ---
-## Misc.
-- [[myMagicWord]]
-- [[Prepared recipes]]
-- [[MagicMirror volume level]]
----
-## Tip
-- [[Register your Mirror as Google Assistant related device]]
-- [[Self check for issue]]
-- [[Resolving mmap issue and no response audio]] 
+- [[Tip:Making Timer with gAction]]
