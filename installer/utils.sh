@@ -92,10 +92,6 @@ Installer_electronrebuild () {
 	cd ..
 	Installer_pwd="$(pwd)"
 	Installer_debug "Current diectory: $Installer_pwd"
-	Installer_info "Installing electron-rebuild..."
-	Installer_debug "npm install --save-dev electron-rebuild"
-	npm install --save-dev electron-rebuild || exit 1
-	Installer_success "Electron-rebuild installed"
 	Installer_info "Execute electron-rebuild..."
 	Installer_warning "It could takes 10~30 minutes."
 	Installer_debug "./node_modules/.bin/electron-rebuild"
@@ -290,6 +286,36 @@ Installer_checkmic () {
       #update_alsa $play_hw $rec_hw
     else
       rec_hw=""
+      plug_rec=""
+      break
+    fi
+  done
+  rm -f $audiofile
+ }
+
+Installer_checkmicv2 () {
+  audiofile="testmic.wav"
+  plug_rec="${plug_rec:-plughw:1}"
+  while true; do
+    if Installer_info "Checking audio input..."
+      Installer_yesno "Make sure your microphone is on, press [Yes] and say something.\nPress [No] if you don't want to check." true >/dev/null; then
+      echo
+      Installer_debug "Actual test input config: $plug_rec"
+      rm -f $audiofile
+      arecord -D $plug_rec -r 16000 -c 1 -d 3 -t wav -f S16_LE $audiofile 2>/dev/null || Installer_error "Current configuration not Working !"
+      if [ -f $audiofile ]; then
+        Installer_info "Using default output speaker for playing"
+        play $audiofile || Installer_error "Output device error ! (default speaker not set)"
+        Installer_yesno "Did you hear yourself?" true >/dev/null && break
+      fi
+      echo
+      Installer_warning "Selection of the microphone device"
+      devices="$(arecord -l)"
+      Installer_info "$devices"
+      read -p "Indicate the card # to use [0-9]: " card
+      plug_rec="plughw:$card"
+      Installer_info "you have selected: $plug_rec"
+    else
       plug_rec=""
       break
     fi

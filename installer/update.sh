@@ -31,7 +31,10 @@ Installer_info "Updating..."
 git pull
 #fresh package.json
 git checkout package.json
-Installer_info "Installing..."
-Installer_error "Electron Rebuild and Check audio step are not needed !"
+cd ~/MagicMirror/modules/MMM-AssistantMk2/node_modules
+Installer_info "Deleting ALL @bugsounet libraries..."
+rm -rf @bugsounet
+cd ~/MagicMirror/modules/MMM-AssistantMk2
+Installer_info "Ready for Installing..."
 # launch installer
 npm install
