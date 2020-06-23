@@ -25,7 +25,7 @@
   },
   "homepage": "https://github.com/bugsounet/MMM-AssistantMk2",
   "dependencies": {
-    "@bugsounet/node-buffertomp3": "^1.0.0",
+    "@bugsounet/node-buffertomp3": "1.0.0",
     "@bugsounet/node-lpcm16": "^1.0.0",
     "@bugsounet/snowboy": "^1.5.0",
     "electron-rebuild": "^1.11.0",
