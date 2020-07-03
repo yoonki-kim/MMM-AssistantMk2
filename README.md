@@ -9,6 +9,3 @@ This module is a pure version of GoogleAssistant without any plugins.<br>
 No MMM-Hotword needed (a detector is embed)<br>
 If you don't need plugins or assistant for launching program<br>
 This module is yours !
-
----
-# **This project have moved to [MMM-GoogleAssistant](https://github.com/bugsounet/MMM-GoogleAssistant)**
