@@ -2,7 +2,7 @@
 
 Module.register("MMM-AssistantMk2", {
   defaults: {
-    verbose: false,
+    debug: true,
     startChime: "connection.mp3",
     useWelcomeMessage: "",
     lang: "en-US",
@@ -10,10 +10,6 @@ Module.register("MMM-AssistantMk2", {
       latitude: 51.5033640,
       longitude: -0.1276250,
     },
-    responseVoice: true,
-    responseScreen: true,
-    screenZoom: "80%",
-    screenDuration: 5000,
     standbyStatic: false,
     record: {
       recorder : "arecord",
@@ -86,9 +82,6 @@ Module.register("MMM-AssistantMk2", {
         break
       case "TRANSCRIPTION":
         this.assistant.transcription(payload)
-        break
-      case "RESPONSE_START":
-        this.assistant.responseStart(payload)
         break
       case "RESPONSE_END":
         this.sendNotification("ASSISTANT_RESPONSE_END")
